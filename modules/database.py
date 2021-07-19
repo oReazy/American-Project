@@ -1,5 +1,4 @@
 import pymysql, json, re
-import asyncio, aiomysql
 
 
 def connect_base():  # Подключение к БД
