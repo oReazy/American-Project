@@ -4,18 +4,21 @@ from vkbottle.bot import Bot, Message
 from vkbottle import Keyboard, KeyboardButtonColor, Text
 import json, time, os, sys, re
 from modules import database
+import smtplib
+# from email.mime.text import MIMEText
+# from email.mime.multipart import MIMEMultipart
 
 
 # ------------------------------------------------------------------------------------------
 
 async def Show(message: Message):
-    data = database.getUserData(message.from_id)
-    database.setUserData(message.from_id, 'state', "'settings.Show'")
+    data = await database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'settings.Show'")
     await message.answer(
         message=f"🎯 » ⚙ Настройки персонажа",
         keyboard=(
             Keyboard(one_time=True, inline=False)
-                .add(Text("◀ Назад", {"cmd": "characterAction.Show"}), color=KeyboardButtonColor.PRIMARY)
+                .add(Text("◀ Назад", {"cmd": "mainMenu.Show"}), color=KeyboardButtonColor.PRIMARY)
                 .row()
                 .add(Text("✉ Email", {"cmd": "settings.Email"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
@@ -27,8 +30,8 @@ async def Show(message: Message):
 
 
 async def Email(message: Message):
-    data = database.getUserData(message.from_id)
-    database.setUserData(message.from_id, 'state', "'settings.Email'")
+    data = await database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'settings.Email'")
     if data[4] == 'No email address':
         await message.answer(
             message=f"🎯 » ⚙ » ✉ Email\n\n"
@@ -64,8 +67,8 @@ async def Email(message: Message):
 
 
 async def addMail(message: Message):
-    data = database.getUserData(message.from_id)
-    database.setUserData(message.from_id, 'state', "'settings.addMail_check'")
+    data = await database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'settings.addMail_check'")
     await message.answer(
         message=f"🎯 » ⚙ » ✉ » ✉ Добавить почту\n\n"
                 f"📝 Введите электронную почту",
@@ -80,7 +83,20 @@ async def addMail(message: Message):
 async def addMail_check(message: Message):
     result = database.regularCheck('^(?!.*@.*@.*$)(?!.*@.*\-\-.*\..*$)(?!.*@.*\-\..*$)(?!.*@.*\-$)(.*@.+(\..{1,11})?)$', str(message.text))
     if result[0] == 1:
-        database.setUserData(message.from_id, 'mail', f"'{result[1]}'")
+        await database.setUserData(message.from_id, 'mail', f"'{result[1]}'")
+        await addMail_OK(message)
+    else:
+        await message.answer(
+            message=f"❌ Ошибка. Такой почты не существует, либо вы ее написали неправильно"
+        )
+        await addMail(message)
+    return
+
+
+async def addMail_check(message: Message):
+    result = database.regularCheck('^(?!.*@.*@.*$)(?!.*@.*\-\-.*\..*$)(?!.*@.*\-\..*$)(?!.*@.*\-$)(.*@.+(\..{1,11})?)$', str(message.text))
+    if result[0] == 1:
+        await database.setUserData(message.from_id, 'mail', f"'{result[1]}'")
         await addMail_OK(message)
     else:
         await message.answer(
@@ -91,8 +107,8 @@ async def addMail_check(message: Message):
 
 
 async def addMail_OK(message: Message):
-    data = database.getUserData(message.from_id)
-    database.setUserData(message.from_id, 'state', "'settings.addMail_OK'")
+    data = await database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'settings.addMail_OK'")
     await message.answer(
         message=f"✅ Вы успешно добавили почту.\n\n"
                 f"⚠ Для максимальной безопасности, мы рекомендуем вам поставить двухфакторную аунтификацию от ВКонтакте. В случае, "
@@ -107,8 +123,8 @@ async def addMail_OK(message: Message):
 
 
 async def editMail(message: Message):
-    data = database.getUserData(message.from_id)
-    database.setUserData(message.from_id, 'state', "'settings.editMail_check'")
+    data = await database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'settings.editMail_check'")
     await message.answer(
         message=f"🎯 » ⚙ » ✉ » ✉ Изменить почту\n\n"
                 f"📝 Введите новую электронную почту",
@@ -121,10 +137,10 @@ async def editMail(message: Message):
     return
 
 async def editMail_check(message: Message):
-    result = database.regularCheck('^(?!.*@.*@.*$)(?!.*@.*\-\-.*\..*$)(?!.*@.*\-\..*$)(?!.*@.*\-$)(.*@.+(\..{1,11})?)$', str(message.text))
+    result = await database.regularCheck('^(?!.*@.*@.*$)(?!.*@.*\-\-.*\..*$)(?!.*@.*\-\..*$)(?!.*@.*\-$)(.*@.+(\..{1,11})?)$', str(message.text))
     print(result)
     if result[0] == 1:
-        database.setUserData(message.from_id, 'mail', f"'{result[1]}'")
+        await database.setUserData(message.from_id, 'mail', f"'{result[1]}'")
         await editMail_OK(message)
     else:
         await message.answer(
@@ -135,8 +151,8 @@ async def editMail_check(message: Message):
 
 
 async def editMail_OK(message: Message):
-    data = database.getUserData(message.from_id)
-    database.setUserData(message.from_id, 'state', "'settings.editMail_OK'")
+    data = await database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'settings.editMail_OK'")
     await message.answer(
         message=f"✅ Вы успешно изменили почту",
         keyboard=(
@@ -152,9 +168,9 @@ async def editMail_OK(message: Message):
 # ---------------------------------------------------------------------------------------------------------------
 # РАССЛЫКИ
 async def Mailing(message: Message):
-    data = database.getUserData(message.from_id)
-    server_settings = database.getBdData('settings', 'id', "'1'")
-    database.setUserData(message.from_id, 'state', "'settings.Mailing'")
+    data = await database.getUserData(message.from_id)
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    await database.setUserData(message.from_id, 'state', "'settings.Mailing'")
 
     KEYBOARD_MAILING = Keyboard(one_time=True, inline=False)
     KEYBOARD_MAILING.add(Text("◀ Назад", {"cmd": "settings.Show"}), color=KeyboardButtonColor.PRIMARY)
@@ -187,7 +203,7 @@ async def Mailing(message: Message):
 
 
 async def MailingLeaveProject(message: Message):
-    database.setMultiUserData(message.from_id, "mailing_project = '❌ Не подписан', state = 'settings.MailingLeaveProject'")
+    await database.setMultiUserData(message.from_id, "mailing_project = '❌ Не подписан', state = 'settings.MailingLeaveProject'")
     await message.answer(
         message=f"😭 Вы отписались от рассылки с новостями проекта\n\n"
                 f"👉🏻 Теперь вы не будете получать вознаграждений от рассылок, так-как они к вам больше не поступают. "
@@ -203,7 +219,7 @@ async def MailingLeaveProject(message: Message):
 
 
 async def MailingAddProject(message: Message):
-    database.setMultiUserData(message.from_id, "mailing_project = '✅ Подписан', state = 'settings.MailingAddProject'")
+    await database.setMultiUserData(message.from_id, "mailing_project = '✅ Подписан', state = 'settings.MailingAddProject'")
     await message.answer(
         message=f"🎉 Вы подписались на новости проекта\n\nМы благодарим вас за подписку на рассылку новостей от проекта. В ней "
                 f"мы рассказываем о будущих обновлениях, так и об актуальных. Никакой воды и рекламы, только все по делу. Также "
@@ -219,7 +235,7 @@ async def MailingAddProject(message: Message):
 
 
 async def MailingLeaveServer(message: Message):
-    database.setMultiUserData(message.from_id, "mailing_server = '❌ Не подписан', state = 'settings.MailingLeaveServer'")
+    await database.setMultiUserData(message.from_id, "mailing_server = '❌ Не подписан', state = 'settings.MailingLeaveServer'")
     await message.answer(
         message=f"😭 Вы отписались от рассылки с новостями сервера\n\n"
                 f"👉🏻 Теперь вы не будете получать вознаграждений от рассылок, так-как они к вам больше не поступают. "
@@ -235,7 +251,7 @@ async def MailingLeaveServer(message: Message):
 
 
 async def MailingAddServer(message: Message):
-    database.setMultiUserData(message.from_id, "mailing_server = '✅ Подписан', state = 'settings.MailingAddServer'")
+    await database.setMultiUserData(message.from_id, "mailing_server = '✅ Подписан', state = 'settings.MailingAddServer'")
     await message.answer(
         message=f"🎉 Вы подписались на новости сервера\n\nМы благодарим вас за подписку на рассылку новостей от сервера. В ней "
                 f"мы рассказываем о мероприятиях, новостях, наборах во фракции и различные РП-ситуации. Также "

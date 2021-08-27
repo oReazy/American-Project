@@ -1,26 +1,34 @@
-import pymysql, json, re
+import asyncio
+import json, re
+import aiomysql
+
+loop = asyncio.get_event_loop()
+# ---------------------------------------------------------------------------------------
+# ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ
+
+USER = 'areazy6_game'
+PASSWORD = 'Cloud9d'
+HOST = 'areazy6.beget.tech'
+DATABASE = 'areazy6_game'
 
 
-def connect_base():  # Подключение к БД
-    with open("data/database.json", 'r', encoding='UTF-8') as json_file:
-        db = json.load(json_file)
+# ---------------------------------------------------------------------------------------
+
+async def connect_base():  # Подключение к БД
+    connected = await aiomysql.connect(
+        host=HOST,
+        user=USER,
+        password=PASSWORD,
+        db=DATABASE,
+        loop=loop
+    )
+    return connected
+
+
+async def registerNewAccaunt(user_id):  # Создание нового аккаунта в базе данных
     try:
-        connected = pymysql.connect(
-            user=db['USER'],
-            password=db['PASSWORD'],
-            host=db['HOST'],
-            db=db['DATABASE']
-        )
-        print('\033[34m[i] Подключение к базе данных прошло \033[32mуспешно\033[34m (БД)')
-        return connected
-    except:
-        print('\033[34m[!] Ошибка. Не удалось подключиться к базе данных (БД)')
-
-
-def registerNewAccaunt(user_id):  # Создание нового аккаунта в базе данных
-    try:
-        connection = connect_base()
-        with connection.cursor() as cursor:
+        connection = await connect_base()
+        async with connection.cursor() as cursor:
             # new_user = "INSERT INTO `users` (vk_id, state, nick, mail, telephone, lvl, exp, sex, age, nationality, " \
             #            "admin, dollars, euro, yen, pounds, bank_dollars, bank_euro, bank_yen, bank_pounds, " \
             #            "tracing, donate, VIP, lider, member, rang, license_auto, license_motorbike, " \
@@ -33,7 +41,7 @@ def registerNewAccaunt(user_id):  # Создание нового аккаунт
             #            "health, eat, passport, passport_serial, passport_number, marriage, " \
             #            "military_card, casino_chips, admin_info, mailing_project, mailing_server, " \
             #            "bank_card, skill_farmer, skill_drive, skill_trucker, skill_taxi, skill_air
-            #            "temporary_var) VALUES " \
+            #            "temporary_var, limit_report, last_message) VALUES " \
             #            f"({user_id}, " \  # vk_id
             # f"'', " \  # state
             # f"'', " \  # nick
@@ -109,6 +117,8 @@ def registerNewAccaunt(user_id):  # Создание нового аккаунт
             # f"'', " \  # skill_taxi
             # f"'', " \  # skill_air
             # f"'', " \  # temporary_var
+            # f"'', " \  # limit_report
+            # f"'', " \  # last_message
             # f")"
             admin_info = {"admin_name": "", "admin_age": "", "admin_city_live": "", "admin_discord": "",
                           "admin_desc": "", "admin_date_add": "", "admin_date_upp": "", "admin_date_leave": "",
@@ -125,7 +135,7 @@ def registerNewAccaunt(user_id):  # Создание нового аккаунт
                        "health, eat, passport, passport_serial, passport_number, marriage, " \
                        "military_card, casino_chips, admin_info, mailing_project, mailing_server, " \
                        "bank_card, skill_farmer, skill_drive, skill_trucker, skill_taxi, skill_air, " \
-                       "temporary_var) VALUES " \
+                       "temporary_var, limit_report, last_message) VALUES " \
                        f"({user_id}, " \
                        f"'', " \
                        f"'', " \
@@ -200,96 +210,130 @@ def registerNewAccaunt(user_id):  # Создание нового аккаунт
                        f"'0', " \
                        f"'0', " \
                        f"'0', " \
-                       f"'[]'" \
+                       f"'[]', " \
+                       f"'0', " \
+                       f"'0'" \
                        f")"
-            cursor.execute(new_user)
-            connection.commit()
+            await cursor.execute(new_user)
+            await connection.commit()
             connection.close()
-            print(f'\033[33mВстречайте нового пользователя')
+            print(f'\033[33mВстречайте нового пользователя\033[39m')
     except Exception as ex:
-        print(f'\033[34m[!] Ошибка. Не удалось создать пользователя (он уже есть в БД)\n{ex}')
+        print(f'\033[34m[!] Ошибка. Не удалось создать пользователя \n{ex}')
 
 
-def getUserData(user_id):  # получение данных пользователя
-    connection = connect_base()
-    with connection.cursor() as cursor:
+async def getUserData(user_id):  # получение данных пользователя
+    connection = await connect_base()
+    async with connection.cursor() as cursor:
         select_row = f"SELECT * FROM `users` WHERE `vk_id` = {user_id}"
-        cursor.execute(select_row)
-        rows = cursor.fetchall()
+        await cursor.execute(select_row)
+        rows = await cursor.fetchall()
         for row in rows:
             data = row
         connection.close()
     return data
 
 
-def setUserData(user_id, key, value):  # Изменение переменных у пользователя (по одной переменной)
-    connection = connect_base()
-    with connection.cursor() as cursor:
+async def setUserData(user_id, key, value):  # Изменение переменных у пользователя (по одной переменной)
+    connection = await connect_base()
+    async with connection.cursor() as cursor:
         update_row = f"UPDATE `users` SET {key} = {value} WHERE vk_id = {user_id}"
-        cursor.execute(update_row)
-        connection.commit()
-        cursor.close()
+        await cursor.execute(update_row)
+        await connection.commit()
+        connection.close()
 
 
-def setMultiUserData(user_id, value):  # Изменение переменных у пользователя (несколько переменных)
-    connection = connect_base()
-    with connection.cursor() as cursor:
+async def setMultiUserData(user_id, value):  # Изменение переменных у пользователя (несколько переменных)
+    connection = await connect_base()
+    async with connection.cursor() as cursor:
         update_row = f"UPDATE `users` SET {value} WHERE vk_id = {user_id}"
-        cursor.execute(update_row)
-        connection.commit()
-        cursor.close()
+        await cursor.execute(update_row)
+        await connection.commit()
+        connection.close()
 
 
-def deleteUserData(user_id):  # Удаление данных пользователя
-    connection = connect_base()
-    with connection.cursor() as cursor:
+async def deleteUserData(user_id):  # Удаление данных пользователя
+    connection = await connect_base()
+    async with connection.cursor() as cursor:
         delete_row = f"DELETE from `users` WHERE `vk_id` = {user_id}"
-        cursor.execute(delete_row)
-        connection.commit()
-        cursor.close()
+        await cursor.execute(delete_row)
+        await connection.commit()
+        connection.close()
 
 
-def findBaseData(key, value):  # найти значения в базе данных. Выводит их количестве в БД
+async def findBaseData(key, value):  # найти значения в базе данных. Выводит их количестве в БД
     count_row = 0
-    connection = connect_base()
-    with connection.cursor() as cursor:
+    connection = await connect_base()
+    async with connection.cursor() as cursor:
         select_row = f"SELECT * FROM `users` WHERE `{key}` = {value}"
-        cursor.execute(select_row)
-        rows = cursor.fetchall()
+        await cursor.execute(select_row)
+        rows = await cursor.fetchall()
         for row in rows:
             count_row = count_row + 1
         connection.close()
     return count_row
 
+
 # --------------------------------------------------------------------------------------------------
 
-def getBdData(table, key, value):  # получение данных
-    connection = connect_base()
-    with connection.cursor() as cursor:
+async def getBdData(table, key, value):  # получение данных (выводит только последнее)
+    connection = await connect_base()
+    async with connection.cursor() as cursor:
         select_row = f"SELECT * FROM `{table}` WHERE {key} = {value}"
-        cursor.execute(select_row)
-        rows = cursor.fetchall()
+        await cursor.execute(select_row)
+        rows = await cursor.fetchall()
         for row in rows:
             data = row
         connection.close()
     return data
 
 
-def setBdData(table, where_key, where_value, key, value):  # Изменение переменных (по одной переменной)
-    connection = connect_base()
-    with connection.cursor() as cursor:
-        update_row = f"UPDATE `{table}` SET {key} = {value} WHERE {where_key} = {where_value}"
-        cursor.execute(update_row)
-        connection.commit()
-        cursor.close()
+async def getMultiBdData(table, key, value):  # получение данных (выводит все)
+    connection = await connect_base()
+    async with connection.cursor() as cursor:
+        select_row = f"SELECT * FROM `{table}` WHERE {key} = {value}"
+        await cursor.execute(select_row)
+        rows = await cursor.fetchall()
+        connection.close()
+    return rows
 
-def setMultiDbData(table, where_key, where_value, value):  # Изменение переменных (несколько переменных)
-    connection = connect_base()
-    with connection.cursor() as cursor:
+
+async def getMultiProgramBdData(table, where):  # получение данных (программное)
+    connection = await connect_base()
+    async with connection.cursor() as cursor:
+        select_row = f"SELECT * FROM `{table}` WHERE {where}"
+        await cursor.execute(select_row)
+        rows = await cursor.fetchall()
+        connection.close()
+    return rows
+
+
+async def setBdData(table, where_key, where_value, key, value):  # Изменение переменных (по одной переменной)
+    connection = await connect_base()
+    async with connection.cursor() as cursor:
+        update_row = f"UPDATE `{table}` SET {key} = {value} WHERE {where_key} = {where_value}"
+        await cursor.execute(update_row)
+        await connection.commit()
+        connection.close()
+
+
+async def setMultiDbData(table, where_key, where_value, value):  # Изменение переменных (несколько переменных)
+    connection = await connect_base()
+    async with connection.cursor() as cursor:
         update_row = f"UPDATE `{table}` SET {value} WHERE {where_key} = {where_value}"
-        cursor.execute(update_row)
-        connection.commit()
-        cursor.close()
+        await cursor.execute(update_row)
+        await connection.commit()
+        connection.close()
+
+
+async def addMultiBdData(table, keys, values):  # Изменение переменных (по одной переменной)
+    connection = await connect_base()
+    async with connection.cursor() as cursor:
+        update_row = f"INSERT INTO `{table}` ({keys}) VALUES ({values})"
+        await cursor.execute(update_row)
+        await connection.commit()
+        connection.close()
+
 
 # --------------------------------------------------------------------------------------------------
 # Код который ниже написан не связан с базами данных
@@ -300,6 +344,7 @@ async def exitBot():  # делает выход из активной переп
     #     exit(0)
     # except:
     #     pass
+
 
 async def pretty(num):
     num1 = re.sub(r'\d(?=(?:\d{3})+(?!\d))', r'\g<0> ', str(num))
@@ -315,3 +360,18 @@ def regularCheck(key, value):
         return 0, value
     else:
         return 1, value
+
+
+async def def_new_lvl(message, data, server_data):
+    print(data[6], data[7], int(int(data[6]) * int(server_data[16])))
+    new_exp = int(data[7]) - int(int(data[6]) * int(server_data[16]))
+    new_lvl = int(data[6]) + 1
+    await setMultiUserData(message.from_id, f"lvl = '{new_lvl}', exp = '{new_exp}'")
+    await message.answer(
+        message=f"⏫ Поздравляем. Теперь у вас {new_lvl} уровень")
+    data = await getUserData(message.from_id)
+    if int(data[7]) >= int(int(data[6]) * int(server_data[16])):
+        await def_new_lvl(message, data, server_data)
+
+
+

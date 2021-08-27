@@ -12,7 +12,7 @@ from modules import mainMenu
 # ------------------------------------------------------------------------------------------
 
 async def Check(message: Message):
-    data = database.getUserData(message.from_id)
+    data = await database.getUserData(message.from_id)
     if data[5] == '❌ Отсутствует':
         await message.answer(
             message=f"❌ У вас нет мобильного телефона. Купить вы его можете в магазине электроники",
@@ -24,8 +24,8 @@ async def Check(message: Message):
 
 
 async def Show(message: Message):
-    database.setUserData(message.from_id, 'state', "'block.Show'")
-    data = database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'block.Show'")
+    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"📱 Вы достали телефон из кормана"
     )
@@ -39,8 +39,8 @@ async def Show(message: Message):
 
 
 async def PowerOff(message: Message):
-    database.setUserData(message.from_id, 'state', "'block.Show'")
-    data = database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'block.Show'")
+    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"📱 Вы выключили телефон"
     )
@@ -55,8 +55,8 @@ async def PowerOff(message: Message):
 
 
 async def ShowMenu(message: Message):
-    database.setUserData(message.from_id, 'state', "'telephone.ShowMenu'")
-    data = database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'telephone.ShowMenu'")
+    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 📱 Телефон",
         keyboard=(
@@ -72,8 +72,8 @@ async def ShowMenu(message: Message):
 
 
 async def Time(message: Message):
-    database.setUserData(message.from_id, 'state', "'telephone.ShowMenu'")
-    data = database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'telephone.ShowMenu'")
+    data = await database.getUserData(message.from_id)
     real_time = datetime.datetime.now()
     real_day = datetime.date.today()
     await message.answer(

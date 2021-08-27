@@ -10,8 +10,8 @@ from modules import skills
 # ------------------------------------------------------------------------------------------
 
 async def Show(message: Message):
-    data = database.getUserData(message.from_id)
-    database.setUserData(message.from_id, 'state', "'licences.Show'")
+    data = await database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'licences.Show'")
     await message.answer(
         message=f"🎯 » 👤 » 📒 Мои лицензии\n\n"
                 f"🚗 Лицензия на автомобили » {data[26]}\n"

@@ -9,8 +9,8 @@ from modules import database
 # ------------------------------------------------------------------------------------------
 
 async def Show(message):
-    database.setUserData(message.from_id, 'state', "'game_rule.Show'")
-    setting_server = database.getBdData('settings', 'id', "'1'")
+    await database.setUserData(message.from_id, 'state', "'game_rule.Show'")
+    setting_server = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
         message=f"🎯 » 📖 Правила\n\n"
                 f"{setting_server[19]}",

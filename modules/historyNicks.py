@@ -9,8 +9,8 @@ from modules import database
 # ------------------------------------------------------------------------------------------
 
 async def Show(message):
-    database.setUserData(message.from_id, 'state', "'historyNicks.Show'")
-    data = database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'historyNicks.Show'")
+    data = await database.getUserData(message.from_id)
     if data[56] == '[]':
         await message.answer(
             message=f"🎯 » 📃 История ников\n\n❌ История ников пуста.",

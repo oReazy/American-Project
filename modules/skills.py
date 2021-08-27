@@ -9,7 +9,7 @@ from modules import database
 # ------------------------------------------------------------------------------------------
 
 async def Show(message):
-    database.setUserData(message.from_id, 'state', "'skills.Show'")
+    await database.setUserData(message.from_id, 'state', "'skills.Show'")
     await message.answer(
         message=f"🎯 » 🤹 Навыки",
         keyboard=(
@@ -35,8 +35,8 @@ async def Show(message):
 
 
 async def Gun(message):
-    database.setUserData(message.from_id, 'state', "'skills.Gun'")
-    data = database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'skills.Gun'")
+    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 🤹 » 🔫 Скилл оружия\n\n"
                 f"🔫 Пистолет » {data[50]} / 100\n"
@@ -53,8 +53,8 @@ async def Gun(message):
 
 
 async def Fighting(message):
-    database.setUserData(message.from_id, 'state', "'skills.Fighting'")
-    data = database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'skills.Fighting'")
+    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 🤹 » 💪 Скилл боя\n\n"
                 f"Выбранный стиль боя » {data[48]}\n\n"
@@ -72,8 +72,8 @@ async def Fighting(message):
 
 
 async def Farm(message):
-    database.setUserData(message.from_id, 'state', "'skills.Farm'")
-    data = database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'skills.Farm'")
+    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 🤹 » 🌽 Навык фермера\n\n"
                 f"👨‍🌾 Ваш навык фермера » {data[70]}\n\n"
@@ -92,8 +92,8 @@ async def Farm(message):
 
 
 async def Trucker(message):
-    database.setUserData(message.from_id, 'state', "'skills.Trucker'")
-    data = database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'skills.Trucker'")
+    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 🤹 » 🚚 Навык дальнобойщика\n\n"
                 f"🚚 Ваш навык дальнобойщика » {data[72]}\n\n"
@@ -116,8 +116,8 @@ async def Trucker(message):
 
 
 async def Taxi(message):
-    database.setUserData(message.from_id, 'state', "'skills.Taxi'")
-    data = database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'skills.Taxi'")
+    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 🤹 » 🚕 Навык таксиста\n\n"
                 f"🚕 Ваш навык таксиста » {data[73]}\n\n"
@@ -133,8 +133,8 @@ async def Taxi(message):
 
 
 async def Air(message):
-    database.setUserData(message.from_id, 'state', "'skills.Air'")
-    data = database.getUserData(message.from_id)
+    await database.setUserData(message.from_id, 'state', "'skills.Air'")
+    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 🤹 » 🛩 Навык пилота\n\n"
                 f"🛩 Ваш навык пилота » {data[74]}\n\n"

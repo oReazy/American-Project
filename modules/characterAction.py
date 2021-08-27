@@ -9,7 +9,7 @@ from modules import database
 # ------------------------------------------------------------------------------------------
 
 async def Show(message):
-    database.setUserData(message.from_id, 'state', "'characterAction.Show'")
+    await database.setUserData(message.from_id, 'state', "'characterAction.Show'")
     await message.answer(
         message=f"🎯 » 👤 Действия персонажа",
         keyboard=(
@@ -38,9 +38,9 @@ async def Show(message):
 
 
 async def Statistics(message):
-    database.setUserData(message.from_id, 'state', "'characterAction.Statistics'")
-    data = database.getUserData(message.from_id)
-    server_settings = database.getBdData('settings', 'id', "'1'")
+    await database.setUserData(message.from_id, 'state', "'characterAction.Statistics'")
+    data = await database.getUserData(message.from_id)
+    server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
         message=f"🎯 » 👤 » 📊 Моя статистика\n\n"
                 f"😀 Ник » {data[3]}\n"
@@ -51,8 +51,8 @@ async def Statistics(message):
                 f"🏳 Национальность » {data[10]}\n\n"
                 f"💵 Доллары на руках » {await database.pretty(data[12])}\n"
                 f"💶 Евро на руках » {await database.pretty(data[13])}\n"
-                f"💴 Иены на руках »{await database.pretty(data[14])}\n"
-                f"💷 Фунты на руках »{await database.pretty(data[15])}\n\n"
+                f"💴 Иены на руках » {await database.pretty(data[14])}\n"
+                f"💷 Фунты на руках » {await database.pretty(data[15])}\n\n"
                 f"🛠 Работа » {data[43]}\n"
                 f"🏢 Организация » {data[24]}\n"
                 f"⭐ Уровень розыска » {data[20]}\n\n"

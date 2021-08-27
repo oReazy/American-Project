@@ -10,14 +10,14 @@ from modules import characterAction
 # ------------------------------------------------------------------------------------------
 
 async def Show(message: Message):
-    data = database.getUserData(message.from_id)
+    data = await database.getUserData(message.from_id)
     if data[60] == 'Нету':
         await message.answer(
             message=f"❌ У вас нет паспорта. Сделать вы его можете в правительстве")
         await characterAction.Show(message)
         return
     else:
-        database.setUserData(message.from_id, 'state', "'passport.Show'")
+        await database.setUserData(message.from_id, 'state', "'passport.Show'")
         temporary = ast.literal_eval(data[54])
         blacklist_end = ''
         count = 0

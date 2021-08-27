@@ -3,8 +3,9 @@ import vkbottle_types
 from vkbottle.bot import Bot, Message
 from vkbottle import Keyboard, KeyboardButtonColor, Text, API, GroupEventType, GroupTypes
 from modules import registration, database, block, mainMenu, characterAction, skills, game_rule, admin
-from modules import historyPunish, historyNicks, passport, licences, settings, report, map, donate, telephone
+from modules import historyPunish, historyNicks, passport, licences, settings, report, map, donate, telephone, helpGame
 import json, time, os, random
+from modules.newGuysWorks import farm
 
 # ------------------------------------------------------------------------------------------
 
@@ -26,6 +27,12 @@ async def main(message: Message):
         await registration.registration_1(message)
         return
 
+    await database.setUserData(message.from_id, "last_message", f"'{int(time.time())}'")
+    data = await database.getUserData(message.from_id)
+    server_data = await database.getBdData('settings', "id", "'1'")
+    if int(data[7]) >= int(int(data[6]) * int(server_data[16])):
+        await database.def_new_lvl(message, data, server_data)
+
     if message.payload:
         payload = message.payload
         payload = payload.replace("{", "")
@@ -39,22 +46,33 @@ async def main(message: Message):
         if state == 'admin.Panel7_EditData_GroupAdd(message)': await admin.Panel7_EditData_GroupAdd(message, bot); return
         if state == 'admin.Panel7_EditData_Group(message)': await admin.Panel7_EditData_Group(message, bot); return
         if state == 'admin.Panel8_ControlAdmins_upp_up(message)': await admin.Panel8_ControlAdmins_upp_up(message, bot); return
+        if state == 'admin.Panel8_ControlAdmins_upp_down(message)': await admin.Panel8_ControlAdmins_upp_down(message, bot); return
+        if state == 'admin.Panel8_ControlAdmins_upp_set(message)': await admin.Panel8_ControlAdmins_upp_set(message, bot); return
+        if state == 'admin.Panel8_ControlAdmins_leave_1(message)': await admin.Panel8_ControlAdmins_leave_1(message, bot); return
+        if state == 'admin.Panel8_ControlAdmins_leave_2(message)': await admin.Panel8_ControlAdmins_leave_2(message, bot); return
+        if state == 'admin.Panel8_ControlAdmins_info1(message)': await admin.Panel8_ControlAdmins_info1(message, bot); return
+        if state == 'admin.Panel1_CheckPlayer1(message)': await admin.Panel1_CheckPlayer1(message, bot); return
+        if state == 'admin.Panel1_ReportSendReport(message)': await admin.Panel1_ReportSendReport(message, bot); return
         try:
             print(f'payload: {state}')
             await eval(state)
         except Exception as ex:
             print(f'[!] Ошибка: {ex}')
-            data = database.getUserData(message.from_id)
             state = f"{data[2]}(message)"
             await eval(state)
     else:
         try:
-            data = database.getUserData(message.from_id)
             state = f"{data[2]}(message)"
             if state == 'admin.Panel7_EditData_StatusAdd(message)': await admin.Panel7_EditData_StatusAdd(message, api); return
             if state == 'admin.Panel7_EditData_GroupAdd(message)': await admin.Panel7_EditData_GroupAdd(message, bot); return
             if state == 'admin.Console(message)': await admin.Console(message, api, bot); return
             if state == 'admin.Panel8_ControlAdmins_upp_1(message)': await admin.Panel8_ControlAdmins_upp_1(message, api); return
+            if state == 'admin.Panel8_ControlAdmins_upp_set(message)': await admin.Panel8_ControlAdmins_upp_set(message, bot); return
+            if state == 'admin.Panel8_ControlAdmins_leave_1(message)': await admin.Panel8_ControlAdmins_leave_1(message, bot); return
+            if state == 'admin.Panel8_ControlAdmins_leave_2(message)': await admin.Panel8_ControlAdmins_leave_2(message, bot); return
+            if state == 'admin.Panel8_ControlAdmins_info1(message)': await admin.Panel8_ControlAdmins_info1(message, bot); return
+            if state == 'admin.Panel1_CheckPlayer1(message)': await admin.Panel1_CheckPlayer1(message, bot); return
+            if state == 'admin.Panel1_ReportSendReport(message)': await admin.Panel1_ReportSendReport(message, bot); return
             print(state)
             await eval(state)
         except Exception as ex:
@@ -67,6 +85,7 @@ async def main(message: Message):
 
 @bot.on.raw_event(GroupEventType.MESSAGE_EVENT, dataclass=GroupTypes.MessageEvent)
 async def handle_message_event(event: GroupTypes.MessageEvent):
+    await database.setUserData(event.object.user_id, "last_message", f"'{int(time.time())}'")
     payload = event.object.payload
     payloadcmd = payload['cmd']
     if payloadcmd == 'mainMenu.ShowFixFromId':
