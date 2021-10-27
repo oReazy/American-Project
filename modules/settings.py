@@ -1,18 +1,20 @@
+import random
+
 import vkbottle.api
 import vkbottle_types
 from vkbottle.bot import Bot, Message
-from vkbottle import Keyboard, KeyboardButtonColor, Text
-import json, time, os, sys, re
+from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback, GroupEventType, GroupTypes, Bot, API
+import json, time, os, sys, re, ast, datetime
 from modules import database
-import smtplib
-# from email.mime.text import MIMEText
-# from email.mime.multipart import MIMEMultipart
-
 
 # ------------------------------------------------------------------------------------------
 
-async def Show(message: Message):
-    data = await database.getUserData(message.from_id)
+# Раздел с настройками персонажа
+
+# -------------------------------------------------------------------------------------------
+
+
+async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'settings.Show'")
     await message.answer(
         message=f"🎯 » ⚙ Настройки персонажа",
@@ -23,13 +25,71 @@ async def Show(message: Message):
                 .add(Text("✉ Email", {"cmd": "settings.Email"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("📬 Рассылки", {"cmd": "settings.Mailing"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("🗃 Компактный дизайн", {"cmd": "settings.reDesign"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
         )
     )
     return
 
 
-async def Email(message: Message):
+async def reDesign(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'settings.reDesign'")
+    data = await database.getUserData(message.from_id)
+    if data[78] == 0:
+        button = 'Включить компактный дизайн'
+        status = '❌ Выключен'
+    if data[78] == 1:
+        button = 'Выключить компактный дизайн'
+        status = '✅ Включен'
+    await database.setUserData(message.from_id, 'state', "'settings.Show'")
+    await message.answer(
+        message=f"🎯 » ⚙ » 🗃 Компактный дизайн\n\n"
+                f"🗃 Компактный дизайн » {status}\n\n"
+                f"Если вы опытный игрок и уже понимаете, как работает главное меню, мы разработали специальное "
+                f"компактное меню. Оно в два раза меньше по высоте и вмещает все основные настройки.",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "mainMenu.Show"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text(f"{button}", {"cmd": "settings.reDesignSwitch"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+    return
+
+
+async def reDesignSwitch(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if data[78] == 0:
+        await database.setUserData(message.from_id, 'reDesign', "'1'")
+        await message.answer(
+            message=f"✅ Вы успешно обновили вид главного меню",
+            keyboard=(
+                Keyboard(one_time=True, inline=False)
+                    .add(Text("👉🏻 Далее", {"cmd": "settings.reDesign"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("🎯 Перейти в главное меню", {"cmd": "mainMenu.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .get_json()
+            )
+        )
+        return
+    if data[78] == 1:
+        await database.setUserData(message.from_id, 'reDesign', "'0'")
+        await message.answer(
+            message=f"✅ Вы успешно обновили вид главного меню",
+            keyboard=(
+                Keyboard(one_time=True, inline=False)
+                    .add(Text("👉🏻 Далее", {"cmd": "settings.reDesign"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("🎯 Перейти в главное меню", {"cmd": "mainMenu.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .get_json()
+            )
+        )
+        return
+
+
+async def Email(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'settings.Email'")
     if data[4] == 'No email address':
@@ -66,7 +126,7 @@ async def Email(message: Message):
         return
 
 
-async def addMail(message: Message):
+async def addMail(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'settings.addMail_check'")
     await message.answer(
@@ -80,33 +140,33 @@ async def addMail(message: Message):
     )
     return
 
-async def addMail_check(message: Message):
+async def addMail_check(message: Message, bot: Bot, api: API):
     result = database.regularCheck('^(?!.*@.*@.*$)(?!.*@.*\-\-.*\..*$)(?!.*@.*\-\..*$)(?!.*@.*\-$)(.*@.+(\..{1,11})?)$', str(message.text))
     if result[0] == 1:
         await database.setUserData(message.from_id, 'mail', f"'{result[1]}'")
-        await addMail_OK(message)
+        await addMail_OK(message, bot, api)
     else:
         await message.answer(
             message=f"❌ Ошибка. Такой почты не существует, либо вы ее написали неправильно"
         )
-        await addMail(message)
+        await addMail(message, bot, api)
     return
 
 
-async def addMail_check(message: Message):
+async def addMail_check(message: Message, bot: Bot, api: API):
     result = database.regularCheck('^(?!.*@.*@.*$)(?!.*@.*\-\-.*\..*$)(?!.*@.*\-\..*$)(?!.*@.*\-$)(.*@.+(\..{1,11})?)$', str(message.text))
     if result[0] == 1:
         await database.setUserData(message.from_id, 'mail', f"'{result[1]}'")
-        await addMail_OK(message)
+        await addMail_OK(message, bot, api)
     else:
         await message.answer(
             message=f"❌ Ошибка. Такой почты не существует, либо вы ее написали неправильно"
         )
-        await addMail(message)
+        await addMail(message, bot, api)
     return
 
 
-async def addMail_OK(message: Message):
+async def addMail_OK(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'settings.addMail_OK'")
     await message.answer(
@@ -122,7 +182,7 @@ async def addMail_OK(message: Message):
     return
 
 
-async def editMail(message: Message):
+async def editMail(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'settings.editMail_check'")
     await message.answer(
@@ -136,21 +196,21 @@ async def editMail(message: Message):
     )
     return
 
-async def editMail_check(message: Message):
+async def editMail_check(message: Message, bot: Bot, api: API):
     result = await database.regularCheck('^(?!.*@.*@.*$)(?!.*@.*\-\-.*\..*$)(?!.*@.*\-\..*$)(?!.*@.*\-$)(.*@.+(\..{1,11})?)$', str(message.text))
     print(result)
     if result[0] == 1:
         await database.setUserData(message.from_id, 'mail', f"'{result[1]}'")
-        await editMail_OK(message)
+        await editMail_OK(message, bot, api)
     else:
         await message.answer(
             message=f"❌ Ошибка. Такой почты не существует, либо вы ее написали неправильно"
         )
-        await editMail(message)
+        await editMail(message, bot, api)
     return
 
 
-async def editMail_OK(message: Message):
+async def editMail_OK(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'settings.editMail_OK'")
     await message.answer(
@@ -167,7 +227,7 @@ async def editMail_OK(message: Message):
 
 # ---------------------------------------------------------------------------------------------------------------
 # РАССЛЫКИ
-async def Mailing(message: Message):
+async def Mailing(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await database.setUserData(message.from_id, 'state', "'settings.Mailing'")
@@ -202,7 +262,7 @@ async def Mailing(message: Message):
 
 
 
-async def MailingLeaveProject(message: Message):
+async def MailingLeaveProject(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, "mailing_project = '❌ Не подписан', state = 'settings.MailingLeaveProject'")
     await message.answer(
         message=f"😭 Вы отписались от рассылки с новостями проекта\n\n"
@@ -218,7 +278,7 @@ async def MailingLeaveProject(message: Message):
     return
 
 
-async def MailingAddProject(message: Message):
+async def MailingAddProject(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, "mailing_project = '✅ Подписан', state = 'settings.MailingAddProject'")
     await message.answer(
         message=f"🎉 Вы подписались на новости проекта\n\nМы благодарим вас за подписку на рассылку новостей от проекта. В ней "
@@ -234,7 +294,7 @@ async def MailingAddProject(message: Message):
     return
 
 
-async def MailingLeaveServer(message: Message):
+async def MailingLeaveServer(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, "mailing_server = '❌ Не подписан', state = 'settings.MailingLeaveServer'")
     await message.answer(
         message=f"😭 Вы отписались от рассылки с новостями сервера\n\n"
@@ -250,7 +310,7 @@ async def MailingLeaveServer(message: Message):
     return
 
 
-async def MailingAddServer(message: Message):
+async def MailingAddServer(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, "mailing_server = '✅ Подписан', state = 'settings.MailingAddServer'")
     await message.answer(
         message=f"🎉 Вы подписались на новости сервера\n\nМы благодарим вас за подписку на рассылку новостей от сервера. В ней "
@@ -263,4 +323,3 @@ async def MailingAddServer(message: Message):
                 .get_json()
         )
     )
-    return

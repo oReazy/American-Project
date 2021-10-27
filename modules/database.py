@@ -6,10 +6,10 @@ loop = asyncio.get_event_loop()
 # ---------------------------------------------------------------------------------------
 # ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ
 
-USER = 'areazy6_game'
+USER = 'oreazy1s_bot'
 PASSWORD = 'Cloud9d'
-HOST = 'areazy6.beget.tech'
-DATABASE = 'areazy6_game'
+HOST = 'oreazy1s.beget.tech'
+DATABASE = 'oreazy1s_bot'
 
 
 # ---------------------------------------------------------------------------------------
@@ -119,6 +119,7 @@ async def registerNewAccaunt(user_id):  # Создание нового акка
             # f"'', " \  # temporary_var
             # f"'', " \  # limit_report
             # f"'', " \  # last_message
+            # f"'', " \  # reDesign
             # f")"
             admin_info = {"admin_name": "", "admin_age": "", "admin_city_live": "", "admin_discord": "",
                           "admin_desc": "", "admin_date_add": "", "admin_date_upp": "", "admin_date_leave": "",
@@ -212,14 +213,15 @@ async def registerNewAccaunt(user_id):  # Создание нового акка
                        f"'0', " \
                        f"'[]', " \
                        f"'0', " \
+                       f"'0'," \
                        f"'0'" \
                        f")"
             await cursor.execute(new_user)
             await connection.commit()
             connection.close()
-            print(f'\033[33mВстречайте нового пользователя\033[39m')
+            print(f'\033[38m[\033[33m!\033[38m][\033[33mDEBUG\033[38m] Встречайте нового пользователя')
     except Exception as ex:
-        print(f'\033[34m[!] Ошибка. Не удалось создать пользователя \n{ex}')
+        print(f'\033[38m[\033[31m!\033[38m][\033[33mDEBUG\033[38m] Не удалось создать пользователя, причина: {ex}')
 
 
 async def getUserData(user_id):  # получение данных пользователя
@@ -362,7 +364,7 @@ def regularCheck(key, value):
         return 1, value
 
 
-async def def_new_lvl(message, data, server_data):
+async def def_new_lvl(message, bot, api, data, server_data):
     print(data[6], data[7], int(int(data[6]) * int(server_data[16])))
     new_exp = int(data[7]) - int(int(data[6]) * int(server_data[16]))
     new_lvl = int(data[6]) + 1
@@ -371,7 +373,4 @@ async def def_new_lvl(message, data, server_data):
         message=f"⏫ Поздравляем. Теперь у вас {new_lvl} уровень")
     data = await getUserData(message.from_id)
     if int(data[7]) >= int(int(data[6]) * int(server_data[16])):
-        await def_new_lvl(message, data, server_data)
-
-
-
+        await def_new_lvl(message, bot, api, data, server_data)

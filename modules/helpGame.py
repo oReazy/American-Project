@@ -1,14 +1,19 @@
+import random
+
 import vkbottle.api
 import vkbottle_types
 from vkbottle.bot import Bot, Message
-from vkbottle import Keyboard, KeyboardButtonColor, Text
-import json, time, os, sys, re
+from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback, GroupEventType, GroupTypes, Bot, API
+import json, time, os, sys, re, ast, datetime
 from modules import database
-
 
 # ------------------------------------------------------------------------------------------
 
-async def Show(message):
+# Раздел с помощью об игре
+
+# -------------------------------------------------------------------------------------------
+
+async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'helpGame.Show'")
     setting_server = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
@@ -34,7 +39,7 @@ async def Show(message):
     return
 
 
-async def List4(message):
+async def List4(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'helpGame.List4'")
     await message.answer(
         message=f"🎯 » 📖 » 🌐 Банковская карта\n\n"
@@ -48,7 +53,7 @@ async def List4(message):
     return
 
 
-async def List3(message):
+async def List3(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'helpGame.List3'")
     await message.answer(
         message=f"🎯 » 📖 » 🌐 Виды лицензий\n\n"
@@ -70,7 +75,7 @@ async def List3(message):
     return
 
 
-async def List2(message):
+async def List2(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'helpGame.List2'")
     await message.answer(
         message=f"🎯 » 📖 » 🌐 Как заработать первые деньги?\n\n"
@@ -84,7 +89,7 @@ async def List2(message):
     return
 
 
-async def List1(message):
+async def List1(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'helpGame.List1'")
     await message.answer(
         message=f"🎯 » 📖 » 🔰 Часто задаваемые вопросы\n\n"

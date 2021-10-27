@@ -1,20 +1,25 @@
+import random
+
 import vkbottle.api
 import vkbottle_types
 from vkbottle.bot import Bot, Message
-from vkbottle import Keyboard, KeyboardButtonColor, Text
+from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback, GroupEventType, GroupTypes, Bot, API
 import json, time, os, sys, re, ast, datetime
-from modules import database
-from modules import mainMenu
-
+from modules import database, mainMenu
 
 # ------------------------------------------------------------------------------------------
 
-async def Check(message: Message):
-    await Show(message)
+# Раздел с репортом
+
+# -------------------------------------------------------------------------------------------
+
+
+async def Check(message: Message, bot: Bot, api: API):
+    await Show(message, bot, api)
     return
 
 
-async def Show(message: Message):
+async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'report.Show'")
     data = await database.getUserData(message.from_id)
     if int(data[76]) <= int(time.time()):
@@ -46,11 +51,11 @@ async def Show(message: Message):
             message=f"❌ Писать сообщения в репорт можно раз в 3 минуты",
         )
         await database.setUserData(message.from_id, 'state', "'mainMenu.Show'")
-        await mainMenu.Show(message)
+        await mainMenu.Show(message, bot, api)
 
 
 
-async def Send(message: Message):
+async def Send(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'report.SendCheck'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -65,7 +70,7 @@ async def Send(message: Message):
     return
 
 
-async def SendCheck(message: Message):
+async def SendCheck(message: Message, bot: Bot, api: API):
     if len(message.text) < 300:
         new_time = int(time.time()) + 180
         await database.setUserData(message.from_id, 'limit_report', f"'{new_time}'")
@@ -77,10 +82,10 @@ async def SendCheck(message: Message):
             message=f"✅ Ваш репорт был отправлен администрации",
         )
         await database.setUserData(message.from_id, 'state', "'mainMenu.Show'")
-        await mainMenu.Show(message)
+        await mainMenu.Show(message, bot, api)
     else:
         await message.answer(
             message=f"❌ Вы написали слишком длинный репорт",
         )
         await database.setUserData(message.from_id, 'state', "'report.Send'")
-        await Send(message)
+        await Send(message, bot, api)

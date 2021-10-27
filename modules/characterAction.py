@@ -1,14 +1,19 @@
+import random
+
 import vkbottle.api
 import vkbottle_types
 from vkbottle.bot import Bot, Message
-from vkbottle import Keyboard, KeyboardButtonColor, Text
-import json, time, os, sys, re
+from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback, GroupEventType, GroupTypes, Bot, API
+import json, time, os, sys, re, ast, datetime
 from modules import database
-
 
 # ------------------------------------------------------------------------------------------
 
-async def Show(message):
+# Действия персонажа
+
+# ------------------------------------------------------------------------------------------
+
+async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'characterAction.Show'")
     await message.answer(
         message=f"🎯 » 👤 Действия персонажа",
@@ -37,7 +42,7 @@ async def Show(message):
     return
 
 
-async def Statistics(message):
+async def Statistics(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'characterAction.Statistics'")
     data = await database.getUserData(message.from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")

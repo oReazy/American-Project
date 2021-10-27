@@ -1,14 +1,19 @@
+import random
+
 import vkbottle.api
 import vkbottle_types
 from vkbottle.bot import Bot, Message
-from vkbottle import Keyboard, KeyboardButtonColor, Text
-import json, time, os, sys, re, ast
+from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback, GroupEventType, GroupTypes, Bot, API
+import json, time, os, sys, re, ast, datetime
 from modules import database
-
 
 # ------------------------------------------------------------------------------------------
 
-async def Show(message: Message):
+# Раздел с донатом
+
+# -------------------------------------------------------------------------------------------
+
+async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.Show'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -30,7 +35,7 @@ async def Show(message: Message):
     return
 
 
-async def Show_ADD(message: Message):
+async def Show_ADD(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.Show'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -45,7 +50,7 @@ async def Show_ADD(message: Message):
     return
 
 
-async def ShopMenu1(message: Message):
+async def ShopMenu1(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.ShopMenu1'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -77,7 +82,7 @@ async def ShopMenu1(message: Message):
 
 
 
-async def ShopMenu2(message: Message):
+async def ShopMenu2(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.ShopMenu2'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -104,7 +109,7 @@ async def ShopMenu2(message: Message):
     return
 
 
-async def ChangeNick(message: Message):
+async def ChangeNick(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.ChangeNick'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -122,7 +127,7 @@ async def ChangeNick(message: Message):
     )
     return
 
-async def ChangeNickGet(message: Message):
+async def ChangeNickGet(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if int(data[21]) >= 30:
         await database.setUserData(message.from_id, 'state', "'donate.ChangeNickGetCheck'")
@@ -139,11 +144,11 @@ async def ChangeNickGet(message: Message):
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для смены ника',
         )
-        await ChangeNick(message)
+        await ChangeNick(message, bot, api)
         return
 
 
-async def ChangeNickGetCheck(message: Message):
+async def ChangeNickGetCheck(message: Message, bot: Bot, api: API):
     if 3 <= len(message.text) <= 30:
         if await database.findBaseData('nick', f"'{message.text}'") == 0:
             data = await database.getUserData(message.from_id)
@@ -155,24 +160,24 @@ async def ChangeNickGetCheck(message: Message):
             await message.answer(
                 message='✅ Вы успешно поменяли себе ник'
             )
-            await ChangeNick(message)
+            await ChangeNick(message, bot, api)
         else:
             await message.answer(
                 message='❌ Ошибка. Данный ник уже занят. Попробуйте другой'
             )
-            await ChangeNickGet(message)
+            await ChangeNickGet(message, bot, api)
     else:
         await message.answer(
             message=f'❌ Ошибка. Вы ввели либо короткий ник, либо слишком длинный.'
         )
-        await ChangeNickGet(message)
+        await ChangeNickGet(message, bot, api)
 
 
 
 
 
 
-async def SkillTaxi(message: Message):
+async def SkillTaxi(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.SkillTaxi'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -191,7 +196,7 @@ async def SkillTaxi(message: Message):
     return
 
 
-async def SkillTaxiBuy(message: Message):
+async def SkillTaxiBuy(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[21] >= 100:
         new_donate = int(data[21]) - 100
@@ -199,18 +204,18 @@ async def SkillTaxiBuy(message: Message):
         await message.answer(
             message=f'✅ Вы успешно купили максимальный навык дальнобойщика',
         )
-        await SkillTaxi(message)
+        await SkillTaxi(message, bot, api)
         return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
         )
-        await SkillTaxi(message)
+        await SkillTaxi(message, bot, api)
 
 
 
 
-async def SkillTruck(message: Message):
+async def SkillTruck(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.SkillTruck'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -229,7 +234,7 @@ async def SkillTruck(message: Message):
     return
 
 
-async def SkillTruckBuy(message: Message):
+async def SkillTruckBuy(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[21] >= 250:
         new_donate = int(data[21]) - 250
@@ -237,17 +242,17 @@ async def SkillTruckBuy(message: Message):
         await message.answer(
             message=f'✅ Вы успешно купили максимальный навык дальнобойщика',
         )
-        await SkillTruck(message)
+        await SkillTruck(message, bot, api)
         return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
         )
-        await SkillTruck(message)
+        await SkillTruck(message, bot, api)
 
 
 
-async def SkillFarmer(message: Message):
+async def SkillFarmer(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.SkillFarmer'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -266,7 +271,7 @@ async def SkillFarmer(message: Message):
     return
 
 
-async def SkillFarmerBuy(message: Message):
+async def SkillFarmerBuy(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[21] >= 150:
         new_donate = int(data[21]) - 150
@@ -274,17 +279,17 @@ async def SkillFarmerBuy(message: Message):
         await message.answer(
             message=f'✅ Вы успешно купили максимальный навык фермера',
         )
-        await SkillFarmer(message)
+        await SkillFarmer(message, bot, api)
         return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
         )
-        await SkillFarmer(message)
+        await SkillFarmer(message, bot, api)
 
 
 
-async def Licences(message: Message):
+async def Licences(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.Licences'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -303,7 +308,7 @@ async def Licences(message: Message):
     return
 
 
-async def LicencesBuy(message: Message):
+async def LicencesBuy(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[21] >= 250:
         new_donate = int(data[21]) - 250
@@ -311,17 +316,17 @@ async def LicencesBuy(message: Message):
         await message.answer(
             message=f'✅ Вы успешно купили все лицензии',
         )
-        await Licences(message)
+        await Licences(message, bot, api)
         return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
         )
-        await Licences(message)
+        await Licences(message, bot, api)
 
 
 
-async def EXP(message: Message):
+async def EXP(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.EXP'")
     data = await database.getUserData(message.from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
@@ -341,7 +346,7 @@ async def EXP(message: Message):
     return
 
 
-async def EXPGet(message: Message):
+async def EXPGet(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.EXPGetCheck'")
     await message.answer(
         message=f'✏ Напишите, сколько доната вы готовы потратить',
@@ -354,7 +359,7 @@ async def EXPGet(message: Message):
     return
 
 
-async def EXPGetCheck(message: Message):
+async def EXPGetCheck(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.EXPGetCheck'")
     if message.text.isdigit():
         money = int(message.text)
@@ -379,13 +384,13 @@ async def EXPGetCheck(message: Message):
                 await message.answer(
                     message=f"❌ У вас нет столько алмазов"
                 )
-                await EXPGet(message)
+                await EXPGet(message, bot, api)
                 return
         else:
             await message.answer(
                 message=f"❌ Введите число от 1 до 999 999 999"
             )
-            await EXPGet(message)
+            await EXPGet(message, bot, api)
             return
     else:
         await message.answer(
@@ -395,7 +400,7 @@ async def EXPGetCheck(message: Message):
         return
 
 
-async def EXPGetCheckOK(message: Message):
+async def EXPGetCheckOK(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
     new_donate = int(data[21]) - int(int(data[75]) * int(server_settings[3]))
@@ -404,7 +409,7 @@ async def EXPGetCheckOK(message: Message):
     await message.answer(
         message=f'✅ Транзакция успешно проведена.',
     )
-    await EXP(message)
+    await EXP(message, bot, api)
     return
 
 
@@ -420,7 +425,7 @@ async def EXPGetCheckOK(message: Message):
 
 
 
-async def Dollars(message: Message):
+async def Dollars(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.Dollars'")
     data = await database.getUserData(message.from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
@@ -441,7 +446,7 @@ async def Dollars(message: Message):
     return
 
 
-async def DollarsGet(message: Message):
+async def DollarsGet(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.DollarsGetCheck'")
     await message.answer(
         message=f'✏ Напишите, сколько доната вы готовы потратить',
@@ -454,7 +459,7 @@ async def DollarsGet(message: Message):
     return
 
 
-async def DollarsGetCheck(message: Message):
+async def DollarsGetCheck(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.DollarsGetCheck'")
     if message.text.isdigit():
         money = int(message.text)
@@ -479,23 +484,23 @@ async def DollarsGetCheck(message: Message):
                 await message.answer(
                     message=f"❌ У вас нет столько алмазов"
                 )
-                await DollarsGet(message)
+                await DollarsGet(message, bot, api)
                 return
         else:
             await message.answer(
                 message=f"❌ Введите число от 1 до 999 999 999"
             )
-            await DollarsGet(message)
+            await DollarsGet(message, bot, api)
             return
     else:
         await message.answer(
             message=f"❌ Введите корректное число"
         )
-        await DollarsGet(message)
+        await DollarsGet(message, bot, api)
         return
 
 
-async def DollarsGetCheckOK(message: Message):
+async def DollarsGetCheckOK(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
     new_donate = int(data[21]) - int(data[75])
@@ -504,12 +509,12 @@ async def DollarsGetCheckOK(message: Message):
     await message.answer(
         message=f'✅ Транзакция успешно проведена.',
     )
-    await Dollars(message)
+    await Dollars(message, bot, api)
     return
 
 
 
-async def Telephone(message: Message):
+async def Telephone(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.Telephone'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -551,7 +556,7 @@ async def Telephone(message: Message):
     return
 
 
-async def Telephone_Xiaomi8Pro(message: Message):
+async def Telephone_Xiaomi8Pro(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.Telephone_Xiaomi8Pro'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -569,7 +574,7 @@ async def Telephone_Xiaomi8Pro(message: Message):
     return
 
 
-async def Telephone_Xiaomi8Pro_Buy(message: Message):
+async def Telephone_Xiaomi8Pro_Buy(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[21] >= 50:
         new_donate = int(data[21]) - 50
@@ -577,17 +582,17 @@ async def Telephone_Xiaomi8Pro_Buy(message: Message):
         await message.answer(
             message=f'✅ Транзакция успешно проведена.',
         )
-        await Telephone(message)
+        await Telephone(message, bot, api)
         return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
         )
-        await Telephone_Xiaomi8Pro(message)
+        await Telephone_Xiaomi8Pro(message, bot, api)
 
 
 
-async def Telephone_Xiaomi10Pro(message: Message):
+async def Telephone_Xiaomi10Pro(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.Telephone_Xiaomi10Pro'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -605,7 +610,7 @@ async def Telephone_Xiaomi10Pro(message: Message):
     return
 
 
-async def Telephone_Xiaomi10Pro_Buy(message: Message):
+async def Telephone_Xiaomi10Pro_Buy(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[21] >= 100:
         new_donate = int(data[21]) - 100
@@ -613,19 +618,19 @@ async def Telephone_Xiaomi10Pro_Buy(message: Message):
         await message.answer(
             message=f'✅ Транзакция успешно проведена.',
         )
-        await Telephone(message)
+        await Telephone(message, bot, api)
         return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
         )
-        await Telephone_Xiaomi10Pro(message)
+        await Telephone_Xiaomi10Pro(message, bot, api)
 
 
 
 
 
-async def Telephone_Xiaomi11Lite(message: Message):
+async def Telephone_Xiaomi11Lite(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.Telephone_Xiaomi11Lite'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -643,7 +648,7 @@ async def Telephone_Xiaomi11Lite(message: Message):
     return
 
 
-async def Telephone_Xiaomi11Lite_Buy(message: Message):
+async def Telephone_Xiaomi11Lite_Buy(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[21] >= 150:
         new_donate = int(data[21]) - 150
@@ -651,17 +656,17 @@ async def Telephone_Xiaomi11Lite_Buy(message: Message):
         await message.answer(
             message=f'✅ Транзакция успешно проведена.',
         )
-        await Telephone(message)
+        await Telephone(message, bot, api)
         return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
         )
-        await Telephone_Xiaomi11Lite(message)
+        await Telephone_Xiaomi11Lite(message, bot, api)
 
 
 
-async def Telephone_SamsungS20(message: Message):
+async def Telephone_SamsungS20(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.Telephone_SamsungS20'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -679,7 +684,7 @@ async def Telephone_SamsungS20(message: Message):
     return
 
 
-async def Telephone_SamsungS20_Buy(message: Message):
+async def Telephone_SamsungS20_Buy(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[21] >= 200:
         new_donate = int(data[21]) - 200
@@ -687,18 +692,18 @@ async def Telephone_SamsungS20_Buy(message: Message):
         await message.answer(
             message=f'✅ Транзакция успешно проведена.',
         )
-        await Telephone(message)
+        await Telephone(message, bot, api)
         return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
         )
-        await Telephone_SamsungS20(message)
+        await Telephone_SamsungS20(message, bot, api)
 
 
 
 
-async def Telephone_SamsungA72(message: Message):
+async def Telephone_SamsungA72(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.Telephone_SamsungA72'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -716,7 +721,7 @@ async def Telephone_SamsungA72(message: Message):
     return
 
 
-async def Telephone_SamsungA72_Buy(message: Message):
+async def Telephone_SamsungA72_Buy(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[21] >= 250:
         new_donate = int(data[21]) - 250
@@ -724,17 +729,17 @@ async def Telephone_SamsungA72_Buy(message: Message):
         await message.answer(
             message=f'✅ Транзакция успешно проведена.',
         )
-        await Telephone(message)
+        await Telephone(message, bot, api)
         return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
         )
-        await Telephone_SamsungA72(message)
+        await Telephone_SamsungA72(message, bot, api)
 
 
 
-async def Telephone_SamsungS21(message: Message):
+async def Telephone_SamsungS21(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.Telephone_SamsungS21'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -752,7 +757,7 @@ async def Telephone_SamsungS21(message: Message):
     return
 
 
-async def Telephone_SamsungS21_Buy(message: Message):
+async def Telephone_SamsungS21_Buy(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[21] >= 350:
         new_donate = int(data[21]) - 350
@@ -760,18 +765,18 @@ async def Telephone_SamsungS21_Buy(message: Message):
         await message.answer(
             message=f'✅ Транзакция успешно проведена.',
         )
-        await Telephone(message)
+        await Telephone(message, bot, api)
         return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
         )
-        await Telephone_SamsungS21(message)
+        await Telephone_SamsungS21(message, bot, api)
 
 
 
 
-async def Telephone_iPhone11(message: Message):
+async def Telephone_iPhone11(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.Telephone_iPhone11'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -789,7 +794,7 @@ async def Telephone_iPhone11(message: Message):
     return
 
 
-async def Telephone_iPhone11_Buy(message: Message):
+async def Telephone_iPhone11_Buy(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[21] >= 400:
         new_donate = int(data[21]) - 400
@@ -797,16 +802,16 @@ async def Telephone_iPhone11_Buy(message: Message):
         await message.answer(
             message=f'✅ Транзакция успешно проведена.',
         )
-        await Telephone(message)
+        await Telephone(message, bot, api)
         return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
         )
-        await Telephone_iPhone11(message)
+        await Telephone_iPhone11(message, bot, api)
 
 
-async def Telephone_iPhone12(message: Message):
+async def Telephone_iPhone12(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'donate.Telephone_iPhone12'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -824,7 +829,7 @@ async def Telephone_iPhone12(message: Message):
     return
 
 
-async def Telephone_iPhone12_Buy(message: Message):
+async def Telephone_iPhone12_Buy(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[21] >= 500:
         new_donate = int(data[21]) - 500
@@ -832,10 +837,10 @@ async def Telephone_iPhone12_Buy(message: Message):
         await message.answer(
             message=f'✅ Транзакция успешно проведена.',
         )
-        await Telephone(message)
+        await Telephone(message, bot, api)
         return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
         )
-        await Telephone_iPhone12(message)
+        await Telephone_iPhone12(message, bot, api)

@@ -2,10 +2,10 @@ import vkbottle.api
 import vkbottle_types
 from vkbottle.bot import Bot, Message
 from vkbottle import Keyboard, KeyboardButtonColor, Text, API, GroupEventType, GroupTypes
-from modules import registration, database, block, mainMenu, characterAction, skills, game_rule, admin
-from modules import historyPunish, historyNicks, passport, licences, settings, report, map, donate, telephone, helpGame
-import json, time, os, random
-from modules.newGuysWorks import farm
+from modules import registration, database, mainMenu, characterAction, admin, block, donate, helpGame, game_rule
+from modules import historyNicks, historyPunish, report, map, skills, telephone, settings, licences, passport
+import json, time, os, sys, re, ast, datetime, random
+# from modules.newGuysWorks import farm
 
 # ------------------------------------------------------------------------------------------
 
@@ -23,15 +23,15 @@ api = API(token=DATA['token_user'])
 async def main(message: Message):
     count_messages = await bot.api.messages.get_history(
         peer_id=message.from_id)  # получаем кол-во сообщений в переписке
-    if count_messages.count == 1:  # если человек первый раз написал, то переходим на регистрацию
-        await registration.registration_1(message)
+    if count_messages.count == 1 or await database.findBaseData("vk_id", f"{message.from_id}") == 0:  # если человек первый раз написал, то переходим на регистрацию
+        await registration.registration_1(message, bot, api)
         return
 
     await database.setUserData(message.from_id, "last_message", f"'{int(time.time())}'")
     data = await database.getUserData(message.from_id)
     server_data = await database.getBdData('settings', "id", "'1'")
     if int(data[7]) >= int(int(data[6]) * int(server_data[16])):
-        await database.def_new_lvl(message, data, server_data)
+        await database.def_new_lvl(message, bot, api, data, server_data)
 
     if message.payload:
         payload = message.payload
@@ -39,48 +39,25 @@ async def main(message: Message):
         payload = payload.replace("}", "")
         payload = payload.replace('"', "")
         payload = payload.replace(':', "")
-        state = f"{payload[3:]}(message)"
-        if state == 'admin.Panel8_ControlAdmins_add_set(message)': await admin.Panel8_ControlAdmins_add_set(message, api, bot); return
-        if state == 'admin.Panel7_EditData(message)': await admin.Panel7_EditData(message, bot); return
-        if state == 'admin.Panel7_EditData_StatusAdd(message)': await admin.Panel7_EditData_StatusAdd(message, api); return
-        if state == 'admin.Panel7_EditData_GroupAdd(message)': await admin.Panel7_EditData_GroupAdd(message, bot); return
-        if state == 'admin.Panel7_EditData_Group(message)': await admin.Panel7_EditData_Group(message, bot); return
-        if state == 'admin.Panel8_ControlAdmins_upp_up(message)': await admin.Panel8_ControlAdmins_upp_up(message, bot); return
-        if state == 'admin.Panel8_ControlAdmins_upp_down(message)': await admin.Panel8_ControlAdmins_upp_down(message, bot); return
-        if state == 'admin.Panel8_ControlAdmins_upp_set(message)': await admin.Panel8_ControlAdmins_upp_set(message, bot); return
-        if state == 'admin.Panel8_ControlAdmins_leave_1(message)': await admin.Panel8_ControlAdmins_leave_1(message, bot); return
-        if state == 'admin.Panel8_ControlAdmins_leave_2(message)': await admin.Panel8_ControlAdmins_leave_2(message, bot); return
-        if state == 'admin.Panel8_ControlAdmins_info1(message)': await admin.Panel8_ControlAdmins_info1(message, bot); return
-        if state == 'admin.Panel1_CheckPlayer1(message)': await admin.Panel1_CheckPlayer1(message, bot); return
-        if state == 'admin.Panel1_ReportSendReport(message)': await admin.Panel1_ReportSendReport(message, bot); return
+        state = f"{payload[3:]}(message, bot, api)"
         try:
-            print(f'payload: {state}')
+            # print(f'\033[38m[\033[34m!\033[38m][\033[33mDEBUG\033[38m] Перемещение пользователя: {state}')
             await eval(state)
         except Exception as ex:
-            print(f'[!] Ошибка: {ex}')
-            state = f"{data[2]}(message)"
+            print(f'\033[38m[\033[31m!\033[38m][\033[33mDEBUG\033[38m] Произошла ошибка: {ex}')
+            state = f"{data[2]}(message, bot, api)"
             await eval(state)
     else:
         try:
-            state = f"{data[2]}(message)"
-            if state == 'admin.Panel7_EditData_StatusAdd(message)': await admin.Panel7_EditData_StatusAdd(message, api); return
-            if state == 'admin.Panel7_EditData_GroupAdd(message)': await admin.Panel7_EditData_GroupAdd(message, bot); return
-            if state == 'admin.Console(message)': await admin.Console(message, api, bot); return
-            if state == 'admin.Panel8_ControlAdmins_upp_1(message)': await admin.Panel8_ControlAdmins_upp_1(message, api); return
-            if state == 'admin.Panel8_ControlAdmins_upp_set(message)': await admin.Panel8_ControlAdmins_upp_set(message, bot); return
-            if state == 'admin.Panel8_ControlAdmins_leave_1(message)': await admin.Panel8_ControlAdmins_leave_1(message, bot); return
-            if state == 'admin.Panel8_ControlAdmins_leave_2(message)': await admin.Panel8_ControlAdmins_leave_2(message, bot); return
-            if state == 'admin.Panel8_ControlAdmins_info1(message)': await admin.Panel8_ControlAdmins_info1(message, bot); return
-            if state == 'admin.Panel1_CheckPlayer1(message)': await admin.Panel1_CheckPlayer1(message, bot); return
-            if state == 'admin.Panel1_ReportSendReport(message)': await admin.Panel1_ReportSendReport(message, bot); return
-            print(state)
+            state = f"{data[2]}(message, bot, api)"
+            # print(f'\033[38m[\033[34m!\033[38m][\033[33mDEBUG\033[38m] Перемещение пользователя: {state}')
             await eval(state)
         except Exception as ex:
             await message.answer(
                 message=f"😬 Как-то не удобно получилось. У нас возникла ошибка. Сейчас вас отправим в "
                         f"главное меню.")
-            print(f'[!] Ошибка: {ex}')
-            await mainMenu.Show(message)
+            print(f'\033[38m[\033[31m!\033[38m][\033[33mDEBUG\033[38m] Произошла ошибка: {ex}')
+            await mainMenu.Show(message, bot, api)
 
 
 @bot.on.raw_event(GroupEventType.MESSAGE_EVENT, dataclass=GroupTypes.MessageEvent)
@@ -101,11 +78,11 @@ async def handle_message_event(event: GroupTypes.MessageEvent):
             random_id=random.randint(1, 999999999),
             sticker_id=8441
         )
-        await mainMenu.ShowFixFromId(from_id, bot)
+        await mainMenu.ShowFixFromId(from_id, bot, api)
 
     if payloadcmd == 'mainMenu.ShowFix':
         from_id = event.object.user_id
-        await mainMenu.ShowFixFromId(from_id, bot)
+        await mainMenu.ShowFixFromId(from_id, bot, api)
 
     if payloadcmd == 'mainMenu.toLink':
         payloadlink = payload['link']
@@ -116,6 +93,7 @@ async def handle_message_event(event: GroupTypes.MessageEvent):
             event_data=json.dumps({"type": "open_link", "link": payloadlink}),
         )
 
-print("\033[32m[!] Чат-бот запущен\033[39m")  # Вывод в лог "Работаем" зеленого цвета
+print("\n" * 100)
+print("\033[38m[\033[32m!\033[38m][\033[33mDEBUG\033[38m] Чат-бот успешно запущен\033[38m")  # Вывод в лог "Работаем" зеленого цвета
 
 bot.run_forever()

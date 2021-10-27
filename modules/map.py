@@ -1,14 +1,19 @@
+import random
+
 import vkbottle.api
 import vkbottle_types
 from vkbottle.bot import Bot, Message
-from vkbottle import Keyboard, KeyboardButtonColor, Text
-import json, time, os, sys, re, ast
+from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback, GroupEventType, GroupTypes, Bot, API
+import json, time, os, sys, re, ast, datetime
 from modules import database
-
 
 # ------------------------------------------------------------------------------------------
 
-async def Show(message: Message):
+# Раздел карта в чат-боте
+
+# -------------------------------------------------------------------------------------------
+
+async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'map.Show'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -41,7 +46,7 @@ async def Show(message: Message):
     )
     return
 
-async def importandPlaces1(message: Message):
+async def importandPlaces1(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'map.importandPlaces1'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -77,7 +82,7 @@ async def importandPlaces1(message: Message):
     return
 
 
-async def importandPlaces2(message: Message):
+async def importandPlaces2(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'map.importandPlaces2'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -104,7 +109,7 @@ async def importandPlaces2(message: Message):
     return
 
 
-async def newGuysWorks(message: Message):
+async def newGuysWorks(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'map.newGuysWorks'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -132,7 +137,7 @@ async def newGuysWorks(message: Message):
 
 
 
-async def Works(message: Message):
+async def Works(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'map.Works'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -164,7 +169,7 @@ async def Works(message: Message):
 
 
 
-async def Works2(message: Message):
+async def Works2(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'map.Works2'")
     data = await database.getUserData(message.from_id)
     await message.answer(

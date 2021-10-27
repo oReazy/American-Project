@@ -1,20 +1,24 @@
+import random
+
 import vkbottle.api
 import vkbottle_types
 from vkbottle.bot import Bot, Message
-from vkbottle import Keyboard, KeyboardButtonColor, Text
-import json, time, os, sys, re, ast
-from modules import database
-from modules import characterAction
-
+from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback, GroupEventType, GroupTypes, Bot, API
+import json, time, os, sys, re, ast, datetime
+from modules import database, characterAction
 
 # ------------------------------------------------------------------------------------------
 
-async def Show(message: Message):
+# Паспорт игрока
+
+# -------------------------------------------------------------------------------------------
+
+async def Show(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[60] == 'Нету':
         await message.answer(
             message=f"❌ У вас нет паспорта. Сделать вы его можете в правительстве")
-        await characterAction.Show(message)
+        await characterAction.Show(message, bot, api)
         return
     else:
         await database.setUserData(message.from_id, 'state', "'passport.Show'")

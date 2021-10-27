@@ -1,14 +1,19 @@
+import random
+
 import vkbottle.api
 import vkbottle_types
 from vkbottle.bot import Bot, Message
-from vkbottle import Keyboard, KeyboardButtonColor, Text
-import json, time, os, sys, re
+from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback, GroupEventType, GroupTypes, Bot, API
+import json, time, os, sys, re, ast, datetime
 from modules import database
-
 
 # ------------------------------------------------------------------------------------------
 
-async def Show(message):
+# Раздел с навыками персонажа
+
+# -------------------------------------------------------------------------------------------
+
+async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'skills.Show'")
     await message.answer(
         message=f"🎯 » 🤹 Навыки",
@@ -34,7 +39,7 @@ async def Show(message):
     return
 
 
-async def Gun(message):
+async def Gun(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'skills.Gun'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -52,7 +57,7 @@ async def Gun(message):
     return
 
 
-async def Fighting(message):
+async def Fighting(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'skills.Fighting'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -71,7 +76,7 @@ async def Fighting(message):
     return
 
 
-async def Farm(message):
+async def Farm(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'skills.Farm'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -91,7 +96,7 @@ async def Farm(message):
     return
 
 
-async def Trucker(message):
+async def Trucker(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'skills.Trucker'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -115,7 +120,7 @@ async def Trucker(message):
     return
 
 
-async def Taxi(message):
+async def Taxi(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'skills.Taxi'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -132,7 +137,7 @@ async def Taxi(message):
     return
 
 
-async def Air(message):
+async def Air(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'skills.Air'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -148,4 +153,3 @@ async def Air(message):
                 .get_json()
         )
     )
-    return

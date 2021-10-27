@@ -1,31 +1,35 @@
-import asyncio
-import random
+import random, asyncio
 
 import vkbottle.api
 import vkbottle_types
 from vkbottle.bot import Bot, Message
-from vkbottle import Keyboard, KeyboardButtonColor, Text, API, Callback
+from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback, GroupEventType, GroupTypes, Bot, API
 import json, time, os, sys, re, ast, datetime
 
 from modules import database
 from modules import mainMenu
 
+# ------------------------------------------------------------------------------------------
+
+# Администраторская. Админ-центр, админ-панель.
 
 # ------------------------------------------------------------------------------------------
 
-async def Check(message: Message):
+
+async def Check(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[11] > 0:
-        await Show(message)
+        await Show(message, bot, api)
         return
     else:
         await message.answer(
             message=f"❌ Нету доступа"
         )
-        await mainMenu.Show(message)
+        await mainMenu.Show(message, bot, api)
 
+# ------------------------------------------------------------------------------------------
 
-async def Show(message: Message):
+async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Show'")
     data = await database.getUserData(message.from_id)
     report_count = await database.getMultiBdData('report', 'vk_id_admin', "'0'")
@@ -67,7 +71,7 @@ async def Show(message: Message):
     )
 
 
-async def Show2(message: Message):
+async def Show2(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Show2'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -93,7 +97,9 @@ async def Show2(message: Message):
 # АДМИН ПАНЕЛЬ 8-ОГО УРОВНЯ !!!
 
 # --------------------------------------------------------------------------------------------------------
-async def Panel8(message: Message):
+
+
+async def Panel8(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[11] >= 8:
         await database.setUserData(message.from_id, 'state', "'admin.Panel8'")
@@ -118,11 +124,12 @@ async def Panel8(message: Message):
         await message.answer(
             message=f"❌ Тебе еще рано сюда"
         )
-        await Show(message)
+        await Show(message, bot, api)
         return
 
 
-async def Panel8_ControlAdmins(message: Message):
+
+async def Panel8_ControlAdmins(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 👤 Управление администрацией",
@@ -143,7 +150,7 @@ async def Panel8_ControlAdmins(message: Message):
     return
 
 
-async def Panel8_ControlAdmins_info(message: Message):
+async def Panel8_ControlAdmins_info(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, "state = 'admin.Panel8_ControlAdmins_info1', temporary_var = '[]'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 👤 » ℹ Информация об администраторе\n\n📝 Укажите ссылку на администратора",
@@ -156,7 +163,7 @@ async def Panel8_ControlAdmins_info(message: Message):
     return
 
 
-async def Panel8_ControlAdmins_info1(message: Message, bot: Bot):
+async def Panel8_ControlAdmins_info1(message: Message, bot: Bot, api: API):
     try:
         await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins'")
         link = message.text[15:]
@@ -216,13 +223,12 @@ async def Panel8_ControlAdmins_info1(message: Message, bot: Bot):
             message=f'⚠ Возникла ошибка при проверки данных о администраторе\n\n'
                     f'— Убедитесь, что данный пользователь зарегистрирован в чат-боте.'
         )
-        print(ex)
-        await Panel8_ControlAdmins_info(message)
+        print(f'\033[38m[\033[31m!\033[38m][\033[33mDEBUG\033[38m] Произошла ошибка: {ex}')
+        await Panel8_ControlAdmins_info(message, bot, api)
     return
 
 
-
-async def Panel8_ControlAdmins_leave(message: Message):
+async def Panel8_ControlAdmins_leave(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, "state = 'admin.Panel8_ControlAdmins_leave_1', temporary_var = '[]'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 👤 » 👤 Снять администратора\n\n📝 Укажите ссылку на администратора",
@@ -235,7 +241,7 @@ async def Panel8_ControlAdmins_leave(message: Message):
     return
 
 
-async def Panel8_ControlAdmins_leave_1(message: Message, bot: Bot):
+async def Panel8_ControlAdmins_leave_1(message: Message, bot: Bot, api: API):
     try:
         await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins'")
         link = message.text[15:]
@@ -248,23 +254,24 @@ async def Panel8_ControlAdmins_leave_1(message: Message, bot: Bot):
             temporary = []
             temporary.append(id_user)
             await database.setUserData(message.from_id, 'temporary_var', f'"{temporary}"')
-            await Panel8_ControlAdmins_leave_2(message, bot)
+            await Panel8_ControlAdmins_leave_2(message, bot, api)
         else:
             await message.answer(
                 message=f'⚠ Игрока, которого вы хотите снять с должности не является администратором!\n\n'
                         f'— Убедитесь, что вы ввели правильную ссылку'
             )
-            await Panel8_ControlAdmins_leave(message)
+            await Panel8_ControlAdmins_leave(message, bot, api)
     except Exception as ex:
         await message.answer(
             message=f'⚠ Возникла ошибка при снятии данного администратора.\n\n'
                     f'— Убедитесь, что администратору, которому вы хотите выдать админ-права зарегистрирован в чат-боте.\n\n{ex}'
         )
-        await Panel8_ControlAdmins_leave(message)
+        await Panel8_ControlAdmins_leave(message, bot, api)
     return
 
 
-async def Panel8_ControlAdmins_leave_2(message: Message, bot: Bot):
+
+async def Panel8_ControlAdmins_leave_2(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     temporary = ast.literal_eval(data[75])
     admin = await database.getUserData(temporary[0])
@@ -320,7 +327,7 @@ async def Panel8_ControlAdmins_leave_2(message: Message, bot: Bot):
 
 
 
-async def Panel8_ControlAdmins_upp(message: Message):
+async def Panel8_ControlAdmins_upp(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, "state = 'admin.Panel8_ControlAdmins_upp_1', temporary_var = '[]'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 👤 » 👤 Повысить/понизить администратора\n\n📝 Укажите ссылку на администратора",
@@ -333,10 +340,11 @@ async def Panel8_ControlAdmins_upp(message: Message):
     return
 
 
-async def Panel8_ControlAdmins_upp_1(message: Message, bot: API):
+
+async def Panel8_ControlAdmins_upp_1(message: Message, bot: Bot, api: API):
     try:
         link = message.text[15:]
-        user_get = await bot.users.get(user_ids=link)
+        user_get = await bot.api.users.get(user_ids=link)
         id_user = user_get[0].id
         await database.setUserData(id_user, 'temporary_var', "'[]'")
         data = await database.getUserData(id_user)
@@ -345,23 +353,23 @@ async def Panel8_ControlAdmins_upp_1(message: Message, bot: API):
             temporary = []
             temporary.append(id_user)
             await database.setUserData(message.from_id, 'temporary_var', f'"{temporary}"')
-            await Panel8_ControlAdmins_upp_2(message)
+            await Panel8_ControlAdmins_upp_2(message, bot, api)
         else:
             await message.answer(
                 message=f'⚠ Игрока, которого вы хотите повысить в должности не является администратором!\n\n'
                         f'— Убедитесь, что вы ввели правильную ссылку'
             )
-            await Panel8_ControlAdmins_upp(message)
+            await Panel8_ControlAdmins_upp(message, bot, api)
     except:
         await message.answer(
             message=f'⚠ Возникла ошибка при повышении/понижении данного администратора.\n\n'
                     f'— Убедитесь, что администратору, которому вы хотите выдать админ-права зарегистрирован в чат-боте.'
         )
-        await Panel8_ControlAdmins_upp(message)
+        await Panel8_ControlAdmins_upp(message, bot, api)
     return
 
 
-async def Panel8_ControlAdmins_upp_2(message: Message):
+async def Panel8_ControlAdmins_upp_2(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_upp_set'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 👤 » 👤 Повысить/понизить администратора\n\n📝 Укажите, что вы хотите сделать с данным администратором\n\n"
@@ -388,7 +396,8 @@ async def Panel8_ControlAdmins_upp_2(message: Message):
     return
 
 
-async def Panel8_ControlAdmins_upp_set(message: Message, bot: Bot):
+
+async def Panel8_ControlAdmins_upp_set(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         new_lvl = int(message.text)
         if 1 <= new_lvl <= 8:
@@ -446,10 +455,11 @@ async def Panel8_ControlAdmins_upp_set(message: Message, bot: Bot):
             await message.answer(
                 message=f"❌ Введите корректный уровень администратора от 1 до 8"
             )
-            await Panel8_ControlAdmins_upp_2(message)
+            await Panel8_ControlAdmins_upp_2(message, bot, api)
 
 
-async def Panel8_ControlAdmins_upp_up(message: Message, bot: Bot):
+
+async def Panel8_ControlAdmins_upp_up(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     temporary = ast.literal_eval(data[75])
     admin = await database.getUserData(temporary[0])
@@ -505,11 +515,11 @@ async def Panel8_ControlAdmins_upp_up(message: Message, bot: Bot):
             message=f"'⚠ Возникла ошибка при повышении данного администратора.\n\n"
                     f"— Вы не можете повысить администратора, т.к. у него 8 уровень"
         )
-        await Panel8_ControlAdmins_upp_2(message)
+        await Panel8_ControlAdmins_upp_2(message, bot, api)
         return
 
 
-async def Panel8_ControlAdmins_upp_down(message: Message, bot: Bot):
+async def Panel8_ControlAdmins_upp_down(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     temporary = ast.literal_eval(data[75])
     admin = await database.getUserData(temporary[0])
@@ -564,18 +574,12 @@ async def Panel8_ControlAdmins_upp_down(message: Message, bot: Bot):
             message=f"'⚠ Возникла ошибка при повышении данного администратора.\n\n"
                     f"— Вы не можете понижать администратора, т.к. у него 1 уровень"
         )
-        await Panel8_ControlAdmins_upp_2(message)
+        await Panel8_ControlAdmins_upp_2(message, bot, api)
         return
 
 
 
-
-
-
-
-
-
-async def Panel8_ControlAdmins_add(message: Message):
+async def Panel8_ControlAdmins_add(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, "state = 'admin.Panel8_ControlAdmins_add_1', temporary_var = '[]'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 👤 » 👤 Поставить администратора\n\n📝 Укажите ссылку на нового администратора",
@@ -588,19 +592,19 @@ async def Panel8_ControlAdmins_add(message: Message):
     return
 
 
-async def Panel8_ControlAdmins_add_1(message: Message):
+async def Panel8_ControlAdmins_add_1(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_2'")
     data = await database.getUserData(message.from_id)
     temporary = []
     temporary.append(message.text)
     await database.setUserData(message.from_id, 'temporary_var', f'"{temporary}"')
-    await Panel8_ControlAdmins_add_2(message)
+    await Panel8_ControlAdmins_add_2(message, bot, api)
     return
 
 
-async def Panel8_ControlAdmins_add_2(message: Message):
+async def Panel8_ControlAdmins_add_2(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_3'")
-    data = database.getUserData(message.from_id)
+    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 👤 » 👤 Поставить администратора\n\n"
                 f"📝 Укажите имя администратора",
@@ -613,7 +617,7 @@ async def Panel8_ControlAdmins_add_2(message: Message):
     return
 
 
-async def Panel8_ControlAdmins_add_3(message: Message):
+async def Panel8_ControlAdmins_add_3(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_4'")
     data = await database.getUserData(message.from_id)
     temporary = ast.literal_eval(data[75])
@@ -631,7 +635,8 @@ async def Panel8_ControlAdmins_add_3(message: Message):
     return
 
 
-async def Panel8_ControlAdmins_add_4(message: Message):
+
+async def Panel8_ControlAdmins_add_4(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_5'")
     data = await database.getUserData(message.from_id)
     temporary = ast.literal_eval(data[75])
@@ -653,7 +658,7 @@ async def Panel8_ControlAdmins_add_4(message: Message):
     return
 
 
-async def Panel8_ControlAdmins_add_5(message: Message):
+async def Panel8_ControlAdmins_add_5(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_6'")
     data = await database.getUserData(message.from_id)
     temporary = ast.literal_eval(data[75])
@@ -675,7 +680,7 @@ async def Panel8_ControlAdmins_add_5(message: Message):
     return
 
 
-async def Panel8_ControlAdmins_add_6(message: Message):
+async def Panel8_ControlAdmins_add_6(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_7'")
     data = await database.getUserData(message.from_id)
     temporary = ast.literal_eval(data[75])
@@ -693,7 +698,7 @@ async def Panel8_ControlAdmins_add_6(message: Message):
     return
 
 
-async def Panel8_ControlAdmins_add_7(message: Message):
+async def Panel8_ControlAdmins_add_7(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_8'")
     data = await database.getUserData(message.from_id)
     temporary = ast.literal_eval(data[75])
@@ -711,7 +716,7 @@ async def Panel8_ControlAdmins_add_7(message: Message):
     return
 
 
-async def Panel8_ControlAdmins_add_8(message: Message):
+async def Panel8_ControlAdmins_add_8(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_9'")
     data = await database.getUserData(message.from_id)
     temporary = ast.literal_eval(data[75])
@@ -729,7 +734,7 @@ async def Panel8_ControlAdmins_add_8(message: Message):
     return
 
 
-async def Panel8_ControlAdmins_add_9(message: Message):
+async def Panel8_ControlAdmins_add_9(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_10'")
     data = await database.getUserData(message.from_id)
     temporary = ast.literal_eval(data[75])
@@ -757,7 +762,7 @@ async def Panel8_ControlAdmins_add_9(message: Message):
     return
 
 
-async def Panel8_ControlAdmins_add_10(message: Message):
+async def Panel8_ControlAdmins_add_10(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 1 <= count <= 8:
@@ -766,21 +771,21 @@ async def Panel8_ControlAdmins_add_10(message: Message):
             temporary = ast.literal_eval(data[75])
             temporary.append(message.text)
             await database.setUserData(message.from_id, 'temporary_var', f'"{temporary}"')
-            await Panel8_ControlAdmins_add_11(message)
+            await Panel8_ControlAdmins_add_11(message, bot, api)
             return
         else:
             await message.answer(
                 message=f"❌ Выберите уровень администрирования с 1 до 8")
-            await Panel8_ControlAdmins_add_9(message)
+            await Panel8_ControlAdmins_add_9(message, bot, api)
             return
     else:
         await message.answer(
             message=f"❌ Вы ввели буквы в сообщении")
-        await Panel8_ControlAdmins_add_9(message)
+        await Panel8_ControlAdmins_add_9(message, bot, api)
         return
 
 
-async def Panel8_ControlAdmins_add_11(message: Message):
+async def Panel8_ControlAdmins_add_11(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_11'")
     data = await database.getUserData(message.from_id)
     temporary = ast.literal_eval(data[75])
@@ -807,7 +812,7 @@ async def Panel8_ControlAdmins_add_11(message: Message):
     return
 
 
-async def Panel8_ControlAdmins_add_set(message: Message, api: API, bot: Bot):
+async def Panel8_ControlAdmins_add_set(message: Message, bot: Bot, api: API):
     try:
         await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins'")
         data = await database.getUserData(message.from_id)
@@ -879,12 +884,20 @@ async def Panel8_ControlAdmins_add_set(message: Message, api: API, bot: Bot):
             message=f"⚠ Возникла ошибка при постановлении данного администратора.\n\n"
                     f"— Убедитесь, что игроку, которому вы хотите выдать админ-права зарегистрирован "
                     f"в чат-боте.")
-        print(f'ОШИБКА: {ex}')
-        await Panel8_ControlAdmins_add_11(message)
+        print(f'\033[38m[\033[31m!\033[38m][\033[33mDEBUG\033[38m] Произошла ошибка: {ex}')
+        await Panel8_ControlAdmins_add_11(message, bot, api)
     return
 
 
-async def Panel8_NewAccaunt(message: Message):
+
+
+
+
+
+
+
+
+async def Panel8_NewAccaunt(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_NewAccaunt'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -907,7 +920,8 @@ async def Panel8_NewAccaunt(message: Message):
     return
 
 
-async def Panel8_Donate(message: Message):
+
+async def Panel8_Donate(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_Donate'")
     data = await database.getUserData(message.from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
@@ -925,7 +939,8 @@ async def Panel8_Donate(message: Message):
     return
 
 
-async def Panel8_Donate_CurseRub(message: Message):
+
+async def Panel8_Donate_CurseRub(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditMulti_PayDayAdd'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
@@ -946,7 +961,7 @@ async def Panel8_Donate_CurseRub(message: Message):
     return
 
 
-async def Panel8_Donate_CurseRubAdd(message: Message):
+async def Panel8_Donate_CurseRubAdd(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 0 <= count <= 5000:
@@ -965,13 +980,13 @@ async def Panel8_Donate_CurseRubAdd(message: Message):
             await message.answer(
                 message=f"❌ Укажите число от 0 до 5 000",
             )
-            await Panel8_Donate_CurseRub(message)
+            await Panel8_Donate_CurseRub(message, bot, api)
             return
     else:
         await message.answer(
             message=f"❌ Укажите число от 0 до 5 000",
         )
-        await Panel8_Donate_CurseRub(message)
+        await Panel8_Donate_CurseRub(message, bot, api)
         return
 
 
@@ -982,7 +997,7 @@ async def Panel8_Donate_CurseRubAdd(message: Message):
 # --------------------------------------------------------------------------------------------------------
 
 
-async def Panel7(message: Message):
+async def Panel7(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[11] >= 7:
         await database.setUserData(message.from_id, 'state', "'admin.Panel7'")
@@ -995,6 +1010,8 @@ async def Panel7(message: Message):
                     .add(Text("▶", {"cmd": "none"}), color=KeyboardButtonColor.SECONDARY)
                     .row()
                     .add(Text("📝 Изменить данные", {"cmd": "admin.Panel7_EditData"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("🚪 Открыть/закрыть регистрацию", {"cmd": "admin.Panel7_EditRegistration"}), color=KeyboardButtonColor.SECONDARY)
                     .row()
                     .add(Text("💎 Изменить курс доната к товарам", {"cmd": "admin.Panel7_EditDonate"}), color=KeyboardButtonColor.SECONDARY)
                     .row()
@@ -1011,12 +1028,63 @@ async def Panel7(message: Message):
         await message.answer(
             message=f"❌ Нету доступа"
         )
-        await Show(message)
+        await Show(message, bot, api)
         return
 
 
 
-async def Panel7_Statistics(message: Message):
+async def Panel7_EditRegistration(message: Message, bot: Bot, api: API):
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditRegistration'")
+    if server_settings[26] == 1:
+        status = "🟩 открыт"
+        button = "🟥 Закрыть сервер"
+    if server_settings[26] == 0:
+        status = "🟥 закрыт"
+        button = "🟩 Открыть сервер"
+    await message.answer(
+        message=f"🎯 » 🛠 » ⚙ » 🚪 Открыть/закрыть регистрацию\n\n"
+                f"🚪 На данный момент сервер » {status}",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "admin.Panel7"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text(f"{button}", {"cmd": "admin.Panel7_EditRegistrationSwitch"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+            )
+        )
+    return
+
+
+async def Panel7_EditRegistrationSwitch(message: Message, bot: Bot, api: API):
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    if server_settings[26] == 1:
+        await database.setBdData('settings', 'id', "'1'", 'open_registration', f"'0'")
+        await message.answer(
+            message=f"✅ Вы успешно закрыли регистрацию на сервере",
+            keyboard=(
+                Keyboard(one_time=True, inline=False)
+                    .add(Text("👉🏻 Далее", {"cmd": "admin.Panel7_EditRegistration"}), color=KeyboardButtonColor.SECONDARY)
+                    .get_json()
+            )
+        )
+        return
+    if server_settings[26] == 0:
+        await database.setBdData('settings', 'id', "'1'", 'open_registration', f"'1'")
+        await message.answer(
+            message=f"✅ Вы успешно открыли регистрацию на сервере",
+            keyboard=(
+                Keyboard(one_time=True, inline=False)
+                    .add(Text("👉🏻 Далее", {"cmd": "admin.Panel7_EditRegistration"}), color=KeyboardButtonColor.SECONDARY)
+                    .get_json()
+            )
+        )
+        return
+
+
+
+
+async def Panel7_Statistics(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_Statistics'")
     await message.answer(
@@ -1037,18 +1105,18 @@ async def Panel7_Statistics(message: Message):
     return
 
 
-async def Panel7_StatisticsClear(message: Message):
+async def Panel7_StatisticsClear(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_Statistics'")
     await database.setMultiDbData('settings', 'id', "'1'", f"statistics_friend = '0', 	statistics_list_chatbot = '0', statistics_search = '0', statistics_youtube = '0', statistics_other = '0'")
     await message.answer(
         message=f"✅ Значения по статистике были успешно сброшены"
         )
-    await Panel7_Statistics(message)
+    await Panel7_Statistics(message, bot, api)
     return
 
 
-async def Panel7_EditMailing(message: Message):
+async def Panel7_EditMailing(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditMailing'")
     await message.answer(
@@ -1070,7 +1138,7 @@ async def Panel7_EditMailing(message: Message):
     return
 
 
-async def Panel7_EditMailing_Project(message: Message):
+async def Panel7_EditMailing_Project(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditMailing_ProjectCheck'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 📢 » 📝 Изменить награду за новости проекта\n\n"
@@ -1090,24 +1158,24 @@ async def Panel7_EditMailing_Project(message: Message):
     return
 
 
-async def Panel7_EditMailing_ProjectCheck(message: Message):
+async def Panel7_EditMailing_ProjectCheck(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         price = int(message.text)
         await database.setBdData('settings', 'id', "'1'", 'pay_mailing_project', f"'{price}'")
         await message.answer(
             message=f"✅ Вы успешно поменяли вознаграждение за рассылку новостей проекта"
         )
-        await Panel7_EditMailing(message)
+        await Panel7_EditMailing(message, bot, api)
     else:
         await message.answer(
             message=f"❌ Введите число"
         )
-        await Panel7_EditMailing_Project(message)
+        await Panel7_EditMailing_Project(message, bot, api)
         return
 
 
 
-async def Panel7_EditMailing_Server(message: Message):
+async def Panel7_EditMailing_Server(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditMailing_ServerCheck'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 📢 » 📝 Изменить награду за новости сервера\n\n"
@@ -1127,26 +1195,26 @@ async def Panel7_EditMailing_Server(message: Message):
     return
 
 
-async def Panel7_EditMailing_ServerCheck(message: Message):
+async def Panel7_EditMailing_ServerCheck(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         price = int(message.text)
         await database.setBdData('settings', 'id', "'1'", 'pay_mailing_server', f"'{price}'")
         await message.answer(
             message=f"✅ Вы успешно поменяли вознаграждение за рассылку новостей сервера"
         )
-        await Panel7_EditMailing(message)
+        await Panel7_EditMailing(message, bot, api)
     else:
         await message.answer(
             message=f"❌ Введите число"
         )
-        await Panel7_EditMailing_Server(message)
+        await Panel7_EditMailing_Server(message, bot, api)
         return
 
 
 
 
 
-async def Panel7_EditData(message: Message, bot: Bot):
+async def Panel7_EditData(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
     byld = await bot.api.groups.get_by_id(group_id=message.group_id, fields=['status'])
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData'")
@@ -1178,7 +1246,7 @@ async def Panel7_EditData(message: Message, bot: Bot):
     return
 
 
-async def Panel7_EditData_Project(message: Message):
+async def Panel7_EditData_Project(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData_ProjectAdd'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 📝 » 📝 Изменить название проекта\n\n"
@@ -1194,7 +1262,7 @@ async def Panel7_EditData_Project(message: Message):
     return
 
 
-async def Panel7_EditData_ProjectAdd(message: Message):
+async def Panel7_EditData_ProjectAdd(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData'")
     await database.setBdData('settings', 'id', "'1'", 'name_project', f"'{message.text}'")
     await message.answer(
@@ -1208,7 +1276,7 @@ async def Panel7_EditData_ProjectAdd(message: Message):
     return
 
 
-async def Panel7_EditData_Server(message: Message):
+async def Panel7_EditData_Server(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData_ServerAdd'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 📝 » 📝 Изменить название сервера\n\n"
@@ -1230,7 +1298,7 @@ async def Panel7_EditData_Server(message: Message):
     return
 
 
-async def Panel7_EditData_ServerAdd(message: Message):
+async def Panel7_EditData_ServerAdd(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData'")
     await database.setBdData('settings', 'id', "'1'", 'name_server', f"'{message.text}'")
     await message.answer(
@@ -1244,7 +1312,7 @@ async def Panel7_EditData_ServerAdd(message: Message):
     return
 
 
-async def Panel7_EditData_Group(message: Message, bot: Bot):
+async def Panel7_EditData_Group(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData_GroupAdd'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
@@ -1264,7 +1332,7 @@ async def Panel7_EditData_Group(message: Message, bot: Bot):
     return
 
 
-async def Panel7_EditData_GroupAdd(message: Message, bot: Bot):
+async def Panel7_EditData_GroupAdd(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData'")
     await bot.api.groups.edit(group_id=message.group_id, title=message.text)
     await message.answer(
@@ -1278,7 +1346,7 @@ async def Panel7_EditData_GroupAdd(message: Message, bot: Bot):
     return
 
 
-async def Panel7_EditData_Status(message: Message):
+async def Panel7_EditData_Status(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData_StatusAdd'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
@@ -1307,12 +1375,12 @@ async def Panel7_EditData_Status(message: Message):
     return
 
 
-async def Panel7_EditData_StatusAdd(message: Message, bot: API):
+async def Panel7_EditData_StatusAdd(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData'")
     if message.text == '~~~ Пустой ~~~':
-        await bot.status.set(group_id=message.group_id, text='')
+        await bot.api.status.set(group_id=message.group_id, text='')
     else:
-        await bot.status.set(group_id=message.group_id, text=message.text)
+        await bot.api.status.set(group_id=message.group_id, text=message.text)
     await message.answer(
         message=f"✅ Вы успешно поменяли название группы",
         keyboard=(
@@ -1324,7 +1392,7 @@ async def Panel7_EditData_StatusAdd(message: Message, bot: API):
     return
 
 
-async def Panel7_EditData_Stocks(message: Message):
+async def Panel7_EditData_Stocks(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData_StocksAdd'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 📝 » 📝 Изменить название акции\n\n"
@@ -1352,7 +1420,7 @@ async def Panel7_EditData_Stocks(message: Message):
     return
 
 
-async def Panel7_EditData_StocksAdd(message: Message):
+async def Panel7_EditData_StocksAdd(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData'")
     if message.text == '~~~ Пустой ~~~':
         await database.setBdData('settings', 'id', "'1'", 'name_stocks', f"''")
@@ -1369,7 +1437,7 @@ async def Panel7_EditData_StocksAdd(message: Message):
     return
 
 
-async def Panel7_EditDonate(message: Message):
+async def Panel7_EditDonate(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditDonate'")
     await message.answer(
@@ -1392,7 +1460,7 @@ async def Panel7_EditDonate(message: Message):
     return
 
 
-async def Panel7_EditDonate_Dollars(message: Message):
+async def Panel7_EditDonate_Dollars(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditDonate_DollarsAdd'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
@@ -1425,7 +1493,7 @@ async def Panel7_EditDonate_Dollars(message: Message):
     return
 
 
-async def Panel7_EditDonate_DollarsAdd(message: Message):
+async def Panel7_EditDonate_DollarsAdd(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 0 <= count <= 999999999:
@@ -1444,17 +1512,17 @@ async def Panel7_EditDonate_DollarsAdd(message: Message):
             await message.answer(
                 message=f"❌ Укажите число от 0 до 999 999 999",
             )
-            await Panel7_EditDonate_Dollars(message)
+            await Panel7_EditDonate_Dollars(message, bot, api)
             return
     else:
         await message.answer(
             message=f"❌ Укажите число от 0 до 999 999 999",
         )
-        await Panel7_EditDonate_Dollars(message)
+        await Panel7_EditDonate_Dollars(message, bot, api)
         return
 
 
-async def Panel7_EditDonate_EXP(message: Message):
+async def Panel7_EditDonate_EXP(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditDonate_DollarsAdd'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
@@ -1488,7 +1556,7 @@ async def Panel7_EditDonate_EXP(message: Message):
     return
 
 
-async def Panel7_EditDonate_EXPAdd(message: Message):
+async def Panel7_EditDonate_EXPAdd(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 0 <= count <= 5000:
@@ -1507,17 +1575,17 @@ async def Panel7_EditDonate_EXPAdd(message: Message):
             await message.answer(
                 message=f"❌ Укажите число от 0 до 5 000",
             )
-            await Panel7_EditDonate_EXP(message)
+            await Panel7_EditDonate_EXP(message, bot, api)
             return
     else:
         await message.answer(
             message=f"❌ Укажите число от 0 до 5 000",
         )
-        await Panel7_EditDonate_EXP(message)
+        await Panel7_EditDonate_EXP(message, bot, api)
         return
 
 
-async def Panel7_EditMulti(message: Message):
+async def Panel7_EditMulti(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditDonate'")
     await message.answer(
@@ -1542,7 +1610,7 @@ async def Panel7_EditMulti(message: Message):
     return
 
 
-async def Panel7_EditMulti_PayDay(message: Message):
+async def Panel7_EditMulti_PayDay(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditMulti_PayDayAdd'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
@@ -1563,7 +1631,7 @@ async def Panel7_EditMulti_PayDay(message: Message):
     return
 
 
-async def Panel7_EditMulti_PayDayAdd(message: Message):
+async def Panel7_EditMulti_PayDayAdd(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 0 <= count <= 500:
@@ -1582,18 +1650,18 @@ async def Panel7_EditMulti_PayDayAdd(message: Message):
             await message.answer(
                 message=f"❌ Укажите число от 0 до 500",
             )
-            await Panel7_EditMulti_PayDay(message)
+            await Panel7_EditMulti_PayDay(message, bot, api)
             return
     else:
         await message.answer(
             message=f"❌ Укажите число от 0 до 500",
         )
-        await Panel7_EditMulti_PayDay(message)
+        await Panel7_EditMulti_PayDay(message, bot, api)
         return
 
 
 
-async def Panel7_EditMulti_Salary(message: Message):
+async def Panel7_EditMulti_Salary(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditMulti_SalaryAdd'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
@@ -1614,7 +1682,7 @@ async def Panel7_EditMulti_Salary(message: Message):
     return
 
 
-async def Panel7_EditMulti_SalaryAdd(message: Message):
+async def Panel7_EditMulti_SalaryAdd(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 0 <= count <= 500:
@@ -1633,18 +1701,18 @@ async def Panel7_EditMulti_SalaryAdd(message: Message):
             await message.answer(
                 message=f"❌ Укажите число от 0 до 500",
             )
-            await Panel7_EditMulti_Salary(message)
+            await Panel7_EditMulti_Salary(message, bot, api)
             return
     else:
         await message.answer(
             message=f"❌ Укажите число от 0 до 500",
         )
-        await Panel7_EditMulti_Salary(message)
+        await Panel7_EditMulti_Salary(message, bot, api)
         return
 
 
 
-async def Panel7_EditMulti_EXP(message: Message):
+async def Panel7_EditMulti_EXP(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditMulti_SalaryAdd'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
@@ -1671,7 +1739,7 @@ async def Panel7_EditMulti_EXP(message: Message):
     return
 
 
-async def Panel7_EditMulti_EXPAdd(message: Message):
+async def Panel7_EditMulti_EXPAdd(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 0 <= count <= 500:
@@ -1690,13 +1758,13 @@ async def Panel7_EditMulti_EXPAdd(message: Message):
             await message.answer(
                 message=f"❌ Укажите число от 0 до 500",
             )
-            await Panel7_EditMulti_EXP(message)
+            await Panel7_EditMulti_EXP(message, bot, api)
             return
     else:
         await message.answer(
             message=f"❌ Укажите число от 0 до 500",
         )
-        await Panel7_EditMulti_EXP(message)
+        await Panel7_EditMulti_EXP(message, bot, api)
         return
 
 
@@ -1707,7 +1775,7 @@ async def Panel7_EditMulti_EXPAdd(message: Message):
 # --------------------------------------------------------------------------------------------------------
 
 
-async def Panel6(message: Message):
+async def Panel6(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[11] >= 6:
         await database.setUserData(message.from_id, 'state', "'admin.Panel6'")
@@ -1728,11 +1796,11 @@ async def Panel6(message: Message):
         await message.answer(
             message=f"❌ Нету доступа"
         )
-        await Show(message)
+        await Show(message, bot, api)
         return
 
 
-async def Panel6_EditRules(message: Message):
+async def Panel6_EditRules(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules'")
     await message.answer(
@@ -1753,7 +1821,7 @@ async def Panel6_EditRules(message: Message):
     return
 
 
-async def Panel6_EditRules_RulesServer(message: Message):
+async def Panel6_EditRules_RulesServer(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesServer'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
@@ -1771,7 +1839,7 @@ async def Panel6_EditRules_RulesServer(message: Message):
     return
 
 
-async def Panel6_EditRules_RulesServer_Edit(message: Message):
+async def Panel6_EditRules_RulesServer_Edit(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesServer_EditCheck'")
     await message.answer(
@@ -1786,7 +1854,7 @@ async def Panel6_EditRules_RulesServer_Edit(message: Message):
     return
 
 
-async def Panel6_EditRules_RulesServer_EditCheck(message: Message):
+async def Panel6_EditRules_RulesServer_EditCheck(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesServer_EditCheck'")
     if len(message.text) <= 3000:
@@ -1794,13 +1862,13 @@ async def Panel6_EditRules_RulesServer_EditCheck(message: Message):
         await message.answer(
             message=f"✅ Вы успешно обновили правила сервера"
             )
-        await Panel6_EditRules_RulesServer(message)
+        await Panel6_EditRules_RulesServer(message, bot, api)
         return
     else:
         await message.answer(
             message=f"❌ Ошибка. Слишком длинное сообщение"
         )
-        await Panel6_EditRules_RulesServer_Edit(message)
+        await Panel6_EditRules_RulesServer_Edit(message, bot, api)
 
 
 
@@ -1809,7 +1877,7 @@ async def Panel6_EditRules_RulesServer_EditCheck(message: Message):
 
 
 
-async def Panel6_EditRules_RulesAdmins(message: Message):
+async def Panel6_EditRules_RulesAdmins(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesAdmins'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
@@ -1827,7 +1895,7 @@ async def Panel6_EditRules_RulesAdmins(message: Message):
     return
 
 
-async def Panel6_EditRules_RulesAdmins_Edit(message: Message):
+async def Panel6_EditRules_RulesAdmins_Edit(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesAdmins_EditCheck'")
     await message.answer(
@@ -1842,7 +1910,7 @@ async def Panel6_EditRules_RulesAdmins_Edit(message: Message):
     return
 
 
-async def Panel6_EditRules_RulesAdmins_EditCheck(message: Message):
+async def Panel6_EditRules_RulesAdmins_EditCheck(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesAdmins_EditCheck'")
     if len(message.text) <= 3000:
@@ -1850,13 +1918,13 @@ async def Panel6_EditRules_RulesAdmins_EditCheck(message: Message):
         await message.answer(
             message=f"✅ Вы успешно обновили правила для администраторов"
             )
-        await Panel6_EditRules_RulesAdmins(message)
+        await Panel6_EditRules_RulesAdmins(message, bot, api)
         return
     else:
         await message.answer(
             message=f"❌ Ошибка. Слишком длинное сообщение"
         )
-        await Panel6_EditRules_RulesAdmins_Edit(message)
+        await Panel6_EditRules_RulesAdmins_Edit(message, bot, api)
 
 
 
@@ -1864,7 +1932,7 @@ async def Panel6_EditRules_RulesAdmins_EditCheck(message: Message):
 
 
 
-async def Panel6_EditRules_FAQAdmins(message: Message):
+async def Panel6_EditRules_FAQAdmins(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_FAQAdmins'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
@@ -1882,7 +1950,7 @@ async def Panel6_EditRules_FAQAdmins(message: Message):
     return
 
 
-async def Panel6_EditRules_FAQAdmins_Edit(message: Message):
+async def Panel6_EditRules_FAQAdmins_Edit(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_FAQAdmins_EditCheck'")
     await message.answer(
@@ -1897,7 +1965,7 @@ async def Panel6_EditRules_FAQAdmins_Edit(message: Message):
     return
 
 
-async def Panel6_EditRules_FAQAdmins_EditCheck(message: Message):
+async def Panel6_EditRules_FAQAdmins_EditCheck(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_FAQAdmins_EditCheck'")
     if len(message.text) <= 3000:
@@ -1905,15 +1973,13 @@ async def Panel6_EditRules_FAQAdmins_EditCheck(message: Message):
         await message.answer(
             message=f"✅ Вы успешно обновили правила для администраторов"
             )
-        await Panel6_EditRules_FAQAdmins(message)
+        await Panel6_EditRules_FAQAdmins(message, bot, api)
         return
     else:
         await message.answer(
             message=f"❌ Ошибка. Слишком длинное сообщение"
         )
-        await Panel6_EditRules_FAQAdmins_Edit(message)
-
-
+        await Panel6_EditRules_FAQAdmins_Edit(message, bot, api)
 
 
 # --------------------------------------------------------------------------------------------------------
@@ -1923,7 +1989,7 @@ async def Panel6_EditRules_FAQAdmins_EditCheck(message: Message):
 # --------------------------------------------------------------------------------------------------------
 
 
-async def Panel5(message: Message):
+async def Panel5(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[11] >= 5:
         await database.setUserData(message.from_id, 'state', "'admin.Panel5'")
@@ -1942,7 +2008,7 @@ async def Panel5(message: Message):
         await message.answer(
             message=f"❌ Нету доступа"
         )
-        await Show(message)
+        await Show(message, bot, api)
         return
 
 
@@ -1953,7 +2019,7 @@ async def Panel5(message: Message):
 # --------------------------------------------------------------------------------------------------------
 
 
-async def Panel4(message: Message):
+async def Panel4(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[11] >= 4:
         await database.setUserData(message.from_id, 'state', "'admin.Panel4'")
@@ -1972,7 +2038,7 @@ async def Panel4(message: Message):
         await message.answer(
             message=f"❌ Нету доступа"
         )
-        await Show(message)
+        await Show(message, api, bot)
         return
 
 
@@ -1984,7 +2050,7 @@ async def Panel4(message: Message):
 # --------------------------------------------------------------------------------------------------------
 
 
-async def Panel3(message: Message):
+async def Panel3(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[11] >= 3:
         await database.setUserData(message.from_id, 'state', "'admin.Panel3'")
@@ -2003,7 +2069,7 @@ async def Panel3(message: Message):
         await message.answer(
             message=f"❌ Нету доступа"
         )
-        await Show(message)
+        await Show(message, bot, api)
         return
 
 
@@ -2014,7 +2080,7 @@ async def Panel3(message: Message):
 # --------------------------------------------------------------------------------------------------------
 
 
-async def Panel2(message: Message):
+async def Panel2(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[11] >= 2:
         await database.setUserData(message.from_id, 'state', "'admin.Panel2'")
@@ -2035,11 +2101,11 @@ async def Panel2(message: Message):
         await message.answer(
             message=f"❌ Нету доступа"
         )
-        await Show(message)
+        await Show(message, bot, api)
         return
 
 
-async def Panel2_Online(message: Message):
+async def Panel2_Online(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, "state = 'admin.Panel2_Online', temporary_var = '[]'")
     math_count_online = int(time.time())-300
     math_count_1h = int(time.time())-3600
@@ -2066,7 +2132,7 @@ async def Panel2_Online(message: Message):
 # --------------------------------------------------------------------------------------------------------
 
 
-async def Panel1(message: Message):
+async def Panel1(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[11] >= 1:
         await database.setUserData(message.from_id, 'state', "'admin.Panel1'")
@@ -2089,15 +2155,15 @@ async def Panel1(message: Message):
         await message.answer(
             message=f"❌ Нету доступа"
         )
-        await Show(message)
+        await Show(message, bot, api)
         return
 
 
-async def Panel1_Report(message: Message):
+async def Panel1_Report(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, "state = 'admin.Panel1_Report', temporary_var = '[]'")
     data = await database.getUserData(message.from_id)
     report_count = await database.getMultiBdData('report', 'vk_id_admin', "'0'")
-    print(len(report_count))
+    # print(len(report_count))
     if len(report_count) == 0:
         await message.answer(
             message=f"🎯 » 🛠 » 😀 » 💬 Репорт\n\n❌ Сейчас нет вопросов в репорт",
@@ -2120,7 +2186,7 @@ async def Panel1_Report(message: Message):
         )
 
 
-async def Panel1_ReportSendReport(message: Message, bot: Bot):
+async def Panel1_ReportSendReport(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     id_report = data[75]
     await database.setMultiDbData('report', 'id', f"'{id_report}'", f"answer = '{message.text}'")
@@ -2141,13 +2207,13 @@ async def Panel1_ReportSendReport(message: Message, bot: Bot):
                 .get_json()
         )
     )
-    await Panel1(message)
+    await Panel1(message, bot, api)
     return
 
 
 
 
-async def Panel1_CheckPlayer(message: Message):
+async def Panel1_CheckPlayer(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, "state = 'admin.Panel1_CheckPlayer1', temporary_var = '[]'")
     await message.answer(
         message=f"🎯 » 🛠 » 😀 » ℹ Статистика игрока\n\n📝 Укажите ссылку на пользователя",
@@ -2160,7 +2226,7 @@ async def Panel1_CheckPlayer(message: Message):
     return
 
 
-async def Panel1_CheckPlayer1(message: Message, bot: Bot):
+async def Panel1_CheckPlayer1(message: Message, bot: Bot, api: API):
     try:
         await database.setUserData(message.from_id, 'state', "'admin.Panel1'")
         link = message.text[15:]
@@ -2209,10 +2275,8 @@ async def Panel1_CheckPlayer1(message: Message, bot: Bot):
             message=f'⚠ Возникла ошибка при проверки статистики\n\n'
                     f'— Убедитесь, что данный пользователь зарегистрирован в чат-боте.'
         )
-        await Panel1_CheckPlayer(message)
+        await Panel1_CheckPlayer(message, bot, api)
     return
-
-
 
 
 
@@ -2223,7 +2287,8 @@ async def Panel1_CheckPlayer1(message: Message, bot: Bot):
 # ------------------------------------------------------------------------------------------------------------
 
 
-async def Rules(message: Message):
+
+async def Rules(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Rules'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
@@ -2236,7 +2301,7 @@ async def Rules(message: Message):
     )
 
 
-async def FAQ(message: Message):
+async def FAQ(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Rules'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
@@ -2249,7 +2314,7 @@ async def FAQ(message: Message):
     )
 
 
-async def toConsole(message: Message):
+async def toConsole(message: Message, bot: Bot, api: API):
     await message.answer(
         message=f"📟 Вы перешли в режим консоли.\n\n"
                 f"Базовые команды:\n"
@@ -2258,6 +2323,7 @@ async def toConsole(message: Message):
     )
     await database.setUserData(message.from_id, 'state', "'admin.Console'")
     return
+
 
 
 async def Console(message: Message, api: API, bot: Bot):
@@ -2538,7 +2604,7 @@ async def Console(message: Message, api: API, bot: Bot):
 
 
     if command[0] == '/mn' and data[11] >= 1:
-        await mainMenu.Show(message)
+        await mainMenu.Show(message, bot, api)
         return
     else:
         if command[0] == '/mn':
@@ -2548,11 +2614,11 @@ async def Console(message: Message, api: API, bot: Bot):
             return
 
 
-    if command[0] == '/newmn' and data[11] >= 1:
-        await mainMenu.Mini(message)
+    if command[0] == '/minimn' and data[11] >= 1:
+        await mainMenu.Mini(message, bot, api)
         return
     else:
-        if command[0] == '/newmn':
+        if command[0] == '/minimn':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
@@ -2560,7 +2626,7 @@ async def Console(message: Message, api: API, bot: Bot):
 
 
     if command[0] == '/quit' and data[11] >= 1:
-        await Show(message)
+        await Show(message, bot, api)
         return
     else:
         if command[0] == '/quit':

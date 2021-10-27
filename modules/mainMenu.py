@@ -3,16 +3,22 @@ import random
 import vkbottle.api
 import vkbottle_types
 from vkbottle.bot import Bot, Message
-from vkbottle import Keyboard, KeyboardButtonColor, Text
+from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback, GroupEventType, GroupTypes, Bot, API
 import json, time, os, sys, re, ast
 from modules import database
 
+# ------------------------------------------------------------------------------------------
+
+# Главное меню проекта
 
 # ------------------------------------------------------------------------------------------
 
-async def Show(message: Message):
+async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'mainMenu.Show'")
     data = await database.getUserData(message.from_id)
+    if data[78] == 1:
+        await Mini(message, bot, api)
+        return
     server_settings = await database.getBdData('settings', 'id', "'1'")
     num1 = await database.pretty(data[12])
     num2 = await database.pretty(data[13])
@@ -82,7 +88,7 @@ async def Show(message: Message):
         return
 
 
-async def ShowFixFromId(from_id, bot: Bot):
+async def ShowFixFromId(from_id, bot: Bot, api: API):
     await database.setUserData(from_id, 'state', "'mainMenu.Show'")
     data = await database.getUserData(from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
@@ -158,7 +164,7 @@ async def ShowFixFromId(from_id, bot: Bot):
         return
 
 
-async def Mini(message: Message):
+async def Mini(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'mainMenu.Mini'")
     data = await database.getUserData(message.from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
@@ -166,31 +172,59 @@ async def Mini(message: Message):
     num2 = await database.pretty(data[13])
     num3 = await database.pretty(data[14])
     num4 = await database.pretty(data[15])
-    await message.answer(
-        message=f"🎯 Главное меню{server_settings[25]}\n\n"
-                f"💵 Доллары на руках » {num1}\n"
-                f"💶 Евро на руках » {num2}\n"
-                f"💴 Иены на руках » {num3}\n"
-                f"💷 Фунты на руках » {num4}",
-        keyboard=(
-            Keyboard(one_time=True, inline=False)
-                .add(Text("🛠 Админ-панель", {"cmd": "admin.Check"}), color=KeyboardButtonColor.POSITIVE)
-                .row()
-                .add(Text("👤", {"cmd": "characterAction.Show"}), color=KeyboardButtonColor.SECONDARY)
-                .add(Text("📱", {"cmd": "telephone.Check"}), color=KeyboardButtonColor.SECONDARY)
-                .add(Text("🗺", {"cmd": "map.Show"}), color=KeyboardButtonColor.SECONDARY)
-                .add(Text("🤹", {"cmd": "skills.Show"}), color=KeyboardButtonColor.SECONDARY)
-                .add(Text("💎", {"cmd": "donate.Show"}), color=KeyboardButtonColor.SECONDARY)
-                .row()
-                .add(Text("⚙ Настройки", {"cmd": "settings.Show"}), color=KeyboardButtonColor.SECONDARY)
-                .add(Text("📣 Репорт", {"cmd": "report.Check"}), color=KeyboardButtonColor.SECONDARY)
-                .row()
-                .add(Text("📖 Помощь по игре", {"cmd": "helpGame.Show"}), color=KeyboardButtonColor.SECONDARY)
-                .add(Text("📖 Правила", {"cmd": "game_rule.Show"}), color=KeyboardButtonColor.SECONDARY)
-                .row()
-                .add(Text("📃 История наказаний", {"cmd": "historyPunish.Show"}), color=KeyboardButtonColor.SECONDARY)
-                .add(Text("📃 История ников", {"cmd": "historyNicks.Show"}), color=KeyboardButtonColor.SECONDARY)
-                .get_json()
+    if data[11] == 0:
+        await message.answer(
+            message=f"🎯 Главное меню{server_settings[25]}\n\n"
+                    f"💵 Доллары на руках » {num1}\n"
+                    f"💶 Евро на руках » {num2}\n"
+                    f"💴 Иены на руках » {num3}\n"
+                    f"💷 Фунты на руках » {num4}",
+            keyboard=(
+                Keyboard(one_time=True, inline=False)
+                    .add(Text("👤", {"cmd": "characterAction.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("📱", {"cmd": "telephone.Check"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("🗺", {"cmd": "map.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("🤹", {"cmd": "skills.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("💎", {"cmd": "donate.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("⚙ Настройки", {"cmd": "settings.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("📣 Репорт", {"cmd": "report.Check"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("📖 Помощь по игре", {"cmd": "helpGame.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("📖 Правила", {"cmd": "game_rule.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("📃 История наказаний", {"cmd": "historyPunish.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("📃 История ников", {"cmd": "historyNicks.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .get_json()
+            )
         )
-    )
-    return
+        return
+    if data[11] > 0:
+        await message.answer(
+            message=f"🎯 Главное меню{server_settings[25]}\n\n"
+                    f"💵 Доллары на руках » {num1}\n"
+                    f"💶 Евро на руках » {num2}\n"
+                    f"💴 Иены на руках » {num3}\n"
+                    f"💷 Фунты на руках » {num4}",
+            keyboard=(
+                Keyboard(one_time=True, inline=False)
+                    .add(Text("🛠 Админ-панель", {"cmd": "admin.Check"}), color=KeyboardButtonColor.POSITIVE)
+                    .row()
+                    .add(Text("👤", {"cmd": "characterAction.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("📱", {"cmd": "telephone.Check"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("🗺", {"cmd": "map.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("🤹", {"cmd": "skills.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("💎", {"cmd": "donate.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("⚙ Настройки", {"cmd": "settings.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("📣 Репорт", {"cmd": "report.Check"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("📖 Помощь по игре", {"cmd": "helpGame.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("📖 Правила", {"cmd": "game_rule.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("📃 История наказаний", {"cmd": "historyPunish.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("📃 История ников", {"cmd": "historyNicks.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .get_json()
+            )
+        )
+        return

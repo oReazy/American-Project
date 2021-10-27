@@ -1,29 +1,32 @@
-import asyncio
+import random, asyncio
 
 import vkbottle.api
 import vkbottle_types
 from vkbottle.bot import Bot, Message
-from vkbottle import Keyboard, KeyboardButtonColor, Text
+from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback, GroupEventType, GroupTypes, Bot, API
 import json, time, os, sys, re, ast, datetime
-from modules import database
-from modules import mainMenu
-
+from modules import database, mainMenu
 
 # ------------------------------------------------------------------------------------------
 
-async def Check(message: Message):
+# Телефон персонажа
+
+# -------------------------------------------------------------------------------------------
+
+
+async def Check(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[5] == '❌ Отсутствует':
         await message.answer(
             message=f"❌ У вас нет мобильного телефона. Купить вы его можете в магазине электроники",
         )
-        await mainMenu.Show(message)
+        await mainMenu.Show(message, bot, api)
     else:
-        await Show(message)
+        await Show(message, bot, api)
         return
 
 
-async def Show(message: Message):
+async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'block.Show'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -34,11 +37,11 @@ async def Show(message: Message):
         message=f"📱 Вы включили телефон"
     )
     await asyncio.sleep(2)
-    await ShowMenu(message)
+    await ShowMenu(message, bot, api)
     return
 
 
-async def PowerOff(message: Message):
+async def PowerOff(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'block.Show'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -49,12 +52,12 @@ async def PowerOff(message: Message):
         message=f"📱 Вы убрали телефон в корман"
     )
     await asyncio.sleep(2)
-    await mainMenu.Show(message)
+    await mainMenu.Show(message, bot, api)
     return
 
 
 
-async def ShowMenu(message: Message):
+async def ShowMenu(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'telephone.ShowMenu'")
     data = await database.getUserData(message.from_id)
     await message.answer(
@@ -71,7 +74,7 @@ async def ShowMenu(message: Message):
     return
 
 
-async def Time(message: Message):
+async def Time(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'telephone.ShowMenu'")
     data = await database.getUserData(message.from_id)
     real_time = datetime.datetime.now()
