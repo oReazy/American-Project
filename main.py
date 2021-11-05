@@ -5,7 +5,8 @@ from vkbottle import Keyboard, KeyboardButtonColor, Text, API, GroupEventType, G
 from modules import registration, database, mainMenu, characterAction, admin, block, donate, helpGame, game_rule
 from modules import historyNicks, historyPunish, report, map, skills, telephone, settings, licences, passport
 import json, time, os, sys, re, ast, datetime, random
-# from modules.newGuysWorks import farm
+from modules.newGuysWorks import farm
+from modules.importantLocations import LicensingCenter, CentralBank
 
 # ------------------------------------------------------------------------------------------
 
@@ -27,7 +28,8 @@ async def main(message: Message):
         await registration.registration_1(message, bot, api)
         return
 
-    await database.setUserData(message.from_id, "last_message", f"'{int(time.time())}'")
+    await database.setMultiUserData(message.from_id, f"last_message = '{int(time.time())}', last_message_date = '{datetime.datetime.now()}'")
+    # await database.setUserData(message.from_id, "last_message", f"'{int(time.time())}'")
     data = await database.getUserData(message.from_id)
     server_data = await database.getBdData('settings', "id", "'1'")
     if int(data[7]) >= int(int(data[6]) * int(server_data[16])):
@@ -40,6 +42,7 @@ async def main(message: Message):
         payload = payload.replace('"', "")
         payload = payload.replace(':', "")
         state = f"{payload[3:]}(message, bot, api)"
+        # await message.answer(message=f'{state}')
         try:
             # print(f'\033[38m[\033[34m!\033[38m][\033[33mDEBUG\033[38m] Перемещение пользователя: {state}')
             await eval(state)
@@ -79,6 +82,16 @@ async def handle_message_event(event: GroupTypes.MessageEvent):
             sticker_id=8441
         )
         await mainMenu.ShowFixFromId(from_id, bot, api)
+
+    if payloadcmd == 'CentralBank.CreateBankCard6':
+        from_id = event.object.user_id
+        await bot.api.messages.send_message_event_answer(
+            event_id=event.object.event_id,
+            user_id=event.object.user_id,
+            peer_id=event.object.peer_id,
+            event_data=json.dumps({"type": "show_snackbar", "text": "⭐ Открыты новые возможности"}),
+        )
+        await CentralBank.CreateBankCard6(from_id, bot)
 
     if payloadcmd == 'mainMenu.ShowFix':
         from_id = event.object.user_id

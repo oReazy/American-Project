@@ -1848,9 +1848,21 @@ async def Panel6_EditRules_RulesServer_Edit(message: Message, bot: Bot, api: API
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("Отмена", {"cmd": "admin.Panel6_EditRules_RulesServer"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("📝 Стандартное значение", {"cmd": "admin.Panel6_EditRules_RulesServer_EditStandart"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
             )
         )
+    return
+
+
+async def Panel6_EditRules_RulesServer_EditStandart(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesAdmins_EditCheck'")
+    await database.setBdData('settings', 'id', "'1'", 'rules_server', f"'Главный администратор еще не написал правила для данного сервера'")
+    await message.answer(
+        message=f"✅ Вы успешно обновили правила сервера"
+        )
+    await Panel6_EditRules_RulesServer(message, bot, api)
     return
 
 
@@ -1904,14 +1916,25 @@ async def Panel6_EditRules_RulesAdmins_Edit(message: Message, bot: Bot, api: API
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("Отмена", {"cmd": "admin.Panel6_EditRules_RulesAdmins"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("📝 Стандартное значение", {"cmd": "admin.Panel6_EditRules_RulesAdmins_EditStandart"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
             )
         )
     return
 
 
+async def Panel6_EditRules_RulesAdmins_EditStandart(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesAdmins_EditCheck'")
+    await database.setBdData('settings', 'id', "'1'", 'regulation_admins', f"'Главный администратор еще не написал устав для администрации'")
+    await message.answer(
+        message=f"✅ Вы успешно обновили правила для администраторов"
+        )
+    await Panel6_EditRules_RulesAdmins(message, bot, api)
+    return
+
+
 async def Panel6_EditRules_RulesAdmins_EditCheck(message: Message, bot: Bot, api: API):
-    data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesAdmins_EditCheck'")
     if len(message.text) <= 3000:
         await database.setBdData('settings', 'id', "'1'", 'regulation_admins', f"'{message.text}'")
@@ -1959,10 +1982,21 @@ async def Panel6_EditRules_FAQAdmins_Edit(message: Message, bot: Bot, api: API):
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("Отмена", {"cmd": "admin.Panel6_EditRules_FAQAdmins"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("📝 Стандартное значение", {"cmd": "admin.Panel6_EditRules_FAQAdmins_EditStandart"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
             )
         )
     return
+
+
+async def Panel6_EditRules_FAQAdmins_EditStandart(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesAdmins_EditCheck'")
+    await database.setBdData('settings', 'id', "'1'", 'faq_admins', f"'Главный администратор еще не написал FAQ админ-панели для администрации'")
+    await message.answer(
+        message=f"✅ Вы успешно обновили FAQ для администраторов"
+        )
+    await Panel6_EditRules_FAQAdmins(message, bot, api)
 
 
 async def Panel6_EditRules_FAQAdmins_EditCheck(message: Message, bot: Bot, api: API):
@@ -1971,7 +2005,7 @@ async def Panel6_EditRules_FAQAdmins_EditCheck(message: Message, bot: Bot, api: 
     if len(message.text) <= 3000:
         await database.setBdData('settings', 'id', "'1'", '	faq_admins', f"'{message.text}'")
         await message.answer(
-            message=f"✅ Вы успешно обновили правила для администраторов"
+            message=f"✅ Вы успешно обновили FAQ для администраторов"
             )
         await Panel6_EditRules_FAQAdmins(message, bot, api)
         return
@@ -2109,6 +2143,7 @@ async def Panel2_Online(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, "state = 'admin.Panel2_Online', temporary_var = '[]'")
     math_count_online = int(time.time())-300
     math_count_1h = int(time.time())-3600
+    print(math_count_online)
     count_online = len(await database.getMultiProgramBdData('users', f"last_message >= {math_count_online}"))
     count_1h = len(await database.getMultiProgramBdData('users', f"last_message >= {math_count_1h}"))
     await message.answer(
@@ -2449,6 +2484,38 @@ async def Console(message: Message, api: API, bot: Bot):
                 message=f"❌ Нету доступа"
             )
             return
+
+
+
+    if command[0] == '/regopen' and data[11] >= 7:
+        await database.setBdData('settings', 'id', "'1'", 'pay_mailing_server', f"'1'")
+        await message.answer(
+            message=f'✅ Вы успешно открыли регистрацию на сервере'
+        )
+        return
+    else:
+        if command[0] == '/regopen':
+            await message.answer(
+                message=f"❌ Нету доступа"
+            )
+            return
+
+
+
+    if command[0] == '/regclosed' and data[11] >= 7:
+        await database.setBdData('settings', 'id', "'1'", 'pay_mailing_server', f"'0'")
+        await message.answer(
+            message=f'✅ Вы успешно закрыли регистрацию на сервере'
+        )
+        return
+    else:
+        if command[0] == '/regopen':
+            await message.answer(
+                message=f"❌ Нету доступа"
+            )
+            return
+
+
 
 
     if command[0] == '/changenamestocks' and data[11] >= 7:
