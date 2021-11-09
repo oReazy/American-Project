@@ -78,11 +78,289 @@ async def Bankomat(message: Message, bot: Bot, api: API):
                 .add(Text("🔼 Пополнить", {"cmd": "CentralBank.addBalance1"}), color=KeyboardButtonColor.SECONDARY)
                 .add(Text("🔽 Списать", {"cmd": "CentralBank.vivodBalance1"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
-                .add(Text("💸 Перевод денег", {"cmd": "CentralBank.none"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("💸 Перевод денег", {"cmd": "CentralBank.transfer"}), color=KeyboardButtonColor.SECONDARY)
                 .add(Text("💱 Обменник валют", {"cmd": "CentralBank.none"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
         )
     )
+
+
+async def transfer(message: Message, bot: Bot, api: API):
+    await database.setMultiUserData(message.from_id, "state = 'CentralBank.transfer2', temporary_var = '[]'")
+    await message.answer(
+        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 » 💸 Перевод денег\n\n📝 Укажите ссылку на пользователя",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Отмена", {"cmd": "CentralBank.Bankomat"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
+        )
+    )
+    return
+
+
+
+
+async def transfer2(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'CentralBank.transfer2'")
+    try:
+        link = message.text[15:]
+        user_get = await bot.api.users.get(user_ids=link)
+        id_user = user_get[0].id
+        data = await database.getUserData(id_user)
+        user_data = await database.getUserData(message.from_id)
+        if data[69] == '❌ Отсутствует':
+            await message.answer(
+                message=f"❌ У данного человека отсутствует банковская карта. Переводы недоступны"
+            )
+            await transfer(message, bot, api)
+            return
+        if data[1] == user_data[1]:
+            await message.answer(
+                message=f"❌ Вы пытаетесь перевести деньги самому себе"
+            )
+            await transfer(message, bot, api)
+            return
+        await database.setUserData(message.from_id, 'temporary_var', f"'{id_user}'")
+        await message.answer(
+            message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 » 💸 Перевод денег\n\n"
+                    f"Выберите валюту для перевода",
+            keyboard=(
+                Keyboard(one_time=True, inline=False)
+                    .add(Text("◀ Отмена", {"cmd": "CentralBank.Bankomat"}), color=KeyboardButtonColor.PRIMARY)
+                    .row()
+                    .add(Text("💵 Доллары", {"cmd": "CentralBank.transferDollars"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("💶 Евро", {"cmd": "CentralBank.transferEuro"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("💴 Иены", {"cmd": "CentralBank.transferYen"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("💷 Фунты", {"cmd": "CentralBank.transferPounds"}), color=KeyboardButtonColor.SECONDARY)
+                    .get_json()
+            )
+        )
+    except Exception as ex:
+        await message.answer(
+            message=f'⚠ Возникла ошибка при поиске игрока\n\n'
+                    f'— Убедитесь, что вы ввели правильную ссылку и то, что человек играет на нашем сервере'
+        )
+        await transfer(message, bot, api)
+    return
+
+
+
+async def transferPounds(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'CentralBank.transferPoundsCheck'")
+    await message.answer(
+        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 » 💸 » 💷 Фунты\n\n📝 Укажите количество денег для перевода",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Отмена", {"cmd": "CentralBank.Bankomat"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
+        )
+    )
+    return
+
+
+async def transferPoundsCheck(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if message.text.isdigit():
+        count = int(message.text)
+        if 0 < count:
+            if data[19] >= count:
+                data_to_transfer = await database.getUserData(int(data[75]))
+                new_balance = int(data_to_transfer[19]) + count
+                new_balance2 = int(data[19]) - count
+                await database.setMultiUserData(message.from_id, f"bank_pounds = '{new_balance2}'")
+                await database.setMultiUserData(int(data[75]), f"bank_pounds = '{new_balance}'")
+                await message.answer(
+                    message=f"✅ Вы успешно перевели деньги {data_to_transfer[3]} на счет в количестве {count} фунтов (💷)"
+                    )
+                await Bankomat(message, bot, api)
+                return
+            else:
+                await message.answer(
+                    message=f"❌ У вас нет столько денег в банке"
+                )
+                await transferPounds(message, bot, api)
+                return
+        else:
+            await message.answer(
+                message=f"❌ Укажите число больше 0",
+            )
+            await transferPounds(message, bot, api)
+            return
+    else:
+        await message.answer(
+            message=f"❌ Укажите число больше 0",
+        )
+        await transferPounds(message, bot, api)
+        return
+
+
+
+
+
+async def transferYen(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'CentralBank.transferYenCheck'")
+    await message.answer(
+        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 » 💸 » 💴 Иены\n\n📝 Укажите количество денег для перевода",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Отмена", {"cmd": "CentralBank.Bankomat"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
+        )
+    )
+    return
+
+
+async def transferYenCheck(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if message.text.isdigit():
+        count = int(message.text)
+        if 0 < count:
+            if data[18] >= count:
+                data_to_transfer = await database.getUserData(int(data[75]))
+                new_balance = int(data_to_transfer[18]) + count
+                new_balance2 = int(data[18]) - count
+                await database.setMultiUserData(message.from_id, f"bank_yen = '{new_balance2}'")
+                await database.setMultiUserData(int(data[75]), f"bank_yen = '{new_balance}'")
+                await message.answer(
+                    message=f"✅ Вы успешно перевели деньги {data_to_transfer[3]} на счет в количестве {count} иен (💴)"
+                    )
+                await Bankomat(message, bot, api)
+                return
+            else:
+                await message.answer(
+                    message=f"❌ У вас нет столько денег в банке"
+                )
+                await transferYen(message, bot, api)
+                return
+        else:
+            await message.answer(
+                message=f"❌ Укажите число больше 0",
+            )
+            await transferYen(message, bot, api)
+            return
+    else:
+        await message.answer(
+            message=f"❌ Укажите число больше 0",
+        )
+        await transferYen(message, bot, api)
+        return
+
+
+
+async def transferEuro(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'CentralBank.transferEuroCheck'")
+    await message.answer(
+        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 » 💸 » 💶 Евро\n\n📝 Укажите количество денег для перевода",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Отмена", {"cmd": "CentralBank.Bankomat"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
+        )
+    )
+    return
+
+
+async def transferEuroCheck(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if message.text.isdigit():
+        count = int(message.text)
+        if 0 < count:
+            if data[17] >= count:
+                data_to_transfer = await database.getUserData(int(data[75]))
+                new_balance = int(data_to_transfer[17]) + count
+                new_balance2 = int(data[17]) - count
+                await database.setMultiUserData(message.from_id, f"bank_euro = '{new_balance2}'")
+                await database.setMultiUserData(int(data[75]), f"bank_euro = '{new_balance}'")
+                await message.answer(
+                    message=f"✅ Вы успешно перевели деньги {data_to_transfer[3]} на счет в количестве {count} евро (💶)"
+                    )
+                await Bankomat(message, bot, api)
+                return
+            else:
+                await message.answer(
+                    message=f"❌ У вас нет столько денег в банке"
+                )
+                await transferEuro(message, bot, api)
+                return
+        else:
+            await message.answer(
+                message=f"❌ Укажите число больше 0",
+            )
+            await transferEuro(message, bot, api)
+            return
+    else:
+        await message.answer(
+            message=f"❌ Укажите число больше 0",
+        )
+        await transferEuro(message, bot, api)
+        return
+
+
+
+
+
+
+async def transferDollars(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'CentralBank.transferDollarsCheck'")
+    await message.answer(
+        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 » 💸 » 💵 Доллары\n\n📝 Укажите количество денег для перевода",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Отмена", {"cmd": "CentralBank.Bankomat"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
+        )
+    )
+    return
+
+
+async def transferDollarsCheck(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if message.text.isdigit():
+        count = int(message.text)
+        if 0 < count:
+            if data[16] >= count:
+                data_to_transfer = await database.getUserData(int(data[75]))
+                new_balance = int(data_to_transfer[16]) + count
+                new_balance2 = int(data[16]) - count
+                await database.setMultiUserData(message.from_id, f"bank_dollars = '{new_balance2}'")
+                await database.setMultiUserData(int(data[75]), f"bank_dollars = '{new_balance}'")
+                await message.answer(
+                    message=f"✅ Вы успешно перевели деньги {data_to_transfer[3]} на счет в количестве {count} долларов (💵)"
+                    )
+                await Bankomat(message, bot, api)
+                return
+            else:
+                await message.answer(
+                    message=f"❌ У вас нет столько денег в банке"
+                )
+                await transferDollars(message, bot, api)
+                return
+        else:
+            await message.answer(
+                message=f"❌ Укажите число больше 0",
+            )
+            await transferDollars(message, bot, api)
+            return
+    else:
+        await message.answer(
+            message=f"❌ Укажите число больше 0",
+        )
+        await transferDollars(message, bot, api)
+        return
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 async def Balance(message: Message, bot: Bot, api: API):
@@ -158,7 +436,7 @@ async def vivodBalancePoundsCheck(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 0 < count:
-            if data[15] <= data[19]:
+            if data[19] >= count:
                 new_balance = int(data[15]) + count
                 new_balance2 = int(data[19]) - count
                 await database.setMultiUserData(message.from_id, f"pounds = '{new_balance}', bank_pounds = '{new_balance2}'")
@@ -169,7 +447,7 @@ async def vivodBalancePoundsCheck(message: Message, bot: Bot, api: API):
                 return
             else:
                 await message.answer(
-                    message=f"❌ У вас нет столько денег на руках"
+                    message=f"❌ У вас нет столько денег в банке"
                 )
                 await Bankomat(message, bot, api)
                 return
@@ -225,7 +503,7 @@ async def vivodBalanceYenCheck(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 0 < count:
-            if data[14] <= data[18]:
+            if data[18] >= count:
                 new_balance = int(data[14]) + count
                 new_balance2 = int(data[18]) - count
                 await database.setMultiUserData(message.from_id, f"yen = '{new_balance}', bank_yen = '{new_balance2}'")
@@ -236,7 +514,7 @@ async def vivodBalanceYenCheck(message: Message, bot: Bot, api: API):
                 return
             else:
                 await message.answer(
-                    message=f"❌ У вас нет столько денег на руках"
+                    message=f"❌ У вас нет столько денег в банке"
                 )
                 await Bankomat(message, bot, api)
                 return
@@ -292,7 +570,7 @@ async def vivodBalanceEuroCheck(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 0 < count:
-            if data[13] <= data[17]:
+            if data[17] >= count:
                 new_balance = int(data[13]) + count
                 new_balance2 = int(data[17]) - count
                 await database.setMultiUserData(message.from_id, f"euro = '{new_balance}', bank_euro = '{new_balance2}'")
@@ -303,7 +581,7 @@ async def vivodBalanceEuroCheck(message: Message, bot: Bot, api: API):
                 return
             else:
                 await message.answer(
-                    message=f"❌ У вас нет столько денег на руках"
+                    message=f"❌ У вас нет столько денег в банке"
                 )
                 await Bankomat(message, bot, api)
                 return
@@ -357,7 +635,7 @@ async def vivodBalanceDollarsCheck(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 0 < count:
-            if data[12] <= data[16]:
+            if data[16] >= count:
                 new_balance = int(data[12]) + count
                 new_balance2 = int(data[16]) - count
                 await database.setMultiUserData(message.from_id, f"dollars = '{new_balance}', bank_dollars = '{new_balance2}'")
@@ -368,7 +646,7 @@ async def vivodBalanceDollarsCheck(message: Message, bot: Bot, api: API):
                 return
             else:
                 await message.answer(
-                    message=f"❌ У вас нет столько денег на руках"
+                    message=f"❌ У вас нет столько денег в банке"
                 )
                 await Bankomat(message, bot, api)
                 return
@@ -455,7 +733,7 @@ async def addBalancePoundsCheck(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 0 < count:
-            if data[15] >= data[19]:
+            if data[15] >= count:
                 new_balance = int(data[15]) - count
                 new_balance2 = int(data[19]) + count
                 await database.setMultiUserData(message.from_id, f"pounds = '{new_balance}', bank_pounds = '{new_balance2}'")
@@ -522,7 +800,7 @@ async def addBalanceYenCheck(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 0 < count:
-            if data[14] >= data[18]:
+            if data[14] >= count:
                 new_balance = int(data[14]) - count
                 new_balance2 = int(data[18]) + count
                 await database.setMultiUserData(message.from_id, f"yen = '{new_balance}', bank_yen = '{new_balance2}'")
@@ -589,7 +867,7 @@ async def addBalanceEuroCheck(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 0 < count:
-            if data[13] >= data[17]:
+            if data[13] >= count:
                 new_balance = int(data[13]) - count
                 new_balance2 = int(data[17]) + count
                 await database.setMultiUserData(message.from_id, f"euro = '{new_balance}', bank_euro = '{new_balance2}'")
@@ -654,7 +932,7 @@ async def addBalanceDollarsCheck(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 0 < count:
-            if data[12] >= data[16]:
+            if data[12] >= count:
                 new_balance = int(data[12]) - count
                 new_balance2 = int(data[16]) + count
                 await database.setMultiUserData(message.from_id, f"dollars = '{new_balance}', bank_dollars = '{new_balance2}'")

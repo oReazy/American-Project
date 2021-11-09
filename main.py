@@ -6,7 +6,7 @@ from modules import registration, database, mainMenu, characterAction, admin, bl
 from modules import historyNicks, historyPunish, report, map, skills, telephone, settings, licences, passport
 import json, time, os, sys, re, ast, datetime, random
 from modules.newGuysWorks import farm
-from modules.importantLocations import LicensingCenter, CentralBank
+from modules.importantLocations import LicensingCenter, CentralBank, Pier, SportsHall, EmploymentCenter
 
 # ------------------------------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ async def main(message: Message):
         await registration.registration_1(message, bot, api)
         return
 
-    await database.setMultiUserData(message.from_id, f"last_message = '{int(time.time())}', last_message_date = '{datetime.datetime.now()}'")
+    await database.setMultiUserData(message.from_id, f"last_message = '{int(time.time())}'")
     # await database.setUserData(message.from_id, "last_message", f"'{int(time.time())}'")
     data = await database.getUserData(message.from_id)
     server_data = await database.getBdData('settings', "id", "'1'")
@@ -92,6 +92,16 @@ async def handle_message_event(event: GroupTypes.MessageEvent):
             event_data=json.dumps({"type": "show_snackbar", "text": "⭐ Открыты новые возможности"}),
         )
         await CentralBank.CreateBankCard6(from_id, bot)
+
+    if payloadcmd == 'LicensingCenter.Show':
+        from_id = event.object.user_id
+        await bot.api.messages.send_message_event_answer(
+            event_id=event.object.event_id,
+            user_id=event.object.user_id,
+            peer_id=event.object.peer_id,
+            event_data=json.dumps({"type": "show_snackbar", "text": "⭐ Открыты новые возможности"}),
+        )
+        await LicensingCenter.AutoOpen(from_id, bot)
 
     if payloadcmd == 'mainMenu.ShowFix':
         from_id = event.object.user_id

@@ -41,7 +41,7 @@ async def registerNewAccaunt(user_id):  # Создание нового акка
             #            "health, eat, passport, passport_serial, passport_number, marriage, " \
             #            "military_card, casino_chips, admin_info, mailing_project, mailing_server, " \
             #            "bank_card, skill_farmer, skill_drive, skill_trucker, skill_taxi, skill_air
-            #            "temporary_var, limit_report, last_message) VALUES " \
+            #            "temporary_var, limit_report, last_message, reDesign) VALUES " \
             #            f"({user_id}, " \  # vk_id
             # f"'', " \  # state
             # f"'', " \  # nick
@@ -119,7 +119,7 @@ async def registerNewAccaunt(user_id):  # Создание нового акка
             # f"'', " \  # temporary_var
             # f"'', " \  # limit_report
             # f"'', " \  # last_message
-            # f"'', " \  # reDesign
+            # f"'' " \  # reDesign
             # f")"
             admin_info = {"admin_name": "", "admin_age": "", "admin_city_live": "", "admin_discord": "",
                           "admin_desc": "", "admin_date_add": "", "admin_date_upp": "", "admin_date_leave": "",
@@ -136,7 +136,7 @@ async def registerNewAccaunt(user_id):  # Создание нового акка
                        "health, eat, passport, passport_serial, passport_number, marriage, " \
                        "military_card, casino_chips, admin_info, mailing_project, mailing_server, " \
                        "bank_card, skill_farmer, skill_drive, skill_trucker, skill_taxi, skill_air, " \
-                       "temporary_var, limit_report, last_message) VALUES " \
+                       "temporary_var, limit_report, last_message, reDesign) VALUES " \
                        f"({user_id}, " \
                        f"'', " \
                        f"'', " \
@@ -202,7 +202,7 @@ async def registerNewAccaunt(user_id):  # Создание нового акка
                        f"'Не женат(а)', " \
                        f"'❌ Отсутствует', " \
                        f"'0', " \
-                       "'[]', " \
+                       f"'[]', " \
                        f"'❌ Не подписаны', " \
                        f"'❌ Не подписаны', " \
                        f"'❌ Отсутствует', " \
@@ -211,9 +211,9 @@ async def registerNewAccaunt(user_id):  # Создание нового акка
                        f"'0', " \
                        f"'0', " \
                        f"'0', " \
-                       f"'[]', " \
                        f"'0', " \
-                       f"'0'," \
+                       f"'0', " \
+                       f"'0', " \
                        f"'0'" \
                        f")"
             await cursor.execute(new_user)

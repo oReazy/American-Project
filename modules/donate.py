@@ -396,7 +396,7 @@ async def EXPGetCheck(message: Message, bot: Bot, api: API):
         await message.answer(
             message=f"❌ Введите корректное число"
         )
-        await EXPGet(message)
+        await EXPGet(message, bot, api)
         return
 
 

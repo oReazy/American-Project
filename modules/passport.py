@@ -17,7 +17,7 @@ async def Show(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[60] == 'Нету':
         await message.answer(
-            message=f"❌ У вас нет паспорта. Сделать вы его можете в правительстве")
+            message=f"❌ У вас нет паспорта. Сделать вы его можете в мэрии")
         await characterAction.Show(message, bot, api)
         return
     else:

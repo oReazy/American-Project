@@ -2567,6 +2567,48 @@ async def Console(message: Message, api: API, bot: Bot):
             return
     # -------------------------------------------------------------
 
+    if command[0] == '/fractioninfo' and data[11] >= 3:
+        lentext = len(command[0]) + 1
+        text = message.text[lentext:]
+        try:
+            data = await database.getBdData('fractions', 'id', f"'{text}'")
+            await message.answer(
+                message=f"📟 » Информация о фракции\n\n"
+                        f"📃 Название фракции » {data[1]}\n"
+                        f"😎 Лидер фракции » {data[2]}\n"
+                        f"⛓ Ссылка на беседу » {data[3]}\n\n"
+                        f"✏ Доска объявлений фракции » {data[4]}\n\n"
+                        f"📜 ИНФОРМАЦИЯ О РАНГАХ ФРАКЦИИ:\n"
+                        f"🔟 — 10 РАНГ — {data[5]} — {data[15]} долларов (💵)\n"
+                        f"9️⃣ — 9 РАНГ — {data[6]} — {data[16]} долларов (💵)\n"
+                        f"8️⃣ — 8 РАНГ — {data[7]} — {data[17]} долларов (💵)\n"
+                        f"7️⃣ — 7 РАНГ — {data[8]} — {data[18]} долларов (💵)\n"
+                        f"6️⃣ — 6 РАНГ — {data[9]} — {data[19]} долларов (💵)\n"
+                        f"5️⃣ — 5 РАНГ — {data[10]} — {data[20]} долларов (💵)\n"
+                        f"4️⃣ — 4 РАНГ — {data[11]} — {data[21]} долларов (💵)\n"
+                        f"3️⃣ — 3 РАНГ — {data[12]} — {data[22]} долларов (💵)\n"
+                        f"2️⃣ — 2 РАНГ — {data[13]} — {data[23]} долларов (💵)\n"
+                        f"1️⃣ — 1 РАНГ — {data[14]} — {data[24]} долларов (💵)\n"
+            )
+        except Exception as ex:
+            await message.answer(
+                message=f'⚠ Возникла ошибка при выводе информации фракции\n\n'
+                        f'— Убедитесь, что ID фракции существует'
+            )
+            print(ex)
+        return
+    else:
+        if command[0] == '/fractioninfo':
+            await message.answer(
+                message=f"❌ Нету доступа"
+            )
+            return
+
+
+
+
+    # -------------------------------------------------------------
+
     if command[0] == '/onlineserver' and data[11] >= 2:
         math_count_online = int(time.time()) - 300
         math_count_1h = int(time.time()) - 3600
