@@ -20,7 +20,7 @@ async def Show(message: Message, bot: Bot, api: API):
     if data[69] == '❌ Отсутствует':
         await message.answer(
             message=f"🎯 » 🗺 » 🏛 » 🏦 Центральный банк\n\n"
-                    f"👱‍♀ Доброго времени суток, меня зовуту Мария и являюсь сотрудницей Центрального Банка штата {server_settings[9]}. Чем я могу вам помочь?",
+                    f"👱‍♀ Доброго времени суток, меня зовут Мария и я являюсь сотрудницей Центрального Банка штата {server_settings[9]}. Чем я могу вам помочь?",
             keyboard=(
                 Keyboard(one_time=True, inline=False)
                     .add(Text("◀ Назад", {"cmd": "map.importandPlaces1"}), color=KeyboardButtonColor.PRIMARY)
@@ -29,11 +29,10 @@ async def Show(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         await message.answer(
             message=f"🎯 » 🗺 » 🏛 » 🏦 Центральный банк\n\n"
-                    f"👱‍♀ Доброго времени суток, меня зовуту Мария и являюсь сотрудницей Центрального Банка штата {server_settings[9]}. Чем я могу вам помочь?",
+                    f"👱‍♀ Доброго времени суток, меня зовут Мария и я являюсь сотрудницей Центрального Банка штата {server_settings[9]}. Чем я могу вам помочь?",
             keyboard=(
                 Keyboard(one_time=True, inline=False)
                     .add(Text("◀ Назад", {"cmd": "map.importandPlaces1"}), color=KeyboardButtonColor.PRIMARY)
@@ -42,7 +41,6 @@ async def Show(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
 
 
 # -------------------------------------------------------------------------------------------------------------
@@ -55,11 +53,11 @@ async def BankomatWelcome(message: Message, bot: Bot, api: API):
     )
     await asyncio.sleep(5)
     await message.answer(
-        message=f"👈 Вы прикладываете палец для индификации"
+        message=f"👈 Вы прикладываете палец для идентификации"
     )
     await asyncio.sleep(5)
     await Bankomat(message, bot, api)
-    return
+
 
 
 async def Bankomat(message: Message, bot: Bot, api: API):
@@ -73,16 +71,26 @@ async def Bankomat(message: Message, bot: Bot, api: API):
             Keyboard(one_time=True, inline=False)
                 .add(Text("💳 Выйти", {"cmd": "CentralBank.Show"}), color=KeyboardButtonColor.PRIMARY)
                 .row()
-                .add(Text("ℹ Баланс денег", {"cmd": "CentralBank.Balance"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("ℹ Баланс карты", {"cmd": "CentralBank.Balance"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("🔼 Пополнить", {"cmd": "CentralBank.addBalance1"}), color=KeyboardButtonColor.SECONDARY)
                 .add(Text("🔽 Списать", {"cmd": "CentralBank.vivodBalance1"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("💸 Перевод денег", {"cmd": "CentralBank.transfer"}), color=KeyboardButtonColor.SECONDARY)
-                .add(Text("💱 Обменник валют", {"cmd": "CentralBank.none"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("💱 Обменник валют", {"cmd": "CentralBank.ComingSoon"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
         )
     )
+
+
+
+
+async def ComingSoon(message: Message, bot: Bot, api: API):
+    await message.answer(
+        message=f"⌛ В данный момент банк не может сделать обмен валют. Попробуйте позже"
+    )
+    await Bankomat(message, bot, api)
+
 
 
 async def transfer(message: Message, bot: Bot, api: API):
@@ -95,7 +103,7 @@ async def transfer(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 
@@ -113,36 +121,35 @@ async def transfer2(message: Message, bot: Bot, api: API):
                 message=f"❌ У данного человека отсутствует банковская карта. Переводы недоступны"
             )
             await transfer(message, bot, api)
-            return
-        if data[1] == user_data[1]:
-            await message.answer(
-                message=f"❌ Вы пытаетесь перевести деньги самому себе"
-            )
-            await transfer(message, bot, api)
-            return
-        await database.setUserData(message.from_id, 'temporary_var', f"'{id_user}'")
-        await message.answer(
-            message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 » 💸 Перевод денег\n\n"
-                    f"Выберите валюту для перевода",
-            keyboard=(
-                Keyboard(one_time=True, inline=False)
-                    .add(Text("◀ Отмена", {"cmd": "CentralBank.Bankomat"}), color=KeyboardButtonColor.PRIMARY)
-                    .row()
-                    .add(Text("💵 Доллары", {"cmd": "CentralBank.transferDollars"}), color=KeyboardButtonColor.SECONDARY)
-                    .add(Text("💶 Евро", {"cmd": "CentralBank.transferEuro"}), color=KeyboardButtonColor.SECONDARY)
-                    .row()
-                    .add(Text("💴 Иены", {"cmd": "CentralBank.transferYen"}), color=KeyboardButtonColor.SECONDARY)
-                    .add(Text("💷 Фунты", {"cmd": "CentralBank.transferPounds"}), color=KeyboardButtonColor.SECONDARY)
-                    .get_json()
-            )
-        )
+        else:
+            if data[1] == user_data[1]:
+                await message.answer(
+                    message=f"❌ Вы пытаетесь перевести деньги самому себе"
+                )
+                await transfer(message, bot, api)
+            else:
+                await database.setUserData(message.from_id, 'temporary_var', f"'{id_user}'")
+                await message.answer(
+                    message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 » 💸 Перевод денег\n\n"
+                            f"Выберите валюту для перевода",
+                    keyboard=(
+                        Keyboard(one_time=True, inline=False)
+                            .add(Text("◀ Отмена", {"cmd": "CentralBank.Bankomat"}), color=KeyboardButtonColor.PRIMARY)
+                            .row()
+                            .add(Text("💵 Доллары", {"cmd": "CentralBank.transferDollars"}), color=KeyboardButtonColor.SECONDARY)
+                            .add(Text("💶 Евро", {"cmd": "CentralBank.transferEuro"}), color=KeyboardButtonColor.SECONDARY)
+                            .row()
+                            .add(Text("💴 Иены", {"cmd": "CentralBank.transferYen"}), color=KeyboardButtonColor.SECONDARY)
+                            .add(Text("💷 Фунты", {"cmd": "CentralBank.transferPounds"}), color=KeyboardButtonColor.SECONDARY)
+                            .get_json()
+                    )
+                )
     except Exception as ex:
         await message.answer(
             message=f'⚠ Возникла ошибка при поиске игрока\n\n'
                     f'— Убедитесь, что вы ввели правильную ссылку и то, что человек играет на нашем сервере'
         )
         await transfer(message, bot, api)
-    return
 
 
 
@@ -156,7 +163,6 @@ async def transferPounds(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def transferPoundsCheck(message: Message, bot: Bot, api: API):
@@ -174,25 +180,21 @@ async def transferPoundsCheck(message: Message, bot: Bot, api: API):
                     message=f"✅ Вы успешно перевели деньги {data_to_transfer[3]} на счет в количестве {count} фунтов (💷)"
                     )
                 await Bankomat(message, bot, api)
-                return
             else:
                 await message.answer(
                     message=f"❌ У вас нет столько денег в банке"
                 )
                 await transferPounds(message, bot, api)
-                return
         else:
             await message.answer(
                 message=f"❌ Укажите число больше 0",
             )
             await transferPounds(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число больше 0",
         )
         await transferPounds(message, bot, api)
-        return
 
 
 
@@ -208,7 +210,6 @@ async def transferYen(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def transferYenCheck(message: Message, bot: Bot, api: API):
@@ -226,25 +227,21 @@ async def transferYenCheck(message: Message, bot: Bot, api: API):
                     message=f"✅ Вы успешно перевели деньги {data_to_transfer[3]} на счет в количестве {count} иен (💴)"
                     )
                 await Bankomat(message, bot, api)
-                return
             else:
                 await message.answer(
                     message=f"❌ У вас нет столько денег в банке"
                 )
                 await transferYen(message, bot, api)
-                return
         else:
             await message.answer(
                 message=f"❌ Укажите число больше 0",
             )
             await transferYen(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число больше 0",
         )
         await transferYen(message, bot, api)
-        return
 
 
 
@@ -258,7 +255,6 @@ async def transferEuro(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def transferEuroCheck(message: Message, bot: Bot, api: API):
@@ -276,25 +272,21 @@ async def transferEuroCheck(message: Message, bot: Bot, api: API):
                     message=f"✅ Вы успешно перевели деньги {data_to_transfer[3]} на счет в количестве {count} евро (💶)"
                     )
                 await Bankomat(message, bot, api)
-                return
             else:
                 await message.answer(
                     message=f"❌ У вас нет столько денег в банке"
                 )
                 await transferEuro(message, bot, api)
-                return
         else:
             await message.answer(
                 message=f"❌ Укажите число больше 0",
             )
             await transferEuro(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число больше 0",
         )
         await transferEuro(message, bot, api)
-        return
 
 
 
@@ -311,7 +303,6 @@ async def transferDollars(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def transferDollarsCheck(message: Message, bot: Bot, api: API):
@@ -329,25 +320,21 @@ async def transferDollarsCheck(message: Message, bot: Bot, api: API):
                     message=f"✅ Вы успешно перевели деньги {data_to_transfer[3]} на счет в количестве {count} долларов (💵)"
                     )
                 await Bankomat(message, bot, api)
-                return
             else:
                 await message.answer(
                     message=f"❌ У вас нет столько денег в банке"
                 )
                 await transferDollars(message, bot, api)
-                return
         else:
             await message.answer(
                 message=f"❌ Укажите число больше 0",
             )
             await transferDollars(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число больше 0",
         )
         await transferDollars(message, bot, api)
-        return
 
 
 
@@ -376,7 +363,6 @@ async def Balance(message: Message, bot: Bot, api: API):
                 f"💷 Фунты в банке » {num4}",
     )
     await Bankomat(message, bot, api)
-    return
 
 
 
@@ -397,7 +383,6 @@ async def vivodBalance1(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 
@@ -428,7 +413,6 @@ async def vivodBalancePounds(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def vivodBalancePoundsCheck(message: Message, bot: Bot, api: API):
@@ -444,25 +428,21 @@ async def vivodBalancePoundsCheck(message: Message, bot: Bot, api: API):
                     message=f"✅ Вы успешно сняли фунты со своего счета"
                     )
                 await Bankomat(message, bot, api)
-                return
             else:
                 await message.answer(
                     message=f"❌ У вас нет столько денег в банке"
                 )
                 await Bankomat(message, bot, api)
-                return
         else:
             await message.answer(
                 message=f"❌ Укажите число больше 0",
             )
             await vivodBalancePounds(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число больше 0",
         )
         await vivodBalancePounds(message, bot, api)
-        return
 
 
 
@@ -495,7 +475,6 @@ async def vivodBalanceYen(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def vivodBalanceYenCheck(message: Message, bot: Bot, api: API):
@@ -511,25 +490,21 @@ async def vivodBalanceYenCheck(message: Message, bot: Bot, api: API):
                     message=f"✅ Вы успешно сняли иены со своего счета"
                     )
                 await Bankomat(message, bot, api)
-                return
             else:
                 await message.answer(
                     message=f"❌ У вас нет столько денег в банке"
                 )
                 await Bankomat(message, bot, api)
-                return
         else:
             await message.answer(
                 message=f"❌ Укажите число больше 0",
             )
             await vivodBalanceYen(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число больше 0",
         )
         await vivodBalanceYen(message, bot, api)
-        return
 
 
 
@@ -562,7 +537,6 @@ async def vivodBalanceEuro(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def vivodBalanceEuroCheck(message: Message, bot: Bot, api: API):
@@ -578,25 +552,21 @@ async def vivodBalanceEuroCheck(message: Message, bot: Bot, api: API):
                     message=f"✅ Вы успешно сняли евро со своего счета"
                     )
                 await Bankomat(message, bot, api)
-                return
             else:
                 await message.answer(
                     message=f"❌ У вас нет столько денег в банке"
                 )
                 await Bankomat(message, bot, api)
-                return
         else:
             await message.answer(
                 message=f"❌ Укажите число больше 0",
             )
             await vivodBalanceEuro(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число больше 0",
         )
         await vivodBalanceEuro(message, bot, api)
-        return
 
 
 
@@ -627,7 +597,6 @@ async def vivodBalanceDollars(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def vivodBalanceDollarsCheck(message: Message, bot: Bot, api: API):
@@ -643,25 +612,21 @@ async def vivodBalanceDollarsCheck(message: Message, bot: Bot, api: API):
                     message=f"✅ Вы успешно сняли доллары со своего счета"
                     )
                 await Bankomat(message, bot, api)
-                return
             else:
                 await message.answer(
                     message=f"❌ У вас нет столько денег в банке"
                 )
                 await Bankomat(message, bot, api)
-                return
         else:
             await message.answer(
                 message=f"❌ Укажите число больше 0",
             )
             await vivodBalanceDollars(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число больше 0",
         )
         await vivodBalanceDollars(message, bot, api)
-        return
 
 
 
@@ -695,7 +660,6 @@ async def addBalance1(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def addBalancePounds(message: Message, bot: Bot, api: API):
@@ -725,7 +689,6 @@ async def addBalancePounds(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def addBalancePoundsCheck(message: Message, bot: Bot, api: API):
@@ -741,25 +704,21 @@ async def addBalancePoundsCheck(message: Message, bot: Bot, api: API):
                     message=f"✅ Вы успешно пополнили фунтовый счет"
                     )
                 await Bankomat(message, bot, api)
-                return
             else:
                 await message.answer(
                     message=f"❌ У вас нет столько денег на руках"
                 )
                 await Bankomat(message, bot, api)
-                return
         else:
             await message.answer(
                 message=f"❌ Укажите число больше 0",
             )
             await addBalancePounds(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число больше 0",
         )
         await addBalancePounds(message, bot, api)
-        return
 
 
 
@@ -792,7 +751,6 @@ async def addBalanceYen(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def addBalanceYenCheck(message: Message, bot: Bot, api: API):
@@ -808,25 +766,21 @@ async def addBalanceYenCheck(message: Message, bot: Bot, api: API):
                     message=f"✅ Вы успешно пополнили иеновский счет"
                     )
                 await Bankomat(message, bot, api)
-                return
             else:
                 await message.answer(
                     message=f"❌ У вас нет столько денег на руках"
                 )
                 await Bankomat(message, bot, api)
-                return
         else:
             await message.answer(
                 message=f"❌ Укажите число больше 0",
             )
             await addBalanceYen(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число больше 0",
         )
         await addBalanceYen(message, bot, api)
-        return
 
 
 
@@ -859,7 +813,6 @@ async def addBalanceEuro(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def addBalanceEuroCheck(message: Message, bot: Bot, api: API):
@@ -875,25 +828,21 @@ async def addBalanceEuroCheck(message: Message, bot: Bot, api: API):
                     message=f"✅ Вы успешно пополнили евро счет"
                     )
                 await Bankomat(message, bot, api)
-                return
             else:
                 await message.answer(
                     message=f"❌ У вас нет столько денег на руках"
                 )
                 await Bankomat(message, bot, api)
-                return
         else:
             await message.answer(
                 message=f"❌ Укажите число больше 0",
             )
             await addBalanceEuro(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число больше 0",
         )
         await addBalanceEuro(message, bot, api)
-        return
 
 
 
@@ -924,7 +873,7 @@ async def addBalanceDollars(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def addBalanceDollarsCheck(message: Message, bot: Bot, api: API):
@@ -940,25 +889,21 @@ async def addBalanceDollarsCheck(message: Message, bot: Bot, api: API):
                     message=f"✅ Вы успешно пополнили долларовый счет"
                     )
                 await Bankomat(message, bot, api)
-                return
             else:
                 await message.answer(
                     message=f"❌ У вас нет столько денег на руках"
                 )
                 await Bankomat(message, bot, api)
-                return
         else:
             await message.answer(
                 message=f"❌ Укажите число больше 0",
             )
             await addBalanceDollars(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число больше 0",
         )
         await addBalanceDollars(message, bot, api)
-        return
 
 
 
@@ -1006,13 +951,11 @@ async def CreateBankCard2(message: Message, bot: Bot, api: API):
         new_balance = int(data[12]) - 250
         await database.setUserData(message.from_id, "dollars", f"'{new_balance}'")
         await CreateBankCard3(message, bot, api)
-        return
     else:
         await message.answer(
             message=f"❌ У вас нет 250 долларов на руках",
         )
         await CreateBankCard1(message, bot, api)
-        return
 
 
 async def CreateBankCard3(message: Message, bot: Bot, api: API):
@@ -1035,14 +978,14 @@ async def CreateBankCard4(message: Message, bot: Bot, api: API):
     await asyncio.sleep(5)
     await database.setUserData(message.from_id, 'state', "'CentralBank.CreateBankCard4'")
     await message.answer(
-        message=f"🚶🏻‍♂ Вы пришли в специальную комнату и видите в ней фото-камеру и световые прожекторы"
+        message=f"🚶🏻‍♂ Вы пришли в специальную комнату и видите в ней фотокамеру и световые прожекторы"
     )
     await message.answer(
         message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 Получение банковской карты\n\n"
-                f"👱‍♀ Присаживайтесь за стул, сейчас я вас сфотографирую.",
+                f"👱‍♀ Присаживайтесь на стул, сейчас я вас сфотографирую.",
         keyboard=(
             Keyboard(one_time=True, inline=False)
-                .add(Text("🪑 Сесть за стул", {"cmd": "CentralBank.CreateBankCard5"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("🪑 Сесть на стул", {"cmd": "CentralBank.CreateBankCard5"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
         )
     )
@@ -1051,11 +994,11 @@ async def CreateBankCard4(message: Message, bot: Bot, api: API):
 async def CreateBankCard5(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'block.Show'")
     await message.answer(
-        message=f"🪑 Вы сели за стул"
+        message=f"🪑 Вы сели на стул"
     )
     await asyncio.sleep(2)
     await message.answer(
-        message=f"📸 *Произошел щелчек в камере*"
+        message=f"📸 *Произошел щелчок в камере*"
     )
     await asyncio.sleep(4)
     await message.answer(
@@ -1063,7 +1006,7 @@ async def CreateBankCard5(message: Message, bot: Bot, api: API):
     )
     await asyncio.sleep(2)
     await message.answer(
-        message=f"👱‍♀ Сейчас подкреплю вашу фотографирую к карте и сейчас я ее вам выдам..."
+        message=f"👱‍♀  Сейчас прикреплю вашу фотографию к карте и выдам её вам..."
     )
     await asyncio.sleep(15)
     await database.setUserData(message.from_id, 'state', "'CentralBank.CreateBankCard5'")

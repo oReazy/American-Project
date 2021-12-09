@@ -23,14 +23,14 @@ async def Check(message: Message, bot: Bot, api: API):
         await mainMenu.Show(message, bot, api)
     else:
         await Show(message, bot, api)
-        return
+
 
 
 async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'block.Show'")
     data = await database.getUserData(message.from_id)
     await message.answer(
-        message=f"📱 Вы достали телефон из кормана"
+        message=f"📱 Вы достали телефон из кармана"
     )
     await asyncio.sleep(2)
     await message.answer(
@@ -38,7 +38,7 @@ async def Show(message: Message, bot: Bot, api: API):
     )
     await asyncio.sleep(2)
     await ShowMenu(message, bot, api)
-    return
+
 
 
 async def PowerOff(message: Message, bot: Bot, api: API):
@@ -49,17 +49,16 @@ async def PowerOff(message: Message, bot: Bot, api: API):
     )
     await asyncio.sleep(2)
     await message.answer(
-        message=f"📱 Вы убрали телефон в корман"
+        message=f"📱 Вы убрали телефон в карман"
     )
     await asyncio.sleep(2)
     await mainMenu.Show(message, bot, api)
-    return
+
 
 
 
 async def ShowMenu(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'telephone.ShowMenu'")
-    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 📱 Телефон",
         keyboard=(
@@ -71,12 +70,11 @@ async def ShowMenu(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def Time(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'telephone.ShowMenu'")
-    data = await database.getUserData(message.from_id)
     real_time = datetime.datetime.now()
     real_day = datetime.date.today()
     await message.answer(
@@ -91,4 +89,3 @@ async def Time(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return

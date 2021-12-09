@@ -18,7 +18,7 @@ async def Show(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[43] == 'Безработный' or data[43] != 'Фермер':
         await message.answer(
-            message=f"🌽 Ферма\n\n"
+            message=f"🥔 Ферма\n\n"
                     f"👨‍🌾 Здраствуй, меня зовут Том и добро пожаловать на мою ферму. Вы что-то хотите?",
             keyboard=(
                 Keyboard(one_time=True, inline=False)
@@ -31,10 +31,9 @@ async def Show(message: Message, bot: Bot, api: API):
                     .add(Text("📖 Виды работ", {"cmd": "farm.Info2"}), color=KeyboardButtonColor.SECONDARY)
             )
         )
-        return
     else:
         await message.answer(
-            message=f"🌽 Ферма\n\n"
+            message=f"🥔 Ферма\n\n"
                     f"👨‍🌾 Здраствуй, {data[3]}. Не хочешь сегодня поработать?",
             keyboard=(
                 Keyboard(one_time=True, inline=False)
@@ -49,7 +48,6 @@ async def Show(message: Message, bot: Bot, api: API):
                     .add(Text("📖 Виды работ", {"cmd": "farm.Info2"}), color=KeyboardButtonColor.SECONDARY)
             )
         )
-        return
 
 
 async def Getting(message: Message, bot: Bot, api: API):
@@ -58,7 +56,6 @@ async def Getting(message: Message, bot: Bot, api: API):
         message=f"✅ Вы успешно устроились на работу фермера"
         )
     await Show(message, bot, api)
-    return
 
 
 async def Leave(message: Message, bot: Bot, api: API):
@@ -67,15 +64,14 @@ async def Leave(message: Message, bot: Bot, api: API):
         message=f"✅ Вы успешно уволились с работы"
         )
     await Show(message, bot, api)
-    return
 
 
 async def Info1(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'farm.Info1'")
     await message.answer(
-        message=f"🌽 » 📖 Информация по зарплатам\n\n"
+        message=f"🥔 » 📖 Информация по зарплатам\n\n"
                 f"На данной работе есть несколько должностей. На каждой должности вы получаете разную зарплату.\n\n"
-                f"Чернорабочий (сбор кукурузы) » 10 долларов (💵)\n"
+                f"Фермер (сбор картошки) » 10 долларов (💵)\n"
                 f"Тракторист » 15 долларов (💵)\n"
                 f"Комбайнер » 25 долларов (💵)\n"
                 f"Пилот кукурузника » 30 долларов (💵)",
@@ -84,18 +80,18 @@ async def Info1(message: Message, bot: Bot, api: API):
                 .add(Text("◀ Назад", {"cmd": "farm.Show"}), color=KeyboardButtonColor.PRIMARY)
         )
     )
-    return
+
 
 
 async def Info2(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'farm.Info2'")
     await message.answer(
-        message=f"🌽 » 📖 Виды работ\n\n"
+        message=f"🥔 » 📖 Виды работ\n\n"
                 f"На ферме есть несколько служебных должностей, на которых вы можете работать. Узнать на каких должностях вы можете "
                 f"работать, вы можете узнать в скиллах -> навык фермера\n\n"
-                f"Чернорабочий (сбор кукурузы) — это самая первая должность на ферме. Именно на данной должности вы будете ходить по полю и собирать "
-                f"кукурузу.\n"
-                f"Тракторист — вторая должность после чернорабочего. На данной должности вы будете работать на тракторе и вспахивать поле ковшом\n"
+                f"Фермер (сбор картошки) — это самая первая должность на ферме. Именно на данной должности вы будете ходить по полю и собирать "
+                f"картошку.\n"
+                f"Тракторист — вторая должность после фермера. На данной должности вы будете работать на тракторе и вспахивать поле ковшом\n"
                 f"Комбайнер — третья должность после тракториста. На данной должности вы собираете готовую кукурузу\n"
                 f"Пилот кукурзника — четвертая должность после комбайнера. На данной должности вы должны будете иметь лицензию пилотирования. Тут вы будете летать на кукурзнике и сбрасывать химические элементы.",
         keyboard=(
@@ -103,19 +99,18 @@ async def Info2(message: Message, bot: Bot, api: API):
                 .add(Text("◀ Назад", {"cmd": "farm.Show"}), color=KeyboardButtonColor.PRIMARY)
         )
     )
-    return
 
 
 async def choose(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'farm.choose'")
     await message.answer(
-        message=f"🌽 » ⚒ Работать\n\n"
+        message=f"🥔 » ⚒ Работать\n\n"
                 f"Выберите, на какой должности вы будете работать",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "farm.Show"}), color=KeyboardButtonColor.PRIMARY)
                 .row()
-                .add(Text("⚒ Чернорабочий", {"cmd": "farm.CheckRab1"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("⚒ Фермер", {"cmd": "farm.CheckRab1"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("⚒ Тракторист", {"cmd": "farm.CheckRab2"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
@@ -124,7 +119,7 @@ async def choose(message: Message, bot: Bot, api: API):
                 .add(Text("⚒ Пилот кукурузника", {"cmd": "farm.CheckRab4"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return
+
 
 
 # --------------------------------------------------------------------------------------------
@@ -137,16 +132,14 @@ async def CheckRab1(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if int(data[70]) >= 0:
         await message.answer(
-            message=f"✅ Вы успешно устроились на работу чернорабочего"
+            message=f"✅ Вы успешно устроились на работу фермера"
         )
         await rab1_1(message, bot, api)
-        return
     else:
         await message.answer(
             message=f"❌ Вы не можете работать на данной должности, так-как у вас недостаточно очков навыка фермера"
         )
         await choose(message, bot, api)
-        return
 
 
 async def rab1_1(message: Message, bot: Bot, api: API):
@@ -159,7 +152,6 @@ async def rab1_1(message: Message, bot: Bot, api: API):
                 .add(Text("📦 Взять инструменты", {"cmd": "farm.rab1_2"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return
 
 
 async def rab1_2(message: Message, bot: Bot, api: API):
@@ -168,26 +160,25 @@ async def rab1_2(message: Message, bot: Bot, api: API):
         message=f"📦 Вы взяли спец. инструменты из ангара"
     )
     await message.answer(
-        message=f"🌽 Найдите поле, где можно собирать кукурузу",
+        message=f"🥔 Найдите поле, где можно собирать картошку",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("👁 Найти поле", {"cmd": "farm.rab1_3"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return
 
 
 async def rab1_3(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'block.Show'")
     await message.answer(
-        message=f"👁 Вы ищите поле для сбора урожая"
+        message=f"👁 Вы ищете поле для сбора урожая"
     )
     await asyncio.sleep(2)
     await message.answer(
         message=f"👁 Вы нашли поле, где можно собирать урожай"
     )
     await rab1_4(message, bot, api)
-    return
+
 
 
 async def rab1_4(message: Message, bot: Bot, api: API):
@@ -199,20 +190,20 @@ async def rab1_4(message: Message, bot: Bot, api: API):
                 .add(Text("🚶 Подойти к полю", {"cmd": "farm.rab1_5"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return
+
 
 
 async def rab1_5(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'block.Show'")
     await message.answer(
-        message=f"🚶 Вы ходите к полю"
+        message=f"🚶 Вы идете к полю"
     )
     await asyncio.sleep(2)
     await message.answer(
-        message=f"🚶 Вы подошли к полю и готовы собирать кукурузу"
+        message=f"🚶 Вы подошли к полю и готовы собирать картошку"
     )
     await rab1_6(message, bot, api)
-    return
+
 
 
 async def rab1_6(message: Message, bot: Bot, api: API):
@@ -221,58 +212,60 @@ async def rab1_6(message: Message, bot: Bot, api: API):
         message=f"👨‍🌾 Собирайте урожай",
         keyboard=(
             Keyboard(one_time=True, inline=False)
-                .add(Text("🌽 Собирать кукурузу", {"cmd": "farm.rab1_7"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("🥔 Собирать картошку", {"cmd": "farm.rab1_7"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return
+
 
 
 async def rab1_7(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'block.Show'")
     await message.answer(
-        message=f"🌽 Вы наклонились и начинаете собирать кукурузу"
+        message=f"🥔 Вы наклонились и начинаете собирать картошку"
     )
-    await asyncio.sleep(7)
+    await asyncio.sleep(random.randint(5,15))
     kukurusa = random.randint(1, 5) # количество кукурузы, которое можем забрать за раз
     data = await database.getUserData(message.from_id)
     new_data = int(data[75]) + kukurusa
     new_skill = int(data[70]) + 1
     await database.setMultiUserData(message.from_id, f"temporary_var = '{new_data}', skill_farmer = '{new_skill}'")
     await message.answer(
-        message=f"🌽 Вы собрали {kukurusa} кукурузы"
+        message=f"🥔 Вы собрали {kukurusa} картошки"
     )
     await rab1_8(message, bot, api)
-    return
+
 
 
 async def rab1_8(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'farm.rab1_8'")
     await message.answer(
-        message=f"🌽 Желаете продолжить или хотите сдать всю кукурузу и получить деньги за труд?",
+        message=f"🥔 Хотите продолжить работу или сдать всю картошку и получить деньги за труд?",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("💵 Закончить работу", {"cmd": "farm.rab1_end"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
-                .add(Text("🌽 Продолжить работу", {"cmd": "farm.rab1_6"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("🥔 Продолжить работу", {"cmd": "farm.rab1_6"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return
+
 
 
 async def rab1_end(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'farm.Show'")
     data = await database.getUserData(message.from_id)
-    zarplata = int(data[75]) * 10
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    zarplata = int(data[75]) * 10 * server_settings[15]
     itog = int(data[12]) + zarplata
     await database.setUserData(message.from_id, 'dollars', f"'{itog}'")
 
     await message.answer(
-        message=f"👨‍🌾 Том » Спасибо, что поработал на моей ферме. Ты собрал {int(data[75])} кукурузы и в итоге твоя зарплата составляет {zarplata} долларов (💵)",
+        message=f"👨‍🌾 Том » Спасибо, что поработал на моей ферме. Ты собрал {int(data[75])} картошки и в итоге твоя зарплата составляет {zarplata} долларов (💵)",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("💵 Забрать деньги", {"cmd": "farm.Show"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return
+
 
 
 
@@ -291,13 +284,11 @@ async def CheckRab2(message: Message, bot: Bot, api: API):
             message=f"✅ Вы успешно устроились на работу тракториста"
         )
         await rab2_1(message, bot, api)
-        return
     else:
         await message.answer(
             message=f"❌ Вы не можете работать на данной должности, так-как у вас недостаточно очков навыка фермера"
         )
         await choose(message, bot, api)
-        return
 
 
 
@@ -311,7 +302,7 @@ async def rab2_1(message: Message, bot: Bot, api: API):
                 .add(Text("🔑 Взять ключи", {"cmd": "farm.rab2_2"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return
+
 
 
 
@@ -327,7 +318,7 @@ async def rab2_2(message: Message, bot: Bot, api: API):
                 .add(Text("🚜 Подойти и сесть в трактор", {"cmd": "farm.rab2_3"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return
+
 
 
 
@@ -349,7 +340,7 @@ async def rab2_3(message: Message, bot: Bot, api: API):
                 .add(Text("🔑 Завести трактор", {"cmd": "farm.rab2_4"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return
+
 
 
 
@@ -375,7 +366,7 @@ async def rab2_4(message: Message, bot: Bot, api: API):
                 .add(Text("🚜 Выехать из гаража", {"cmd": "farm.rab2_5"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return
+
 
 
 async def rab2_5(message: Message, bot: Bot, api: API):
@@ -400,7 +391,7 @@ async def rab2_5(message: Message, bot: Bot, api: API):
                 .add(Text("🚜 Прицепить ковш к трактору", {"cmd": "farm.rab2_6"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return
+
 
 
 async def rab2_6(message: Message, bot: Bot, api: API):
@@ -421,7 +412,7 @@ async def rab2_6(message: Message, bot: Bot, api: API):
                 .add(Text("🚜 Начать движение", {"cmd": "farm.rab2_7"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return
+
 
 
 async def rab2_7(message: Message, bot: Bot, api: API):
@@ -439,7 +430,7 @@ async def rab2_7(message: Message, bot: Bot, api: API):
     )
     await asyncio.sleep(10)
     await rab2_8(message, bot, api)
-    return
+
 
 
 async def rab2_8(message: Message, bot: Bot, api: API):
@@ -451,7 +442,7 @@ async def rab2_8(message: Message, bot: Bot, api: API):
         message=f"🌽 Вы вспохали поле"
     )
     await rab2_9(message, bot, api)
-    return
+
 
 
 async def rab2_9(message: Message, bot: Bot, api: API):
@@ -465,7 +456,7 @@ async def rab2_9(message: Message, bot: Bot, api: API):
                 .add(Text("🌽 Продолжить работу", {"cmd": "farm.rab2_10"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return
+
 
 
 async def rab2_10(message: Message, bot: Bot, api: API):
@@ -484,13 +475,14 @@ async def rab2_10(message: Message, bot: Bot, api: API):
                 .add(Text("🚜 Начать движение", {"cmd": "farm.rab2_7"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return
+
 
 
 async def rab2_end(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'farm.Show'")
     data = await database.getUserData(message.from_id)
-    zarplata = int(data[75]) * 15
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    zarplata = int(data[75]) * 15 * server_settings[15]
     itog = int(data[12]) + zarplata
     await database.setUserData(message.from_id, 'dollars', f"'{itog}'")
 
@@ -501,4 +493,3 @@ async def rab2_end(message: Message, bot: Bot, api: API):
                 .add(Text("💵 Забрать деньги", {"cmd": "farm.Show"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
-    return

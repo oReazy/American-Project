@@ -19,7 +19,6 @@ async def Show(message: Message, bot: Bot, api: API):
         await message.answer(
             message=f"❌ У вас нет паспорта. Сделать вы его можете в мэрии")
         await characterAction.Show(message, bot, api)
-        return
     else:
         await database.setUserData(message.from_id, 'state', "'passport.Show'")
         temporary = ast.literal_eval(data[54])
@@ -46,7 +45,6 @@ async def Show(message: Message, bot: Bot, api: API):
                         .get_json()
                 )
             )
-            return
         else:
             await message.answer(
                 message=f"🎯 » 👤 » 📕 Мой паспорт\n\n"
@@ -66,4 +64,3 @@ async def Show(message: Message, bot: Bot, api: API):
                         .get_json()
                 )
             )
-            return

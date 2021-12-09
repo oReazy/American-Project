@@ -32,7 +32,6 @@ async def Show(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Show_ADD(message: Message, bot: Bot, api: API):
@@ -47,7 +46,6 @@ async def Show_ADD(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def ShopMenu1(message: Message, bot: Bot, api: API):
@@ -78,7 +76,6 @@ async def ShopMenu1(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 
@@ -106,7 +103,6 @@ async def ShopMenu2(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def ChangeNick(message: Message, bot: Bot, api: API):
@@ -125,7 +121,8 @@ async def ChangeNick(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
+
 
 async def ChangeNickGet(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
@@ -139,13 +136,11 @@ async def ChangeNickGet(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для смены ника',
         )
         await ChangeNick(message, bot, api)
-        return
 
 
 async def ChangeNickGetCheck(message: Message, bot: Bot, api: API):
@@ -193,7 +188,6 @@ async def SkillTaxi(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def SkillTaxiBuy(message: Message, bot: Bot, api: API):
@@ -205,7 +199,6 @@ async def SkillTaxiBuy(message: Message, bot: Bot, api: API):
             message=f'✅ Вы успешно купили максимальный навык дальнобойщика',
         )
         await SkillTaxi(message, bot, api)
-        return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
@@ -231,7 +224,6 @@ async def SkillTruck(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def SkillTruckBuy(message: Message, bot: Bot, api: API):
@@ -243,7 +235,6 @@ async def SkillTruckBuy(message: Message, bot: Bot, api: API):
             message=f'✅ Вы успешно купили максимальный навык дальнобойщика',
         )
         await SkillTruck(message, bot, api)
-        return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
@@ -268,7 +259,6 @@ async def SkillFarmer(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def SkillFarmerBuy(message: Message, bot: Bot, api: API):
@@ -280,7 +270,6 @@ async def SkillFarmerBuy(message: Message, bot: Bot, api: API):
             message=f'✅ Вы успешно купили максимальный навык фермера',
         )
         await SkillFarmer(message, bot, api)
-        return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
@@ -305,7 +294,7 @@ async def Licences(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def LicencesBuy(message: Message, bot: Bot, api: API):
@@ -317,7 +306,6 @@ async def LicencesBuy(message: Message, bot: Bot, api: API):
             message=f'✅ Вы успешно купили все лицензии',
         )
         await Licences(message, bot, api)
-        return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
@@ -343,7 +331,6 @@ async def EXP(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def EXPGet(message: Message, bot: Bot, api: API):
@@ -356,7 +343,6 @@ async def EXPGet(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def EXPGetCheck(message: Message, bot: Bot, api: API):
@@ -379,25 +365,21 @@ async def EXPGetCheck(message: Message, bot: Bot, api: API):
                             .get_json()
                     )
                 )
-                return
             else:
                 await message.answer(
                     message=f"❌ У вас нет столько алмазов"
                 )
                 await EXPGet(message, bot, api)
-                return
         else:
             await message.answer(
                 message=f"❌ Введите число от 1 до 999 999 999"
             )
             await EXPGet(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Введите корректное число"
         )
         await EXPGet(message, bot, api)
-        return
 
 
 async def EXPGetCheckOK(message: Message, bot: Bot, api: API):
@@ -410,7 +392,6 @@ async def EXPGetCheckOK(message: Message, bot: Bot, api: API):
         message=f'✅ Транзакция успешно проведена.',
     )
     await EXP(message, bot, api)
-    return
 
 
 
@@ -443,7 +424,6 @@ async def Dollars(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def DollarsGet(message: Message, bot: Bot, api: API):
@@ -456,7 +436,6 @@ async def DollarsGet(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def DollarsGetCheck(message: Message, bot: Bot, api: API):
@@ -479,25 +458,21 @@ async def DollarsGetCheck(message: Message, bot: Bot, api: API):
                             .get_json()
                     )
                 )
-                return
             else:
                 await message.answer(
                     message=f"❌ У вас нет столько алмазов"
                 )
                 await DollarsGet(message, bot, api)
-                return
         else:
             await message.answer(
                 message=f"❌ Введите число от 1 до 999 999 999"
             )
             await DollarsGet(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Введите корректное число"
         )
         await DollarsGet(message, bot, api)
-        return
 
 
 async def DollarsGetCheckOK(message: Message, bot: Bot, api: API):
@@ -510,7 +485,6 @@ async def DollarsGetCheckOK(message: Message, bot: Bot, api: API):
         message=f'✅ Транзакция успешно проведена.',
     )
     await Dollars(message, bot, api)
-    return
 
 
 
@@ -521,7 +495,8 @@ async def Telephone(message: Message, bot: Bot, api: API):
         message=f"🎯 » 💎 » 🛍 » 📱 Эксклюзивный телефон\n\n"
                 f'💎 Текущее состояние счета » {await database.pretty(data[21])}\n'
                 f'📱 Ваш текущий телефон » {data[5]}\n\n'
-                f'📱 iPhone 12 » 500 алмазов 💎\n'
+                f'📱 iPhone 13 » 500 алмазов 💎\n'
+                f'📱 iPhone 12 » 450 алмазов 💎\n'
                 f'📱 iPhone 11 » 400 алмазов 💎\n'
                 f'📱 SAMSUNG Galaxy S21 » 350 алмазов 💎\n'
                 f'📱 SAMSUNG Galaxy A72 » 250 алмазов 💎\n'
@@ -534,6 +509,8 @@ async def Telephone(message: Message, bot: Bot, api: API):
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "donate.ShopMenu1"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("📱 iPhone 13", {"cmd": "donate.Telephone_iPhone13"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("📱 iPhone 12", {"cmd": "donate.Telephone_iPhone12"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
@@ -553,7 +530,6 @@ async def Telephone(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Telephone_Xiaomi8Pro(message: Message, bot: Bot, api: API):
@@ -571,7 +547,6 @@ async def Telephone_Xiaomi8Pro(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Telephone_Xiaomi8Pro_Buy(message: Message, bot: Bot, api: API):
@@ -583,7 +558,6 @@ async def Telephone_Xiaomi8Pro_Buy(message: Message, bot: Bot, api: API):
             message=f'✅ Транзакция успешно проведена.',
         )
         await Telephone(message, bot, api)
-        return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
@@ -607,7 +581,6 @@ async def Telephone_Xiaomi10Pro(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Telephone_Xiaomi10Pro_Buy(message: Message, bot: Bot, api: API):
@@ -619,7 +592,6 @@ async def Telephone_Xiaomi10Pro_Buy(message: Message, bot: Bot, api: API):
             message=f'✅ Транзакция успешно проведена.',
         )
         await Telephone(message, bot, api)
-        return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
@@ -645,7 +617,6 @@ async def Telephone_Xiaomi11Lite(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Telephone_Xiaomi11Lite_Buy(message: Message, bot: Bot, api: API):
@@ -657,7 +628,6 @@ async def Telephone_Xiaomi11Lite_Buy(message: Message, bot: Bot, api: API):
             message=f'✅ Транзакция успешно проведена.',
         )
         await Telephone(message, bot, api)
-        return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
@@ -681,7 +651,6 @@ async def Telephone_SamsungS20(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Telephone_SamsungS20_Buy(message: Message, bot: Bot, api: API):
@@ -693,7 +662,6 @@ async def Telephone_SamsungS20_Buy(message: Message, bot: Bot, api: API):
             message=f'✅ Транзакция успешно проведена.',
         )
         await Telephone(message, bot, api)
-        return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
@@ -718,7 +686,6 @@ async def Telephone_SamsungA72(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Telephone_SamsungA72_Buy(message: Message, bot: Bot, api: API):
@@ -730,7 +697,6 @@ async def Telephone_SamsungA72_Buy(message: Message, bot: Bot, api: API):
             message=f'✅ Транзакция успешно проведена.',
         )
         await Telephone(message, bot, api)
-        return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
@@ -754,7 +720,6 @@ async def Telephone_SamsungS21(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Telephone_SamsungS21_Buy(message: Message, bot: Bot, api: API):
@@ -766,7 +731,6 @@ async def Telephone_SamsungS21_Buy(message: Message, bot: Bot, api: API):
             message=f'✅ Транзакция успешно проведена.',
         )
         await Telephone(message, bot, api)
-        return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
@@ -791,7 +755,6 @@ async def Telephone_iPhone11(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Telephone_iPhone11_Buy(message: Message, bot: Bot, api: API):
@@ -803,7 +766,6 @@ async def Telephone_iPhone11_Buy(message: Message, bot: Bot, api: API):
             message=f'✅ Транзакция успешно проведена.',
         )
         await Telephone(message, bot, api)
-        return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
@@ -826,21 +788,54 @@ async def Telephone_iPhone12(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Telephone_iPhone12_Buy(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[21] >= 500:
-        new_donate = int(data[21]) - 500
+    if data[21] >= 450:
+        new_donate = int(data[21]) - 450
         await database.setMultiUserData(message.from_id, f"donate = '{new_donate}', telephone = 'iPhone 12'")
         await message.answer(
             message=f'✅ Транзакция успешно проведена.',
         )
         await Telephone(message, bot, api)
-        return
     else:
         await message.answer(
             message=f'❌ У вас недостаточно алмазов для покупки',
         )
         await Telephone_iPhone12(message, bot, api)
+
+
+
+
+async def Telephone_iPhone13(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'donate.Telephone_iPhone13'")
+    data = await database.getUserData(message.from_id)
+    await message.answer(
+        message=f"🎯 » 💎 » 🛍 » 📱 » 📱 iPhone 13\n\n"
+                f'💎 Текущее состояние счета » {await database.pretty(data[21])}\n'
+                f'⚠ Вы действительно хотите купить iPhone 13 за 500 алмазов 💎. Обратите внимание, что предыдущий телефон будет потерян!',
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "donate.Telephone"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("Купить", {"cmd": "donate.Telephone_iPhone13_Buy"}), color=KeyboardButtonColor.POSITIVE)
+                .get_json()
+        )
+    )
+
+
+async def Telephone_iPhone13_Buy(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if data[21] >= 500:
+        new_donate = int(data[21]) - 500
+        await database.setMultiUserData(message.from_id, f"donate = '{new_donate}', telephone = 'iPhone 13'")
+        await message.answer(
+            message=f'✅ Транзакция успешно проведена.',
+        )
+        await Telephone(message, bot, api)
+    else:
+        await message.answer(
+            message=f'❌ У вас недостаточно алмазов для покупки',
+        )
+        await Telephone_iPhone13(message, bot, api)

@@ -28,7 +28,6 @@ async def Show(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 
@@ -47,7 +46,209 @@ async def GetLicences(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
+
+async def BikeCheck(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if data[27] == '✅ Имеется':
+        await message.answer(
+            message=f"❌ У вас уже имеются данные права"
+        )
+        await GetLicences(message, bot, api)
+    else:
+        if int(data[12]) >= 250:
+            new_balance = int(data[12]) - 250
+            await database.setUserData(message.from_id, 'dollars', f"'{new_balance}'")
+            await message.answer(
+                message=f"✅ Вы заплатили 250 долларов (💵) за права"
+            )
+            await BikeQuestion1(message, bot, api)
+        else:
+            await message.answer(
+                message=f"❌ У вас недостаточно денег (нужно 250 долларов (💵)) "
+            )
+            await GetLicences(message, bot, api)
+
+
+
+async def BikeQuestion1(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'LicensingCenter.BikeQuestion1'")
+    await message.answer(
+        message=f"👨 Инструктор » С какой скоростью можно ездить вне города?",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("70", {"cmd": "LicensingCenter.BikeQuestion2"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("120", {"cmd": "LicensingCenter.BikeQuestion2"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("180", {"cmd": "LicensingCenter.BikeQuestion2"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+
+async def BikeQuestion2(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if data[2] != 'LicensingCenter.AutoQuestion2':
+        if message.text == '120':
+            await database.setUserData(message.from_id, 'temporary_var', "'1'")
+    await database.setUserData(message.from_id, 'state', "'LicensingCenter.BikeQuestion2'")
+    await message.answer(
+        message=f"👨 Инструктор » Разрешена ли парковка на тратуаре?",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Разрешена", {"cmd": "LicensingCenter.BikeQuestion3"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("Только в экстренных ситуациях", {"cmd": "LicensingCenter.BikeQuestion3"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("Запрещена", {"cmd": "LicensingCenter.BikeQuestion3"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+async def BikeQuestion3(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if data[2] != 'LicensingCenter.AutoQuestion3':
+        if message.text == 'Только в экстренных ситуациях':
+            new_ball = int(data[75]) + 1
+            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    await database.setUserData(message.from_id, 'state', "'LicensingCenter.BikeQuestion3'")
+    await message.answer(
+        message=f"👨 Инструктор » На каком расстоянии должен стоять знак аварийной остановки?",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("5 метров", {"cmd": "LicensingCenter.BikeQuestion4"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("10 метров", {"cmd": "LicensingCenter.BikeQuestion4"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("15 метров", {"cmd": "LicensingCenter.BikeQuestion4"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("20 метров", {"cmd": "LicensingCenter.BikeQuestion4"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+
+async def BikeQuestion4(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if data[2] != 'LicensingCenter.AutoQuestion4':
+        if message.text == '15 метров':
+            new_ball = int(data[75]) + 1
+            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    await database.setUserData(message.from_id, 'state', "'LicensingCenter.BikeQuestion4'")
+    await message.answer(
+        message=f"👨 Инструктор » В дождливую погоду тормозной путь транспортного средства?",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Увеличивается", {"cmd": "LicensingCenter.BikeQuestion5"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("Не изменяется", {"cmd": "LicensingCenter.BikeQuestion5"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("Уменьшается", {"cmd": "LicensingCenter.BikeQuestion5"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+
+async def BikeQuestion5(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if data[2] != 'LicensingCenter.BikeQuestion5':
+        if message.text == 'Увеличивается':
+            new_ball = int(data[75]) + 1
+            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    await database.setUserData(message.from_id, 'state', "'LicensingCenter.BikeQuestion5'")
+    await message.answer(
+        message=f"👨 Инструктор » Выезд со двора или другой прилегающей территории?",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Считается перекрестком", {"cmd": "LicensingCenter.BikeQuestion6"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("Не считается перекрестком", {"cmd": "LicensingCenter.BikeQuestion6"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+
+async def BikeQuestion6(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if data[2] != 'LicensingCenter.BikeQuestion5':
+        if message.text == 'Не считается перекрестком':
+            new_ball = int(data[75]) + 1
+            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    await database.setUserData(message.from_id, 'state', "'LicensingCenter.BikeQuestion6'")
+    await message.answer(
+        message=f"👨 Инструктор » Какова максимальная скорость мототранспорта по городу?",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("60 км/ч", {"cmd": "LicensingCenter.BikeQuestion7"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("80 км/ч", {"cmd": "LicensingCenter.BikeQuestion7"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("100 км/ч", {"cmd": "LicensingCenter.BikeQuestion7"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("120 км/ч", {"cmd": "LicensingCenter.BikeQuestion7"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+
+async def BikeQuestion7(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if data[2] != 'LicensingCenter.AutoQuestion7':
+        if message.text == '60 км/ч':
+            new_ball = int(data[75]) + 1
+            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    await database.setUserData(message.from_id, 'state', "'LicensingCenter.AutoQuestion7'")
+    data = await database.getUserData(message.from_id)
+    new_ball = int(data[75])
+    if new_ball >= 3:
+        await message.answer(
+            message=f"👨 Инструктор » Вы успешно сдали экзамен на {new_ball} из 6 баллов.\nПолучите свои права, ждем вас снова в центре лицензирования",
+            keyboard=(
+                Keyboard(one_time=True, inline=False)
+                    .add(Callback("📒 Получить права", payload={"cmd": "LicensingCenter.ShowBikes"}), color=KeyboardButtonColor.SECONDARY)
+                    .get_json()
+            )
+        )
+    else:
+        await message.answer(
+            message=f"👨 Инструктор »  Увы, вы не сдали на права. Вы набрали {new_ball} из 6 баллов. Попробуйте еще раз",
+            keyboard=(
+                Keyboard(one_time=True, inline=False)
+                    .add(Text("👉 Продолжить", {"cmd": "LicensingCenter.Show"}), color=KeyboardButtonColor.SECONDARY)
+                    .get_json()
+            )
+        )
+
+async def BikeOpen(from_id, bot: Bot):
+    await database.setUserData(from_id, 'state', "'LicensingCenter.Show'")
+    await database.setUserData(from_id, 'license_motorbike', "'✅ Имеется'")
+    await bot.api.messages.send(
+        user_id=from_id,
+        random_id=random.randint(1, 999999999),
+        message=f"📒 Вы взяли права на вождение мотоциклов.\n\n"
+                f"⭐ ТЕПЕРЬ У ВАС ЕСТЬ ВОЗМОЖНОСТИ:\n"
+                f"— Работать на доставке с помощью мопеда\n"
+                f"— Покупать мотоциклы и управлять ими",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("👉 Продолжить", {"cmd": "LicensingCenter.Show"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+
+
+
+
+
+
+
 
 
 
@@ -58,21 +259,19 @@ async def AutoCheck(message: Message, bot: Bot, api: API):
             message=f"❌ У вас уже имеются данные права"
         )
         await GetLicences(message, bot, api)
-        return
-    if int(data[12]) >= 1500:
-        new_balance = int(data[12]) - 1500
-        await database.setUserData(message.from_id, 'dollars', f"'{new_balance}'")
-        await message.answer(
-            message=f"✅ Вы заплатили 1 500 долларов (💵) за права"
-        )
-        await AutoQuestion1(message, bot, api)
-        return
     else:
-        await message.answer(
-            message=f"❌ У вас недостаточно денег (нужно 1 500 долларов (💵)) "
-        )
-        await GetLicences(message, bot, api)
-        return
+        if int(data[12]) >= 1500:
+            new_balance = int(data[12]) - 1500
+            await database.setUserData(message.from_id, 'dollars', f"'{new_balance}'")
+            await message.answer(
+                message=f"✅ Вы заплатили 1 500 долларов (💵) за права"
+            )
+            await AutoQuestion1(message, bot, api)
+        else:
+            await message.answer(
+                message=f"❌ У вас недостаточно денег (нужно 1 500 долларов (💵)) "
+            )
+            await GetLicences(message, bot, api)
 
 
 
@@ -89,7 +288,6 @@ async def AutoQuestion1(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def AutoQuestion2(message: Message, bot: Bot, api: API):
@@ -110,7 +308,6 @@ async def AutoQuestion2(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def AutoQuestion3(message: Message, bot: Bot, api: API):
@@ -130,7 +327,6 @@ async def AutoQuestion3(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 
@@ -153,7 +349,6 @@ async def AutoQuestion4(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 
@@ -178,7 +373,6 @@ async def AutoQuestion5(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 
@@ -202,7 +396,7 @@ async def AutoQuestion6(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def AutoQuestion7(message: Message, bot: Bot, api: API):
@@ -216,15 +410,14 @@ async def AutoQuestion7(message: Message, bot: Bot, api: API):
         message=f"👨 Инструктор » Разрешено ли движение задним ходом на магистрали?",
         keyboard=(
             Keyboard(one_time=True, inline=False)
-                .add(Text("Запрещен", {"cmd": "LicensingCenter.AutoQuestion8"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("Запрещено", {"cmd": "LicensingCenter.AutoQuestion8"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
-                .add(Text("Разрешен", {"cmd": "LicensingCenter.AutoQuestion8"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("Разрешено", {"cmd": "LicensingCenter.AutoQuestion8"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("Только в экстренных ситуациях", {"cmd": "LicensingCenter.AutoQuestion8"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
         )
     )
-    return
 
 
 async def AutoQuestion8(message: Message, bot: Bot, api: API):
@@ -245,7 +438,6 @@ async def AutoQuestion8(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         await message.answer(
             message=f"👨 Инструктор »  Увы, вы не сдали на права. Вы набрали {new_ball} из 7 баллов. Попробуйте еще раз",
@@ -255,7 +447,7 @@ async def AutoQuestion8(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
+
 
 async def AutoOpen(from_id, bot: Bot):
     await database.setUserData(from_id, 'state', "'LicensingCenter.Show'")
@@ -266,7 +458,7 @@ async def AutoOpen(from_id, bot: Bot):
         message=f"📒 Вы взяли права на вождение автомобилей.\n\n"
                 f"⭐ ТЕПЕРЬ У ВАС ЕСТЬ ВОЗМОЖНОСТИ:\n"
                 f"— Покупать автомобили в автосалонах и управлять ими\n"
-                f"— Работать на работах: таксист, механиком\n",
+                f"— Работать на работах: таксист, механик\n",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("👉 Продолжить", {"cmd": "LicensingCenter.Show"}), color=KeyboardButtonColor.SECONDARY)
@@ -295,4 +487,3 @@ async def PricesLicences(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return

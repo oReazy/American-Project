@@ -19,7 +19,7 @@ async def Show(message: Message, bot: Bot, api: API):
     await message.answer(
         message=f"🎯 » 📖 Помощь по игре\n\n"
                 f"ℹ {setting_server[8]} — игровой чат-бот, где вы можете зарабатывать игровые деньги, вступать в организации и семьи, "
-                f"участвовать в мероприятиях и многое другое. Так-как в нашем чат-боте очень много систем, у многих игроков возникают "
+                f"участвовать в мероприятиях и многое другое. Так как в нашем чат-боте очень много систем, у многих игроков возникают "
                 f"вопросы, ответы на которые можно получить тут.",
         keyboard=(
             Keyboard(one_time=True, inline=False)
@@ -34,9 +34,37 @@ async def Show(message: Message, bot: Bot, api: API):
                 .add(Text("🌐 Виды лицензий", {"cmd": "helpGame.List3"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("🌐 Банковская карта", {"cmd": "helpGame.List4"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("🌐 Уровни для работ", {"cmd": "helpGame.List5"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
         )
     )
-    return
+
+
+async def List5(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'helpGame.List4'")
+    await message.answer(
+        message=f"🎯 » 📖 » 🌐 Уровни для работ\n\n"
+                f"Каждый новый уровень игрока — это новые возможности, которые ему открываются по мере своей игры.\n\n"
+                f"🚕 Таксист » 1 уровень\n"
+                f"🚌 Водитель автобуса » 2 уровень\n"
+                f"🌭 Продавец хотдогов » 2 уровень\n"
+                f"🧰 Механик » 3 уровень\n"
+                f"🚛 Водитель мусоровоза » 4 уровень\n"
+                f"🚚 Дальнобойщик » 5 уровень\n"
+                f"🧯 Пожарный » 6 уровень\n"
+                f"🚋 Водитель трамвая » 7 уровень\n"
+                f"🚈 Машинист электропоезда » 7 уровень\n"
+                f"💵 Инкассатор » 8 уровень\n"
+                f"✈ Пилот » 9 уровень\n"
+                f"💰 Налоговая служба » 10 уровень\n"
+                f"🧰 Дорожная служба » 11 уровень",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "helpGame.Show"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
+        )
+    )
 
 
 async def List4(message: Message, bot: Bot, api: API):
@@ -48,9 +76,9 @@ async def List4(message: Message, bot: Bot, api: API):
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "helpGame.Show"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
         )
     )
-    return
 
 
 async def List3(message: Message, bot: Bot, api: API):
@@ -70,9 +98,9 @@ async def List3(message: Message, bot: Bot, api: API):
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "helpGame.Show"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
         )
     )
-    return
 
 
 async def List2(message: Message, bot: Bot, api: API):
@@ -84,9 +112,10 @@ async def List2(message: Message, bot: Bot, api: API):
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "helpGame.Show"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
         )
     )
-    return
+
 
 
 async def List1(message: Message, bot: Bot, api: API):
@@ -99,13 +128,13 @@ async def List1(message: Message, bot: Bot, api: API):
                 f"Как заработать первые деньги? — Откройте карту -> работы для новичков\n"
                 f"Как можно вступить во фракцию? — Следите за новостями сервера. Как только начнется набор, вам необходимо прийти во фракцию, далее на собеседование\n"
                 f"Как можно стать лидером? — Через обзвон.\n"
-                f"Можно ли купить админку или как стать админом? — Админку купить нельзя! Стать администратором вы можете через пост лидера, либо через обзвон.\n"
+                f"Можно ли купить админку или как стать им? — Админку купить нельзя! Стать администратором вы можете через пост лидера или через обзвон.\n"
                 f"Как можно отписаться/подписаться на рассылки? — Откройте настройки персонажа -> рассылки\n"
                 f"Где можно купить дом? — В риэлторском агентстве\n"
                 f"Где можно купить машину? — Откройте карту -> Автосалоны",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "helpGame.Show"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
         )
     )
-    return

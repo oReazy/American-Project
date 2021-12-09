@@ -16,7 +16,6 @@ from modules import database, mainMenu
 
 async def Check(message: Message, bot: Bot, api: API):
     await Show(message, bot, api)
-    return
 
 
 async def Show(message: Message, bot: Bot, api: API):
@@ -45,7 +44,6 @@ async def Show(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         await message.answer(
             message=f"❌ Писать сообщения в репорт можно раз в 3 минуты",
@@ -57,7 +55,6 @@ async def Show(message: Message, bot: Bot, api: API):
 
 async def Send(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'report.SendCheck'")
-    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 📣 » 📣 Отправить репорт\n\n"
                 f"📝 Напишите ваш репорт",
@@ -67,7 +64,6 @@ async def Send(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def SendCheck(message: Message, bot: Bot, api: API):

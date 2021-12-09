@@ -25,4 +25,3 @@ async def Show(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return

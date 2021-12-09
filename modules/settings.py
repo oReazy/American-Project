@@ -30,7 +30,6 @@ async def Show(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def reDesign(message: Message, bot: Bot, api: API):
@@ -50,13 +49,12 @@ async def reDesign(message: Message, bot: Bot, api: API):
                 f"компактное меню. Оно в два раза меньше по высоте и вмещает все основные настройки.",
         keyboard=(
             Keyboard(one_time=True, inline=False)
-                .add(Text("◀ Назад", {"cmd": "mainMenu.Show"}), color=KeyboardButtonColor.PRIMARY)
+                .add(Text("◀ Назад", {"cmd": "settings.Show"}), color=KeyboardButtonColor.PRIMARY)
                 .row()
                 .add(Text(f"{button}", {"cmd": "settings.reDesignSwitch"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
         )
     )
-    return
 
 
 async def reDesignSwitch(message: Message, bot: Bot, api: API):
@@ -73,20 +71,19 @@ async def reDesignSwitch(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
-    if data[78] == 1:
-        await database.setUserData(message.from_id, 'reDesign', "'0'")
-        await message.answer(
-            message=f"✅ Вы успешно обновили вид главного меню",
-            keyboard=(
-                Keyboard(one_time=True, inline=False)
-                    .add(Text("👉🏻 Далее", {"cmd": "settings.reDesign"}), color=KeyboardButtonColor.SECONDARY)
-                    .row()
-                    .add(Text("🎯 Перейти в главное меню", {"cmd": "mainMenu.Show"}), color=KeyboardButtonColor.SECONDARY)
-                    .get_json()
+    else:
+        if data[78] == 1:
+            await database.setUserData(message.from_id, 'reDesign', "'0'")
+            await message.answer(
+                message=f"✅ Вы успешно обновили вид главного меню",
+                keyboard=(
+                    Keyboard(one_time=True, inline=False)
+                        .add(Text("👉🏻 Далее", {"cmd": "settings.reDesign"}), color=KeyboardButtonColor.SECONDARY)
+                        .row()
+                        .add(Text("🎯 Перейти в главное меню", {"cmd": "mainMenu.Show"}), color=KeyboardButtonColor.SECONDARY)
+                        .get_json()
+                )
             )
-        )
-        return
 
 
 async def Email(message: Message, bot: Bot, api: API):
@@ -107,7 +104,6 @@ async def Email(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         await message.answer(
             message=f"🎯 » ⚙ » ✉ Email\n\n"
@@ -123,11 +119,9 @@ async def Email(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
 
 
 async def addMail(message: Message, bot: Bot, api: API):
-    data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'settings.addMail_check'")
     await message.answer(
         message=f"🎯 » ⚙ » ✉ » ✉ Добавить почту\n\n"
@@ -138,19 +132,6 @@ async def addMail(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
-
-async def addMail_check(message: Message, bot: Bot, api: API):
-    result = database.regularCheck('^(?!.*@.*@.*$)(?!.*@.*\-\-.*\..*$)(?!.*@.*\-\..*$)(?!.*@.*\-$)(.*@.+(\..{1,11})?)$', str(message.text))
-    if result[0] == 1:
-        await database.setUserData(message.from_id, 'mail', f"'{result[1]}'")
-        await addMail_OK(message, bot, api)
-    else:
-        await message.answer(
-            message=f"❌ Ошибка. Такой почты не существует, либо вы ее написали неправильно"
-        )
-        await addMail(message, bot, api)
-    return
 
 
 async def addMail_check(message: Message, bot: Bot, api: API):
@@ -163,11 +144,9 @@ async def addMail_check(message: Message, bot: Bot, api: API):
             message=f"❌ Ошибка. Такой почты не существует, либо вы ее написали неправильно"
         )
         await addMail(message, bot, api)
-    return
 
 
 async def addMail_OK(message: Message, bot: Bot, api: API):
-    data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'settings.addMail_OK'")
     await message.answer(
         message=f"✅ Вы успешно добавили почту.\n\n"
@@ -179,11 +158,9 @@ async def addMail_OK(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def editMail(message: Message, bot: Bot, api: API):
-    data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'settings.editMail_check'")
     await message.answer(
         message=f"🎯 » ⚙ » ✉ » ✉ Изменить почту\n\n"
@@ -194,7 +171,6 @@ async def editMail(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 async def editMail_check(message: Message, bot: Bot, api: API):
     result = await database.regularCheck('^(?!.*@.*@.*$)(?!.*@.*\-\-.*\..*$)(?!.*@.*\-\..*$)(?!.*@.*\-$)(.*@.+(\..{1,11})?)$', str(message.text))
@@ -207,11 +183,9 @@ async def editMail_check(message: Message, bot: Bot, api: API):
             message=f"❌ Ошибка. Такой почты не существует, либо вы ее написали неправильно"
         )
         await editMail(message, bot, api)
-    return
 
 
 async def editMail_OK(message: Message, bot: Bot, api: API):
-    data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'settings.editMail_OK'")
     await message.answer(
         message=f"✅ Вы успешно изменили почту",
@@ -221,7 +195,6 @@ async def editMail_OK(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 
@@ -258,7 +231,6 @@ async def Mailing(message: Message, bot: Bot, api: API):
                 f"следить за новостями вашего сервера: мероприятия, РП-ситуации, наборы во фракции и многое другое.",
         keyboard=KEYBOARD_MAILING
     )
-    return
 
 
 
@@ -275,7 +247,6 @@ async def MailingLeaveProject(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def MailingAddProject(message: Message, bot: Bot, api: API):
@@ -291,7 +262,7 @@ async def MailingAddProject(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def MailingLeaveServer(message: Message, bot: Bot, api: API):
@@ -307,7 +278,7 @@ async def MailingLeaveServer(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def MailingAddServer(message: Message, bot: Bot, api: API):

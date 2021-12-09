@@ -23,6 +23,8 @@ async def Show(message: Message, bot: Bot, api: API):
                 .row()
                 .add(Text("📊 Моя статистика", {"cmd": "characterAction.Statistics"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
+                .add(Text("💼 Инвентарь", {"cmd": "inventory.Show"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
                 .add(Text("🚗 Меню автомобиля", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .add(Text("🏠 Меню дома", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .row()
@@ -35,11 +37,10 @@ async def Show(message: Message, bot: Bot, api: API):
                 .add(Text("📒 Мои лицензии", {"cmd": "licences.Show"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("🐯 Татуировки", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
-                .add(Text("👥 Меню семьи", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .add(Text("👥 Меню семьи", {"cmd": "family.Show"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
         )
     )
-    return
 
 
 async def Statistics(message: Message, bot: Bot, api: API):
@@ -71,4 +72,3 @@ async def Statistics(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return

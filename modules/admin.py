@@ -6,6 +6,7 @@ from vkbottle.bot import Bot, Message
 from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback, GroupEventType, GroupTypes, Bot, API
 import json, time, os, sys, re, ast, datetime
 
+
 from modules import database
 from modules import mainMenu
 
@@ -20,7 +21,6 @@ async def Check(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     if data[11] > 0:
         await Show(message, bot, api)
-        return
     else:
         await message.answer(
             message=f"❌ Нету доступа"
@@ -119,13 +119,11 @@ async def Panel8(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         await message.answer(
             message=f"❌ Тебе еще рано сюда"
         )
         await Show(message, bot, api)
-        return
 
 
 
@@ -147,7 +145,6 @@ async def Panel8_ControlAdmins(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
 
 
 async def Panel8_ControlAdmins_info(message: Message, bot: Bot, api: API):
@@ -160,7 +157,6 @@ async def Panel8_ControlAdmins_info(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Panel8_ControlAdmins_info1(message: Message, bot: Bot, api: API):
@@ -225,7 +221,6 @@ async def Panel8_ControlAdmins_info1(message: Message, bot: Bot, api: API):
         )
         print(f'\033[38m[\033[31m!\033[38m][\033[33mDEBUG\033[38m] Произошла ошибка: {ex}')
         await Panel8_ControlAdmins_info(message, bot, api)
-    return
 
 
 async def Panel8_ControlAdmins_leave(message: Message, bot: Bot, api: API):
@@ -238,7 +233,7 @@ async def Panel8_ControlAdmins_leave(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def Panel8_ControlAdmins_leave_1(message: Message, bot: Bot, api: API):
@@ -267,7 +262,7 @@ async def Panel8_ControlAdmins_leave_1(message: Message, bot: Bot, api: API):
                     f'— Убедитесь, что администратору, которому вы хотите выдать админ-права зарегистрирован в чат-боте.\n\n{ex}'
         )
         await Panel8_ControlAdmins_leave(message, bot, api)
-    return
+
 
 
 
@@ -319,7 +314,7 @@ async def Panel8_ControlAdmins_leave_2(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
+
 
 
 
@@ -337,7 +332,7 @@ async def Panel8_ControlAdmins_upp(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 
@@ -366,7 +361,7 @@ async def Panel8_ControlAdmins_upp_1(message: Message, bot: Bot, api: API):
                     f'— Убедитесь, что администратору, которому вы хотите выдать админ-права зарегистрирован в чат-боте.'
         )
         await Panel8_ControlAdmins_upp(message, bot, api)
-    return
+
 
 
 async def Panel8_ControlAdmins_upp_2(message: Message, bot: Bot, api: API):
@@ -393,7 +388,7 @@ async def Panel8_ControlAdmins_upp_2(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 
@@ -450,7 +445,6 @@ async def Panel8_ControlAdmins_upp_set(message: Message, bot: Bot, api: API):
                         .get_json()
                 )
             )
-            return
         else:
             await message.answer(
                 message=f"❌ Введите корректный уровень администратора от 1 до 8"
@@ -509,14 +503,12 @@ async def Panel8_ControlAdmins_upp_up(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         await message.answer(
             message=f"'⚠ Возникла ошибка при повышении данного администратора.\n\n"
                     f"— Вы не можете повысить администратора, т.к. у него 8 уровень"
         )
         await Panel8_ControlAdmins_upp_2(message, bot, api)
-        return
 
 
 async def Panel8_ControlAdmins_upp_down(message: Message, bot: Bot, api: API):
@@ -568,14 +560,12 @@ async def Panel8_ControlAdmins_upp_down(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         await message.answer(
             message=f"'⚠ Возникла ошибка при повышении данного администратора.\n\n"
                     f"— Вы не можете понижать администратора, т.к. у него 1 уровень"
         )
         await Panel8_ControlAdmins_upp_2(message, bot, api)
-        return
 
 
 
@@ -589,7 +579,6 @@ async def Panel8_ControlAdmins_add(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Panel8_ControlAdmins_add_1(message: Message, bot: Bot, api: API):
@@ -599,7 +588,7 @@ async def Panel8_ControlAdmins_add_1(message: Message, bot: Bot, api: API):
     temporary.append(message.text)
     await database.setUserData(message.from_id, 'temporary_var', f'"{temporary}"')
     await Panel8_ControlAdmins_add_2(message, bot, api)
-    return
+
 
 
 async def Panel8_ControlAdmins_add_2(message: Message, bot: Bot, api: API):
@@ -614,7 +603,7 @@ async def Panel8_ControlAdmins_add_2(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def Panel8_ControlAdmins_add_3(message: Message, bot: Bot, api: API):
@@ -632,7 +621,7 @@ async def Panel8_ControlAdmins_add_3(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 
@@ -655,7 +644,7 @@ async def Panel8_ControlAdmins_add_4(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def Panel8_ControlAdmins_add_5(message: Message, bot: Bot, api: API):
@@ -677,7 +666,7 @@ async def Panel8_ControlAdmins_add_5(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def Panel8_ControlAdmins_add_6(message: Message, bot: Bot, api: API):
@@ -695,7 +684,7 @@ async def Panel8_ControlAdmins_add_6(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def Panel8_ControlAdmins_add_7(message: Message, bot: Bot, api: API):
@@ -713,7 +702,7 @@ async def Panel8_ControlAdmins_add_7(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def Panel8_ControlAdmins_add_8(message: Message, bot: Bot, api: API):
@@ -731,7 +720,7 @@ async def Panel8_ControlAdmins_add_8(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def Panel8_ControlAdmins_add_9(message: Message, bot: Bot, api: API):
@@ -759,7 +748,7 @@ async def Panel8_ControlAdmins_add_9(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def Panel8_ControlAdmins_add_10(message: Message, bot: Bot, api: API):
@@ -772,17 +761,14 @@ async def Panel8_ControlAdmins_add_10(message: Message, bot: Bot, api: API):
             temporary.append(message.text)
             await database.setUserData(message.from_id, 'temporary_var', f'"{temporary}"')
             await Panel8_ControlAdmins_add_11(message, bot, api)
-            return
         else:
             await message.answer(
                 message=f"❌ Выберите уровень администрирования с 1 до 8")
             await Panel8_ControlAdmins_add_9(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Вы ввели буквы в сообщении")
         await Panel8_ControlAdmins_add_9(message, bot, api)
-        return
 
 
 async def Panel8_ControlAdmins_add_11(message: Message, bot: Bot, api: API):
@@ -809,7 +795,6 @@ async def Panel8_ControlAdmins_add_11(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Panel8_ControlAdmins_add_set(message: Message, bot: Bot, api: API):
@@ -878,7 +863,6 @@ async def Panel8_ControlAdmins_add_set(message: Message, bot: Bot, api: API):
                                         )
                                     )
         await database.setUserData(id_user, 'state', "'mainMenu.Show'")
-        return
     except Exception as ex:
         await message.answer(
             message=f"⚠ Возникла ошибка при постановлении данного администратора.\n\n"
@@ -886,7 +870,6 @@ async def Panel8_ControlAdmins_add_set(message: Message, bot: Bot, api: API):
                     f"в чат-боте.")
         print(f'\033[38m[\033[31m!\033[38m][\033[33mDEBUG\033[38m] Произошла ошибка: {ex}')
         await Panel8_ControlAdmins_add_11(message, bot, api)
-    return
 
 
 
@@ -917,7 +900,7 @@ async def Panel8_NewAccaunt(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 
@@ -936,7 +919,7 @@ async def Panel8_Donate(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 
@@ -958,7 +941,7 @@ async def Panel8_Donate_CurseRub(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel8_Donate_CurseRubAdd(message: Message, bot: Bot, api: API):
@@ -975,19 +958,16 @@ async def Panel8_Donate_CurseRubAdd(message: Message, bot: Bot, api: API):
                         .get_json()
                     )
                 )
-            return
         else:
             await message.answer(
                 message=f"❌ Укажите число от 0 до 5 000",
             )
             await Panel8_Donate_CurseRub(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число от 0 до 5 000",
         )
         await Panel8_Donate_CurseRub(message, bot, api)
-        return
 
 
 # --------------------------------------------------------------------------------------------------------
@@ -1023,13 +1003,11 @@ async def Panel7(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         await message.answer(
             message=f"❌ Нету доступа"
         )
         await Show(message, bot, api)
-        return
 
 
 
@@ -1053,7 +1031,6 @@ async def Panel7_EditRegistration(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
 
 
 async def Panel7_EditRegistrationSwitch(message: Message, bot: Bot, api: API):
@@ -1068,7 +1045,6 @@ async def Panel7_EditRegistrationSwitch(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     if server_settings[26] == 0:
         await database.setBdData('settings', 'id', "'1'", 'open_registration', f"'1'")
         await message.answer(
@@ -1079,7 +1055,6 @@ async def Panel7_EditRegistrationSwitch(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
 
 
 
@@ -1102,7 +1077,7 @@ async def Panel7_Statistics(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_StatisticsClear(message: Message, bot: Bot, api: API):
@@ -1113,7 +1088,7 @@ async def Panel7_StatisticsClear(message: Message, bot: Bot, api: API):
         message=f"✅ Значения по статистике были успешно сброшены"
         )
     await Panel7_Statistics(message, bot, api)
-    return
+
 
 
 async def Panel7_EditMailing(message: Message, bot: Bot, api: API):
@@ -1135,7 +1110,7 @@ async def Panel7_EditMailing(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditMailing_Project(message: Message, bot: Bot, api: API):
@@ -1155,7 +1130,7 @@ async def Panel7_EditMailing_Project(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditMailing_ProjectCheck(message: Message, bot: Bot, api: API):
@@ -1171,7 +1146,6 @@ async def Panel7_EditMailing_ProjectCheck(message: Message, bot: Bot, api: API):
             message=f"❌ Введите число"
         )
         await Panel7_EditMailing_Project(message, bot, api)
-        return
 
 
 
@@ -1192,7 +1166,7 @@ async def Panel7_EditMailing_Server(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditMailing_ServerCheck(message: Message, bot: Bot, api: API):
@@ -1208,7 +1182,7 @@ async def Panel7_EditMailing_ServerCheck(message: Message, bot: Bot, api: API):
             message=f"❌ Введите число"
         )
         await Panel7_EditMailing_Server(message, bot, api)
-        return
+
 
 
 
@@ -1243,7 +1217,7 @@ async def Panel7_EditData(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditData_Project(message: Message, bot: Bot, api: API):
@@ -1259,7 +1233,7 @@ async def Panel7_EditData_Project(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditData_ProjectAdd(message: Message, bot: Bot, api: API):
@@ -1273,7 +1247,7 @@ async def Panel7_EditData_ProjectAdd(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def Panel7_EditData_Server(message: Message, bot: Bot, api: API):
@@ -1295,7 +1269,7 @@ async def Panel7_EditData_Server(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditData_ServerAdd(message: Message, bot: Bot, api: API):
@@ -1309,7 +1283,7 @@ async def Panel7_EditData_ServerAdd(message: Message, bot: Bot, api: API):
                 .get_json()
         )
         )
-    return
+
 
 
 async def Panel7_EditData_Group(message: Message, bot: Bot, api: API):
@@ -1329,7 +1303,7 @@ async def Panel7_EditData_Group(message: Message, bot: Bot, api: API):
                 .add(Text(f"{server_settings[8]} | {server_settings[9]} | Акции", {"cmd": "admin.Panel7_EditData_GroupAdd"}), color=KeyboardButtonColor.SECONDARY) .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditData_GroupAdd(message: Message, bot: Bot, api: API):
@@ -1343,7 +1317,7 @@ async def Panel7_EditData_GroupAdd(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditData_Status(message: Message, bot: Bot, api: API):
@@ -1372,7 +1346,7 @@ async def Panel7_EditData_Status(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditData_StatusAdd(message: Message, bot: Bot, api: API):
@@ -1389,7 +1363,7 @@ async def Panel7_EditData_StatusAdd(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditData_Stocks(message: Message, bot: Bot, api: API):
@@ -1417,7 +1391,7 @@ async def Panel7_EditData_Stocks(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditData_StocksAdd(message: Message, bot: Bot, api: API):
@@ -1434,7 +1408,7 @@ async def Panel7_EditData_StocksAdd(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditDonate(message: Message, bot: Bot, api: API):
@@ -1457,12 +1431,11 @@ async def Panel7_EditDonate(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditDonate_Dollars(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditDonate_DollarsAdd'")
-    server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 💎 » 💵 Изменить обмен доната на доллары\n\n"
                 f"📝 Напишите новый курс обмена доната на доллары (число от 0 до 999 999 999)",
@@ -1490,7 +1463,7 @@ async def Panel7_EditDonate_Dollars(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditDonate_DollarsAdd(message: Message, bot: Bot, api: API):
@@ -1507,24 +1480,20 @@ async def Panel7_EditDonate_DollarsAdd(message: Message, bot: Bot, api: API):
                         .get_json()
                     )
                 )
-            return
         else:
             await message.answer(
                 message=f"❌ Укажите число от 0 до 999 999 999",
             )
             await Panel7_EditDonate_Dollars(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число от 0 до 999 999 999",
         )
         await Panel7_EditDonate_Dollars(message, bot, api)
-        return
 
 
 async def Panel7_EditDonate_EXP(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditDonate_DollarsAdd'")
-    server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 💎 » 💵 Изменить обмен доната на доллары\n\n"
                 f"📝 Напишите новый курс обмена доната на EXP (число от 0 до 5 000)\n"
@@ -1553,7 +1522,7 @@ async def Panel7_EditDonate_EXP(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditDonate_EXPAdd(message: Message, bot: Bot, api: API):
@@ -1570,19 +1539,16 @@ async def Panel7_EditDonate_EXPAdd(message: Message, bot: Bot, api: API):
                         .get_json()
                     )
                 )
-            return
         else:
             await message.answer(
                 message=f"❌ Укажите число от 0 до 5 000",
             )
             await Panel7_EditDonate_EXP(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число от 0 до 5 000",
         )
         await Panel7_EditDonate_EXP(message, bot, api)
-        return
 
 
 async def Panel7_EditMulti(message: Message, bot: Bot, api: API):
@@ -1607,12 +1573,11 @@ async def Panel7_EditMulti(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditMulti_PayDay(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditMulti_PayDayAdd'")
-    server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 🌐 » 🌐 Изменить множитель PayDay\n\n"
                 f"📝 Напишите новый множитель PayDay (от 0 до 500)\n",
@@ -1628,7 +1593,7 @@ async def Panel7_EditMulti_PayDay(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel7_EditMulti_PayDayAdd(message: Message, bot: Bot, api: API):
@@ -1645,25 +1610,22 @@ async def Panel7_EditMulti_PayDayAdd(message: Message, bot: Bot, api: API):
                         .get_json()
                     )
                 )
-            return
+
         else:
             await message.answer(
                 message=f"❌ Укажите число от 0 до 500",
             )
             await Panel7_EditMulti_PayDay(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число от 0 до 500",
         )
         await Panel7_EditMulti_PayDay(message, bot, api)
-        return
 
 
 
 async def Panel7_EditMulti_Salary(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditMulti_SalaryAdd'")
-    server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 🌐 » 🌐 Изменить множитель зарплат\n\n"
                 f"📝 Напишите новый множитель зарплат (от 0 до 500)\n",
@@ -1679,7 +1641,6 @@ async def Panel7_EditMulti_Salary(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
 
 
 async def Panel7_EditMulti_SalaryAdd(message: Message, bot: Bot, api: API):
@@ -1696,25 +1657,21 @@ async def Panel7_EditMulti_SalaryAdd(message: Message, bot: Bot, api: API):
                         .get_json()
                     )
                 )
-            return
         else:
             await message.answer(
                 message=f"❌ Укажите число от 0 до 500",
             )
             await Panel7_EditMulti_Salary(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число от 0 до 500",
         )
         await Panel7_EditMulti_Salary(message, bot, api)
-        return
 
 
 
 async def Panel7_EditMulti_EXP(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditMulti_SalaryAdd'")
-    server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 🌐 » 🌐 Изменить множитель EXP\n\n"
                 f"📝 Напишите новый множитель EXP (от 0 до 500)\n",
@@ -1736,7 +1693,6 @@ async def Panel7_EditMulti_EXP(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
 
 
 async def Panel7_EditMulti_EXPAdd(message: Message, bot: Bot, api: API):
@@ -1753,19 +1709,16 @@ async def Panel7_EditMulti_EXPAdd(message: Message, bot: Bot, api: API):
                         .get_json()
                     )
                 )
-            return
         else:
             await message.answer(
                 message=f"❌ Укажите число от 0 до 500",
             )
             await Panel7_EditMulti_EXP(message, bot, api)
-            return
     else:
         await message.answer(
             message=f"❌ Укажите число от 0 до 500",
         )
         await Panel7_EditMulti_EXP(message, bot, api)
-        return
 
 
 # --------------------------------------------------------------------------------------------------------
@@ -1791,17 +1744,14 @@ async def Panel6(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         await message.answer(
             message=f"❌ Нету доступа"
         )
         await Show(message, bot, api)
-        return
 
 
 async def Panel6_EditRules(message: Message, bot: Bot, api: API):
-    data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules'")
     await message.answer(
         message=f"🎯 » 🛠 » 👹 » 📖 Изменение правил\n\n"
@@ -1818,11 +1768,9 @@ async def Panel6_EditRules(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
 
 
 async def Panel6_EditRules_RulesServer(message: Message, bot: Bot, api: API):
-    data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesServer'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
@@ -1836,11 +1784,9 @@ async def Panel6_EditRules_RulesServer(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
 
 
 async def Panel6_EditRules_RulesServer_Edit(message: Message, bot: Bot, api: API):
-    data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesServer_EditCheck'")
     await message.answer(
         message=f"🎯 » 🛠 » 👹 » 📖 » 📖 Изменить правила сервера\n\n"
@@ -1853,7 +1799,6 @@ async def Panel6_EditRules_RulesServer_Edit(message: Message, bot: Bot, api: API
                 .get_json()
             )
         )
-    return
 
 
 async def Panel6_EditRules_RulesServer_EditStandart(message: Message, bot: Bot, api: API):
@@ -1863,7 +1808,6 @@ async def Panel6_EditRules_RulesServer_EditStandart(message: Message, bot: Bot, 
         message=f"✅ Вы успешно обновили правила сервера"
         )
     await Panel6_EditRules_RulesServer(message, bot, api)
-    return
 
 
 async def Panel6_EditRules_RulesServer_EditCheck(message: Message, bot: Bot, api: API):
@@ -1875,7 +1819,6 @@ async def Panel6_EditRules_RulesServer_EditCheck(message: Message, bot: Bot, api
             message=f"✅ Вы успешно обновили правила сервера"
             )
         await Panel6_EditRules_RulesServer(message, bot, api)
-        return
     else:
         await message.answer(
             message=f"❌ Ошибка. Слишком длинное сообщение"
@@ -1890,7 +1833,6 @@ async def Panel6_EditRules_RulesServer_EditCheck(message: Message, bot: Bot, api
 
 
 async def Panel6_EditRules_RulesAdmins(message: Message, bot: Bot, api: API):
-    data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesAdmins'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
@@ -1904,11 +1846,9 @@ async def Panel6_EditRules_RulesAdmins(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
 
 
 async def Panel6_EditRules_RulesAdmins_Edit(message: Message, bot: Bot, api: API):
-    data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesAdmins_EditCheck'")
     await message.answer(
         message=f"🎯 » 🛠 » 👹 » 📖 » 📖 Изменить правила администраторов\n\n"
@@ -1921,7 +1861,6 @@ async def Panel6_EditRules_RulesAdmins_Edit(message: Message, bot: Bot, api: API
                 .get_json()
             )
         )
-    return
 
 
 async def Panel6_EditRules_RulesAdmins_EditStandart(message: Message, bot: Bot, api: API):
@@ -1931,7 +1870,6 @@ async def Panel6_EditRules_RulesAdmins_EditStandart(message: Message, bot: Bot, 
         message=f"✅ Вы успешно обновили правила для администраторов"
         )
     await Panel6_EditRules_RulesAdmins(message, bot, api)
-    return
 
 
 async def Panel6_EditRules_RulesAdmins_EditCheck(message: Message, bot: Bot, api: API):
@@ -1942,7 +1880,6 @@ async def Panel6_EditRules_RulesAdmins_EditCheck(message: Message, bot: Bot, api
             message=f"✅ Вы успешно обновили правила для администраторов"
             )
         await Panel6_EditRules_RulesAdmins(message, bot, api)
-        return
     else:
         await message.answer(
             message=f"❌ Ошибка. Слишком длинное сообщение"
@@ -1956,7 +1893,6 @@ async def Panel6_EditRules_RulesAdmins_EditCheck(message: Message, bot: Bot, api
 
 
 async def Panel6_EditRules_FAQAdmins(message: Message, bot: Bot, api: API):
-    data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_FAQAdmins'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
@@ -1970,11 +1906,9 @@ async def Panel6_EditRules_FAQAdmins(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
 
 
 async def Panel6_EditRules_FAQAdmins_Edit(message: Message, bot: Bot, api: API):
-    data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_FAQAdmins_EditCheck'")
     await message.answer(
         message=f"🎯 » 🛠 » 👹 » 📖 » 📖 Изменить FAQ администраторов\n\n"
@@ -1987,7 +1921,7 @@ async def Panel6_EditRules_FAQAdmins_Edit(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
-    return
+
 
 
 async def Panel6_EditRules_FAQAdmins_EditStandart(message: Message, bot: Bot, api: API):
@@ -2000,7 +1934,6 @@ async def Panel6_EditRules_FAQAdmins_EditStandart(message: Message, bot: Bot, ap
 
 
 async def Panel6_EditRules_FAQAdmins_EditCheck(message: Message, bot: Bot, api: API):
-    data = await database.getUserData(message.from_id)
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_FAQAdmins_EditCheck'")
     if len(message.text) <= 3000:
         await database.setBdData('settings', 'id', "'1'", '	faq_admins', f"'{message.text}'")
@@ -2008,7 +1941,6 @@ async def Panel6_EditRules_FAQAdmins_EditCheck(message: Message, bot: Bot, api: 
             message=f"✅ Вы успешно обновили FAQ для администраторов"
             )
         await Panel6_EditRules_FAQAdmins(message, bot, api)
-        return
     else:
         await message.answer(
             message=f"❌ Ошибка. Слишком длинное сообщение"
@@ -2037,13 +1969,11 @@ async def Panel5(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         await message.answer(
             message=f"❌ Нету доступа"
         )
         await Show(message, bot, api)
-        return
 
 
 # --------------------------------------------------------------------------------------------------------
@@ -2067,13 +1997,11 @@ async def Panel4(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         await message.answer(
             message=f"❌ Нету доступа"
         )
         await Show(message, api, bot)
-        return
 
 
 
@@ -2098,13 +2026,11 @@ async def Panel3(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         await message.answer(
             message=f"❌ Нету доступа"
         )
         await Show(message, bot, api)
-        return
 
 
 # --------------------------------------------------------------------------------------------------------
@@ -2130,20 +2056,17 @@ async def Panel2(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         await message.answer(
             message=f"❌ Нету доступа"
         )
         await Show(message, bot, api)
-        return
 
 
 async def Panel2_Online(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, "state = 'admin.Panel2_Online', temporary_var = '[]'")
     math_count_online = int(time.time())-300
     math_count_1h = int(time.time())-3600
-    print(math_count_online)
     count_online = len(await database.getMultiProgramBdData('users', f"last_message >= {math_count_online}"))
     count_1h = len(await database.getMultiProgramBdData('users', f"last_message >= {math_count_1h}"))
     await message.answer(
@@ -2156,7 +2079,6 @@ async def Panel2_Online(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 
@@ -2185,13 +2107,11 @@ async def Panel1(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         await message.answer(
             message=f"❌ Нету доступа"
         )
         await Show(message, bot, api)
-        return
 
 
 async def Panel1_Report(message: Message, bot: Bot, api: API):
@@ -2210,9 +2130,7 @@ async def Panel1_Report(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
-        print(report_count[0][0])
         await database.setMultiUserData(message.from_id, f"state = 'admin.Panel1_ReportSendReport', temporary_var = '{report_count[0][0]}'")
         await database.setMultiDbData('report', 'id', f"'{report_count[0][0]}'", f"vk_id_admin = '{message.from_id}', nick_admin = '{data[3]}'")
         await message.answer(
@@ -2243,7 +2161,6 @@ async def Panel1_ReportSendReport(message: Message, bot: Bot, api: API):
         )
     )
     await Panel1(message, bot, api)
-    return
 
 
 
@@ -2258,7 +2175,6 @@ async def Panel1_CheckPlayer(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Panel1_CheckPlayer1(message: Message, bot: Bot, api: API):
@@ -2311,7 +2227,6 @@ async def Panel1_CheckPlayer1(message: Message, bot: Bot, api: API):
                     f'— Убедитесь, что данный пользователь зарегистрирован в чат-боте.'
         )
         await Panel1_CheckPlayer(message, bot, api)
-    return
 
 
 
@@ -2357,11 +2272,10 @@ async def toConsole(message: Message, bot: Bot, api: API):
                 f"/mn — перейти в главное меню"
     )
     await database.setUserData(message.from_id, 'state', "'admin.Console'")
-    return
 
 
 
-async def Console(message: Message, api: API, bot: Bot):
+async def Console(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
     command = message.text.split(' ')
@@ -2370,13 +2284,11 @@ async def Console(message: Message, api: API, bot: Bot):
         await message.answer(
             message=f"Эхо бот работает!"
         )
-        return
     else:
         if command[0] == '/test':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
     # -------------------------------------------------------------
 
@@ -2387,13 +2299,11 @@ async def Console(message: Message, api: API, bot: Bot):
             message=f'✅ Вы изменили название проекта на "{text}"'
         )
         await database.setBdData('settings', 'id', "'1'", 'name_project', f"'{text}'")
-        return
     else:
         if command[0] == '/changenameproject':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
 
     if command[0] == '/changenameserver' and data[11] >= 7:
@@ -2403,13 +2313,11 @@ async def Console(message: Message, api: API, bot: Bot):
             message=f'✅ Вы изменили название сервера на "{text}"'
         )
         await database.setBdData('settings', 'id', "'1'", 'name_server', f"'{text}'")
-        return
     else:
         if command[0] == '/changenameserver':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
 
     if command[0] == '/setmailingprojectprice' and data[11] >= 7:
@@ -2420,7 +2328,6 @@ async def Console(message: Message, api: API, bot: Bot):
                 message=f'✅ Вы изменили вознаграждение за рассылку новостей проекта'
             )
             await database.setBdData('settings', 'id', "'1'", 'pay_mailing_project', f"'{text}'")
-            return
         else:
             await message.answer(
                 message=f'❌ Введите корректное число'
@@ -2430,7 +2337,6 @@ async def Console(message: Message, api: API, bot: Bot):
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
 
     if command[0] == '/setmailingserverprice' and data[11] >= 7:
@@ -2441,7 +2347,6 @@ async def Console(message: Message, api: API, bot: Bot):
                 message=f'✅ Вы изменили вознаграждение за рассылку новостей сервера'
             )
             await database.setBdData('settings', 'id', "'1'", 'pay_mailing_server', f"'{text}'")
-            return
         else:
             await message.answer(
                 message=f'❌ Введите корректное число'
@@ -2451,7 +2356,6 @@ async def Console(message: Message, api: API, bot: Bot):
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
 
     if command[0] == '/changenamegroup' and data[11] >= 7:
@@ -2461,13 +2365,11 @@ async def Console(message: Message, api: API, bot: Bot):
             message=f'✅ Вы изменили название сообщества на "{text}"'
         )
         await bot.api.groups.edit(group_id=message.group_id, title=text)
-        return
     else:
         if command[0] == '/changenamegroup':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
 
     if command[0] == '/changestatusgroup' and data[11] >= 7:
@@ -2477,13 +2379,11 @@ async def Console(message: Message, api: API, bot: Bot):
             message=f'✅ Вы изменили статус сообщества на "{text}"'
         )
         await api.status.set(group_id=message.group_id, text=text)
-        return
     else:
         if command[0] == '/changestatusgroup':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
 
 
@@ -2492,13 +2392,11 @@ async def Console(message: Message, api: API, bot: Bot):
         await message.answer(
             message=f'✅ Вы успешно открыли регистрацию на сервере'
         )
-        return
     else:
         if command[0] == '/regopen':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
 
 
@@ -2507,13 +2405,22 @@ async def Console(message: Message, api: API, bot: Bot):
         await message.answer(
             message=f'✅ Вы успешно закрыли регистрацию на сервере'
         )
-        return
     else:
         if command[0] == '/regopen':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
+
+
+    if command[0] == '/paydayactivate' and data[11] >= 7:
+        await message.answer(
+            message=f'✅ Вы успешно включили PayDay'
+        )
+    else:
+        if command[0] == '/regopen':
+            await message.answer(
+                message=f"❌ Нету доступа"
+            )
 
 
 
@@ -2525,13 +2432,11 @@ async def Console(message: Message, api: API, bot: Bot):
             message=f'✅ Вы изменили название акции на "{text}"'
         )
         await database.setBdData('settings', 'id', "'1'", 'name_stocks', f"'{text}'")
-        return
     else:
         if command[0] == '/changenamestocks':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
 
     if command[0] == '/testproject' and data[11] >= 7:
@@ -2541,8 +2446,9 @@ async def Console(message: Message, api: API, bot: Bot):
         link = from_link[15:]
         today = datetime.date.today()
         now = datetime.datetime.now()
-        user_get = await api.users.get(user_ids=link)
-        id_user = (user_get[0].id)
+        print(link)
+        user_get = await bot.api.users.get(user_ids=link)
+        id_user = user_get[0].id
         await message.answer(
             message=f'✅ Вы успешно отправили приглашение на тестовый сервер'
         )
@@ -2558,13 +2464,11 @@ async def Console(message: Message, api: API, bot: Bot):
                 .get_json()
             )
         )
-        return
     else:
         if command[0] == '/testproject':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
     # -------------------------------------------------------------
 
     if command[0] == '/fractioninfo' and data[11] >= 3:
@@ -2596,13 +2500,11 @@ async def Console(message: Message, api: API, bot: Bot):
                         f'— Убедитесь, что ID фракции существует'
             )
             print(ex)
-        return
     else:
         if command[0] == '/fractioninfo':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
 
 
@@ -2618,13 +2520,11 @@ async def Console(message: Message, api: API, bot: Bot):
             message=f"👥 Онлайн игроков » {count_online}\n"
                     f"🤠 За последний час ботом воспользовалось » {count_1h} человек",
         )
-        return
     else:
         if command[0] == '/onlineserver':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
 
     if command[0] == '/online' and data[11] >= 2:
@@ -2633,13 +2533,11 @@ async def Console(message: Message, api: API, bot: Bot):
         await message.answer(
             message=f"👥 Онлайн игроков » {count_online}",
         )
-        return
     else:
         if command[0] == '/online':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
 
     if command[0] == '/houronline' and data[11] >= 2:
@@ -2648,13 +2546,11 @@ async def Console(message: Message, api: API, bot: Bot):
         await message.answer(
             message=f"🤠 За последний час ботом воспользовалось » {count_1h} человек",
         )
-        return
     else:
         if command[0] == '/houronline':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
 
 
@@ -2703,48 +2599,39 @@ async def Console(message: Message, api: API, bot: Bot):
                 message=f'⚠ Возникла ошибка при проверки статистики\n\n'
                         f'— Убедитесь, что данный пользователь зарегистрирован в чат-боте.'
             )
-        return
     else:
         if command[0] == '/check':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
 
     if command[0] == '/mn' and data[11] >= 1:
         await mainMenu.Show(message, bot, api)
-        return
     else:
         if command[0] == '/mn':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
 
     if command[0] == '/minimn' and data[11] >= 1:
         await mainMenu.Mini(message, bot, api)
-        return
     else:
         if command[0] == '/minimn':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
 
     if command[0] == '/quit' and data[11] >= 1:
         await Show(message, bot, api)
-        return
     else:
         if command[0] == '/quit':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
-            return
 
     await message.answer(
         message=f"❌ Неизвестная команда."
     )
-    return

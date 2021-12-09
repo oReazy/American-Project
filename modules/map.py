@@ -15,7 +15,6 @@ from modules import database
 
 async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'map.Show'")
-    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 🗺 Карта",
         keyboard=(
@@ -37,18 +36,16 @@ async def Show(message: Message, bot: Bot, api: API):
                 .add(Text("🍐 Фермы", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .row()
                 .add(Text("👕 Секонд-хенды", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
-                .add(Text("🎭 Мероприятия", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .add(Text("🎭 Мероприятия", {"cmd": "map.events"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("👥 Квестовые персонажи", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .add(Text("🛢 Нефтевышки", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .get_json()
         )
     )
-    return
 
 async def importandPlaces1(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'map.importandPlaces1'")
-    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 🗺 » 🏛 Важные места",
         keyboard=(
@@ -57,7 +54,7 @@ async def importandPlaces1(message: Message, bot: Bot, api: API):
                 .add(Text("◀", {"cmd": "none"}), color=KeyboardButtonColor.SECONDARY)
                 .add(Text("▶", {"cmd": "map.importandPlaces2"}), color=KeyboardButtonColor.PRIMARY)
                 .row()
-                .add(Text("🏛 Мэрия", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .add(Text("🏛 Мэрия", {"cmd": "CityHall.Show"}), color=KeyboardButtonColor.SECONDARY)
                 .add(Text("⚒ Центр занятости", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .row()
                 .add(Text("🏥 Больница", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
@@ -76,15 +73,14 @@ async def importandPlaces1(message: Message, bot: Bot, api: API):
                 .add(Text("⛪ Церковь", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .row()
                 .add(Text("🏢 Лотерейный магазин", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .add(Text("🎰 Казино", {"cmd": "casino.Show"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
         )
     )
-    return
 
 
 async def importandPlaces2(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'map.importandPlaces2'")
-    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 🗺 » 🏛 Важные места (2 страница)",
         keyboard=(
@@ -106,12 +102,10 @@ async def importandPlaces2(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def newGuysWorks(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'map.newGuysWorks'")
-    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 🗺 » 🧱 Работы для новичков",
         keyboard=(
@@ -120,10 +114,10 @@ async def newGuysWorks(message: Message, bot: Bot, api: API):
                 .add(Text("◀", {"cmd": "none"}), color=KeyboardButtonColor.SECONDARY)
                 .add(Text("▶", {"cmd": "none"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
-                .add(Text("🌽 Ферма", {"cmd": "farm.Show"}), color=KeyboardButtonColor.SECONDARY)
-                .add(Text("🏭 Завод", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .add(Text("🥔 Ферма", {"cmd": "farm.Show"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("🏭 Завод", {"cmd": "factory.Show"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
-                .add(Text("📦 Склад", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .add(Text("📦 Склад", {"cmd": "warehouse.Show"}), color=KeyboardButtonColor.SECONDARY)
                 .add(Text("🍕 Доставщик", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .row()
                 .add(Text("🚗 Автомобильный завод", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
@@ -133,13 +127,11 @@ async def newGuysWorks(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 
 async def Works(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'map.Works'")
-    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 🗺 » 🛠 Основные работы",
         keyboard=(
@@ -165,13 +157,11 @@ async def Works(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 
 async def Works2(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'map.Works2'")
-    data = await database.getUserData(message.from_id)
     await message.answer(
         message=f"🎯 » 🗺 » 🛠 Основные работы",
         keyboard=(
@@ -187,4 +177,20 @@ async def Works2(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
+
+
+async def events(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'map.events'")
+    await message.answer(
+        message=f"🎯 » 🗺 » 🎭 Мероприятия",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "map.Show"}), color=KeyboardButtonColor.PRIMARY)
+                .add(Text("◀", {"cmd": "none"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("▶", {"cmd": "none"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("🥚 Собиратели", {"cmd": "collectors.Show"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )

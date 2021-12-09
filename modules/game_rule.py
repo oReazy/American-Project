@@ -24,4 +24,3 @@ async def Show(message: Message, bot: Bot, api: API):
                 .add(Text("◀ Назад", {"cmd": "mainMenu.Show"}), color=KeyboardButtonColor.PRIMARY)
         )
     )
-    return

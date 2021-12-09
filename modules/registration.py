@@ -24,7 +24,6 @@ async def registration_1(message: Message, bot: Bot, api: API):
                     f"❌ Ваш аккаунт не зарегистрирован на данном сервере.\n"
                     f"📝 Придумайте ник вашего персонажа (от 3 до 15 символов)"
         )
-        return
     else:
         await message.answer(
             message=f"❌ Регистрация на данном сервере закрыта",
@@ -35,7 +34,6 @@ async def registration_1(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
 
 
 async def registration_1_check(message: Message, bot: Bot, api: API):
@@ -68,19 +66,17 @@ async def registration_2(message: Message, bot: Bot, api: API):
             .get_json()
         )
     )
-    return
 
 
 async def registration_2_man(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, "sex = 'Мужчина', state = 'registration.registration_3'")
     await registration_3(message, bot, api)
-    return
 
 
 async def registration_2_woman(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, "sex = 'Женщина', state = 'registration.registration_3'")
     await registration_3(message, bot, api)
-    return
+
 
 
 async def registration_3(message: Message, bot: Bot, api: API):
@@ -110,13 +106,13 @@ async def registration_3(message: Message, bot: Bot, api: API):
             .get_json()
         )
     )
-    return
+
 
 
 async def registration_3_check(message: Message, bot: Bot, api: API):
     await database.setMultiUserData(message.from_id, f"nationality = '{message.text}', state = 'registration.registration_4'")
     await registration_4(message, bot, api)
-    return
+
 
 
 async def registration_4(message: Message, bot: Bot, api: API):
@@ -124,7 +120,7 @@ async def registration_4(message: Message, bot: Bot, api: API):
     await message.answer(
         message=f"📝 Введите возраст персонажа (от 18 до 70 лет)"
     )
-    return
+
 
 
 async def registration_4_check(message: Message, bot: Bot, api: API):
@@ -138,13 +134,13 @@ async def registration_4_check(message: Message, bot: Bot, api: API):
                 message=f"❌ Введите возраст в пределах от 18 до 70"
             )
             await registration_4(message, bot, api)
-            return
+
     else:
         await message.answer(
             message=f"❌ Введите возраст цифрами"
         )
         await registration_4(message, bot, api)
-        return
+
 
 
 async def registration_5(message: Message, bot: Bot, api: API):
@@ -165,7 +161,7 @@ async def registration_5(message: Message, bot: Bot, api: API):
             .get_json()
         )
     )
-    return
+
 
 
 async def registration_5_friend(message: Message, bot: Bot, api: API):
@@ -173,7 +169,7 @@ async def registration_5_friend(message: Message, bot: Bot, api: API):
     update = server_settings[20] + 1
     await database.setBdData('settings', 'id', "'1'", 'statistics_friend', f"'{update}'")
     await registration_6(message, bot, api)
-    return
+
 
 
 async def registration_5_list_chatbot(message: Message, bot: Bot, api: API):
@@ -181,7 +177,7 @@ async def registration_5_list_chatbot(message: Message, bot: Bot, api: API):
     update = server_settings[21] + 1
     await database.setBdData('settings', 'id', "'1'", 'statistics_list_chatbot', f"'{update}'")
     await registration_6(message, bot, api)
-    return
+
 
 
 async def registration_5_search(message: Message, bot: Bot, api: API):
@@ -189,7 +185,7 @@ async def registration_5_search(message: Message, bot: Bot, api: API):
     update = server_settings[22] + 1
     await database.setBdData('settings', 'id', "'1'", 'statistics_search', f"'{update}'")
     await registration_6(message, bot, api)
-    return
+
 
 
 async def registration_5_youtube(message: Message, bot: Bot, api: API):
@@ -197,7 +193,7 @@ async def registration_5_youtube(message: Message, bot: Bot, api: API):
     update = server_settings[23] + 1
     await database.setBdData('settings', 'id', "'1'", 'statistics_youtube', f"'{update}'")
     await registration_6(message, bot, api)
-    return
+
 
 
 async def registration_5_other(message: Message, bot: Bot, api: API):
@@ -205,7 +201,7 @@ async def registration_5_other(message: Message, bot: Bot, api: API):
     update = server_settings[24] + 1
     await database.setBdData('settings', 'id', "'1'", 'statistics_other', f"'{update}'")
     await registration_6(message, bot, api)
-    return
+
 
 
 async def registration_6(message: Message, bot: Bot, api: API):
@@ -222,7 +218,7 @@ async def registration_6(message: Message, bot: Bot, api: API):
             .get_json()
         )
     )
-    return
+
 
 
 
@@ -233,7 +229,7 @@ async def registration_6_accept(message: Message, bot: Bot, api: API):
                 f"⚠ Чтобы отписаться от данной рассылки, вам необходимо перейти в настройки вашего персонажа."
     )
     await registration_7(message, bot, api)
-    return
+
 
 
 async def registration_6_denial(message: Message, bot: Bot, api: API):
@@ -243,14 +239,14 @@ async def registration_6_denial(message: Message, bot: Bot, api: API):
                 f"⚠ Вы всегда можете подписаться от отписаться от рассылки в настройках персонажа."
     )
     await registration_7(message, bot, api)
-    return
+
 
 
 async def registration_7(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await database.setMultiUserData(message.from_id, f"lvl = '{server_settings[4]}', exp = '{server_settings[6]}', dollars = '{server_settings[5]}', donate = '{server_settings[7]}'")
     await registration_8(message, bot, api)
-    return
+
 
 
 
@@ -268,7 +264,7 @@ async def registration_8(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 # ---------------------------------------------------------------------------------
@@ -276,4 +272,3 @@ async def registration_8(message: Message, bot: Bot, api: API):
 async def newAccaunt(message: Message, bot: Bot, api: API):
     await database.deleteUserData(message.from_id)
     await registration_1(message, bot, api)
-    return

@@ -36,7 +36,6 @@ async def Show(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Gun(message: Message, bot: Bot, api: API):
@@ -54,7 +53,6 @@ async def Gun(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
 
 
 async def Fighting(message: Message, bot: Bot, api: API):
@@ -73,7 +71,7 @@ async def Fighting(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def Farm(message: Message, bot: Bot, api: API):
@@ -93,7 +91,7 @@ async def Farm(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def Trucker(message: Message, bot: Bot, api: API):
@@ -117,7 +115,7 @@ async def Trucker(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def Taxi(message: Message, bot: Bot, api: API):
@@ -134,7 +132,7 @@ async def Taxi(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-    return
+
 
 
 async def Air(message: Message, bot: Bot, api: API):

@@ -1,15 +1,17 @@
 import asyncio
 import json, re
+import random
+
 import aiomysql
 
 loop = asyncio.get_event_loop()
 # ---------------------------------------------------------------------------------------
 # ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ
 
-USER = 'oreazy1s_bot'
-PASSWORD = 'Cloud9d'
-HOST = 'oreazy1s.beget.tech'
-DATABASE = 'oreazy1s_bot'
+USER = 'root'
+PASSWORD = ''
+HOST = 'localhost'
+DATABASE = 'bot'
 
 
 # ---------------------------------------------------------------------------------------
@@ -41,7 +43,8 @@ async def registerNewAccaunt(user_id):  # Создание нового акка
             #            "health, eat, passport, passport_serial, passport_number, marriage, " \
             #            "military_card, casino_chips, admin_info, mailing_project, mailing_server, " \
             #            "bank_card, skill_farmer, skill_drive, skill_trucker, skill_taxi, skill_air
-            #            "temporary_var, limit_report, last_message, reDesign) VALUES " \
+            #            "temporary_var, limit_report, last_message, reDesign, timeEventCollectors, inventory
+            #            "family) VALUES " \
             #            f"({user_id}, " \  # vk_id
             # f"'', " \  # state
             # f"'', " \  # nick
@@ -119,7 +122,10 @@ async def registerNewAccaunt(user_id):  # Создание нового акка
             # f"'', " \  # temporary_var
             # f"'', " \  # limit_report
             # f"'', " \  # last_message
-            # f"'' " \  # reDesign
+            # f"'', " \  # reDesign
+            # f"'', " \  # timeEventCollectors
+            # f"'' " \  # inventory
+            # f"'', " \  # family
             # f")"
             admin_info = {"admin_name": "", "admin_age": "", "admin_city_live": "", "admin_discord": "",
                           "admin_desc": "", "admin_date_add": "", "admin_date_upp": "", "admin_date_leave": "",
@@ -136,7 +142,8 @@ async def registerNewAccaunt(user_id):  # Создание нового акка
                        "health, eat, passport, passport_serial, passport_number, marriage, " \
                        "military_card, casino_chips, admin_info, mailing_project, mailing_server, " \
                        "bank_card, skill_farmer, skill_drive, skill_trucker, skill_taxi, skill_air, " \
-                       "temporary_var, limit_report, last_message, reDesign) VALUES " \
+                       "temporary_var, limit_report, last_message, reDesign, timeEventCollectors, inventory," \
+                       "family, house, biz, cars) VALUES " \
                        f"({user_id}, " \
                        f"'', " \
                        f"'', " \
@@ -214,7 +221,13 @@ async def registerNewAccaunt(user_id):  # Создание нового акка
                        f"'0', " \
                        f"'0', " \
                        f"'0', " \
-                       f"'0'" \
+                       f"'0', " \
+                       f"'0'," \
+                       f"'[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]', " \
+                       f"'0'," \
+                       f"'[]'," \
+                       f"'[]'," \
+                       f"'[]'" \
                        f")"
             await cursor.execute(new_user)
             await connection.commit()
@@ -365,8 +378,7 @@ def regularCheck(key, value):
 
 
 async def def_new_lvl(message, bot, api, data, server_data):
-    print(data[6], data[7], int(int(data[6]) * int(server_data[16])))
-    new_exp = int(data[7]) - int(int(data[6]) * int(server_data[16]))
+    new_exp = int(data[7]) - (int(int(data[6]) * int(server_data[16])))
     new_lvl = int(data[6]) + 1
     await setMultiUserData(message.from_id, f"lvl = '{new_lvl}', exp = '{new_exp}'")
     await message.answer(
@@ -374,3 +386,19 @@ async def def_new_lvl(message, bot, api, data, server_data):
     data = await getUserData(message.from_id)
     if int(data[7]) >= int(int(data[6]) * int(server_data[16])):
         await def_new_lvl(message, bot, api, data, server_data)
+
+
+
+async def def_new_lvl_payday(bot, api, data, server_data, new_exp):
+    new_exp = new_exp - (int(int(data[6]) * int(server_data[16])))
+    new_lvl = int(data[6]) + 1
+    await setMultiUserData(data[1], f"lvl = '{new_lvl}', exp = '{new_exp}'")
+    await bot.api.messages.send(
+        user_id=data[1],
+        random_id=random.randint(100000, 999999999),
+        peer_id=data[1],
+        message=f'⏫ Поздравляем. Теперь у вас {new_lvl} уровень'
+    )
+    data = await getUserData(data[1])
+    if int(data[7]) >= int(int(data[6]) * int(server_data[16])):
+        await def_new_lvl_payday(bot, api, data, server_data, new_exp)

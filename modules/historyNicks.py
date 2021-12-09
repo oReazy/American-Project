@@ -26,7 +26,6 @@ async def Show(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        return
     else:
         list_nicks = ast.literal_eval(data[56])
         nicks_end = ''
@@ -42,4 +41,3 @@ async def Show(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-    return
