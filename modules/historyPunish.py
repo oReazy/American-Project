@@ -16,7 +16,7 @@ from modules import database
 async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'historyPunish.Show'")
     data = await database.getUserData(message.from_id)
-    if data[55] == '[]':
+    if data[32] == '[]':
         await message.answer(
             message=f"🎯 » 📃 История наказаний\n\n❌ История наказаний пуста.",
             keyboard=(
@@ -26,7 +26,7 @@ async def Show(message: Message, bot: Bot, api: API):
             )
         )
     else:
-        list_punish = ast.literal_eval(data[55])
+        list_punish = ast.literal_eval(data[32])
         punish_end = ''
         count = 0
         while count < len(list_punish) or count >= 20:

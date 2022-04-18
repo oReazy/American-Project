@@ -8,7 +8,7 @@ from modules import database
 
 # ------------------------------------------------------------------------------------------
 
-# Центр лицензирования
+# Пирс
 
 # -------------------------------------------------------------------------------------------
 
@@ -97,7 +97,8 @@ async def FindFamily(message: Message, bot: Bot, api: API):
     await message.answer(
         message=f"🎯 » 🗺 » 🏛 » 🌅 » 🔎 Найти семью\n\n"
                 f"ℹ Напишите основателю или заместителю семьи о том, что вы готовы принять приглашение в семью.\n\n"
-                f"ℹ Для того, чтобы перестать искать семью, нажмите на кнопку ",
+                f"ℹ Для того, чтобы перестать искать семью, нажмите на кнопку\n\n"
+                f"⚠ В РАЗРАБОТКЕ",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "Pier.Show"}), color=KeyboardButtonColor.PRIMARY)
@@ -125,18 +126,13 @@ async def Obmen(message: Message, bot: Bot, api: API):
 
 async def ObmenCheck(message: Message, bot: Bot, api: API):
     inventory = await database.getUserData(message.from_id)
-    inventory = inventory[80]
-    inventory = inventory.replace("]", "")
-    inventory = inventory.replace("[", "")
-    inventory = inventory.replace('"', "")
-    inventory = inventory.replace("'", "")
-    inventory = inventory.split(', ')
+    inventory = ast.literal_eval(inventory[48])
+    inventory = list(inventory)
 
-    if int(inventory[0]) >= 20:
-        inventory[0] = int(inventory[0]) - 20
+    if int(inventory[3]) >= 20:
+        inventory[3] = int(inventory[3]) - 20
 
-        inventory = str(inventory)
-        inventory = inventory.replace("'", "")
+
         await database.setUserData(message.from_id, 'inventory', f"'{inventory}'")
 
 
@@ -148,17 +144,10 @@ async def ObmenCheck(message: Message, bot: Bot, api: API):
                         f"🎁 Вы получили 10 подарков",
             )
             inventory = await database.getUserData(message.from_id)
-            inventory = inventory[80]
-            inventory = inventory.replace("]", "")
-            inventory = inventory.replace("[", "")
-            inventory = inventory.replace('"', "")
-            inventory = inventory.replace("'", "")
-            inventory = inventory.split(', ')
+            inventory = ast.literal_eval(inventory[48])
+            inventory = list(inventory)
 
-            inventory[0] = int(inventory[0]) + 10
-
-            inventory = str(inventory)
-            inventory = inventory.replace("'", "")
+            inventory[3] = int(inventory[3]) + 10
             await database.setUserData(message.from_id, 'inventory', f"'{inventory}'")
             await Obmen(message, bot, api)
         elif prize[randPrize] == 1:
@@ -167,14 +156,10 @@ async def ObmenCheck(message: Message, bot: Bot, api: API):
                         f"🎁 Вы получили 20 подарков",
             )
             inventory = await database.getUserData(message.from_id)
-            inventory = inventory[80]
-            inventory = inventory.replace("]", "")
-            inventory = inventory.replace("[", "")
-            inventory = inventory.replace('"', "")
-            inventory = inventory.replace("'", "")
-            inventory = inventory.split(', ')
+            inventory = ast.literal_eval(inventory[48])
+            inventory = list(inventory)
 
-            inventory[0] = int(inventory[0]) + 20
+            inventory[3] = int(inventory[3]) + 20
 
             inventory = str(inventory)
             inventory = inventory.replace("'", "")
@@ -211,62 +196,41 @@ async def ObmenCheck(message: Message, bot: Bot, api: API):
         elif prize[randPrize] == 5:
             await message.answer(
                 message=f"👨🏻‍🦳 Эдвард » Поздравляю ковбой!\n\n"
-                        f"🥉 Вы получили 1 бронзовый кейс",
+                        f"🥉 Вы получили 1 бронзовую рулетку",
             )
             inventory = await database.getUserData(message.from_id)
-            inventory = inventory[80]
-            inventory = inventory.replace("]", "")
-            inventory = inventory.replace("[", "")
-            inventory = inventory.replace('"', "")
-            inventory = inventory.replace("'", "")
-            inventory = inventory.split(', ')
+            inventory = ast.literal_eval(inventory[48])
+            inventory = list(inventory)
 
             inventory[4] = int(inventory[4]) + 1
-
-            inventory = str(inventory)
-            inventory = inventory.replace("'", "")
             await database.setUserData(message.from_id, 'inventory', f"'{inventory}'")
             await Obmen(message, bot, api)
         elif prize[randPrize] == 6:
             await message.answer(
-                message=f"👨🏻‍🦳 Эдвард » Отличный приз, серебряный кейс!\n\n"
-                        f"🥈 Вы получили 1 серебряный кейс",
+                message=f"👨🏻‍🦳 Эдвард » Отличный приз, серебряная рулетка!\n\n"
+                        f"🥈 Вы получили 1 серебряную рулетку",
             )
             inventory = await database.getUserData(message.from_id)
-            inventory = inventory[80]
-            inventory = inventory.replace("]", "")
-            inventory = inventory.replace("[", "")
-            inventory = inventory.replace('"', "")
-            inventory = inventory.replace("'", "")
-            inventory = inventory.split(', ')
+            inventory = ast.literal_eval(inventory[48])
+            inventory = list(inventory)
 
             inventory[5] = int(inventory[5]) + 1
-
-            inventory = str(inventory)
-            inventory = inventory.replace("'", "")
             await database.setUserData(message.from_id, 'inventory', f"'{inventory}'")
             await Obmen(message, bot, api)
         elif prize[randPrize] == 7:
             await message.answer(
                 message=f"👨🏻‍🦳 Эдвард » Ты нашел золото!\n\n"
-                        f"🥇 Вы получили 1 золотой кейс",
+                        f"🥇 Вы получили 1 золотую рулетку",
             )
             inventory = await database.getUserData(message.from_id)
-            inventory = inventory[80]
-            inventory = inventory.replace("]", "")
-            inventory = inventory.replace("[", "")
-            inventory = inventory.replace('"', "")
-            inventory = inventory.replace("'", "")
-            inventory = inventory.split(', ')
+            inventory = ast.literal_eval(inventory[48])
+            inventory = list(inventory)
 
-            inventory[5] = int(inventory[5]) + 1
-
-            inventory = str(inventory)
-            inventory = inventory.replace("'", "")
+            inventory[6] = int(inventory[6]) + 1
             await database.setUserData(message.from_id, 'inventory', f"'{inventory}'")
             await Obmen(message, bot, api)
         elif prize[randPrize] == 8:
-            DonateList = [10,10,10,15,15,15,20,25,30,30,30,40,40,50,60,70,80,90,100,125,150,175,200,250,300,350,400,500]
+            DonateList = [10,10,10,15,15,15,20,25,25,25,25,25,30,30,30,30,30,40,40,40,40,40,50,60,70,80,90,100,125,150,175,200,250,300,350,400,500]
             randDonate = random.randint(0,len(DonateList)-1)
             if 0 <= DonateList[randDonate] <= 99:
                 await message.answer(
@@ -293,7 +257,7 @@ async def ObmenCheck(message: Message, bot: Bot, api: API):
                             f"👉 Перекинь это сообщение, чтобы твои друзья завидовали твоей удаче",
                 )
             data = await database.getUserData(message.from_id)
-            new_balance = int(data[21]) + DonateList[randDonate]
+            new_balance = int(data[20]) + DonateList[randDonate]
             await database.setUserData(message.from_id, "donate", f"'{new_balance}'")
             await Obmen(message, bot, api)
         elif prize[randPrize] == 9:
@@ -302,17 +266,10 @@ async def ObmenCheck(message: Message, bot: Bot, api: API):
                         f"💵 Вам вернули 20 подарков",
             )
             inventory = await database.getUserData(message.from_id)
-            inventory = inventory[80]
-            inventory = inventory.replace("]", "")
-            inventory = inventory.replace("[", "")
-            inventory = inventory.replace('"', "")
-            inventory = inventory.replace("'", "")
-            inventory = inventory.split(', ')
+            inventory = ast.literal_eval(inventory[48])
+            inventory = list(inventory)
 
-            inventory[0] = int(inventory[0]) + 20
-
-            inventory = str(inventory)
-            inventory = inventory.replace("'", "")
+            inventory[3] = int(inventory[3]) + 20
             await database.setUserData(message.from_id, 'inventory', f"'{inventory}'")
             await Obmen(message, bot, api)
     else:
@@ -345,6 +302,4 @@ async def ObmenInfo1(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
-
-
 

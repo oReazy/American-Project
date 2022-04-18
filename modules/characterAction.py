@@ -47,11 +47,22 @@ async def Statistics(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'characterAction.Statistics'")
     data = await database.getUserData(message.from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
+    VIP = ast.literal_eval(data[21])
+    blacklist = ast.literal_eval(data[25])
+    VIP = list(VIP)
+    if VIP[0] == 'no vip':
+        vipitog= f'❌ Отсутствует'
+    else:
+        if VIP[1] == 10:
+            vipitog = f'{VIP[0]}, навсегда'
+        else:
+            endvip = datetime.datetime.utcfromtimestamp(VIP[1]).strftime('%d.%m.%Y')
+            vipitog = f'{VIP[0]} до {endvip}'
     await message.answer(
         message=f"🎯 » 👤 » 📊 Моя статистика\n\n"
                 f"😀 Ник » {data[3]}\n"
                 f"🌐 Уровень » {data[6]}\n"
-                f"🌐 Очки опыта » {data[7]} / {server_settings[16] * data[6]}\n"
+                f"🌐 Очки опыта » {data[7]} / {server_settings[20] * data[6]}\n"
                 f"🚻 Пол » {data[8]}\n"
                 f"🔢 Возраст » {data[9]} лет\n"
                 f"🏳 Национальность » {data[10]}\n\n"
@@ -59,13 +70,12 @@ async def Statistics(message: Message, bot: Bot, api: API):
                 f"💶 Евро на руках » {await database.pretty(data[13])}\n"
                 f"💴 Иены на руках » {await database.pretty(data[14])}\n"
                 f"💷 Фунты на руках » {await database.pretty(data[15])}\n\n"
-                f"🛠 Работа » {data[43]}\n"
-                f"🏢 Организация » {data[24]}\n"
-                f"⭐ Уровень розыска » {data[20]}\n\n"
-                f"🅰️ Предупреждения » {data[34]}\n"
-                f"💳 Банковская карта » {data[69]}\n"
+                f"🛠 Работа » {data[27]}\n"
+                f"🏢 Организация » {data[22]}\n\n"
+                f"🅰️ Предупреждения » {len(blacklist)}\n"
+                f"💳 Банковская карта » {data[43]}\n"
                 f"📱 Телефон » {data[5]}\n"
-                f"👑 VIP » {data[22]}",
+                f"👑 VIP » {vipitog}",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "characterAction.Show"}), color=KeyboardButtonColor.PRIMARY)

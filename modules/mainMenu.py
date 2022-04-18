@@ -1,22 +1,16 @@
-import random
-
-import vkbottle.api
-import vkbottle_types
+import asyncio, vkbottle.api, vkbottle_types
 from vkbottle.bot import Bot, Message
-from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback, GroupEventType, GroupTypes, Bot, API
-import json, time, os, sys, re, ast
+from vkbottle import Keyboard, KeyboardButtonColor, Text, API, GroupEventType, GroupTypes, LoopWrapper, Callback
+import json, time, os, sys, re, ast, datetime, random
+
 from modules import database
+# ----------------------------------------------------------------------------------------------------------------------
 
-# ------------------------------------------------------------------------------------------
-
-# Главное меню проекта
-
-# ------------------------------------------------------------------------------------------
 
 async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'mainMenu.Show'")
     data = await database.getUserData(message.from_id)
-    if data[78] == 1:
+    if data[47] == 1:
         await Mini(message, bot, api)
     else:
         server_settings = await database.getBdData('settings', 'id', "'1'")
@@ -26,7 +20,7 @@ async def Show(message: Message, bot: Bot, api: API):
         num4 = await database.pretty(data[15])
         if data[11] == 0:
             await message.answer(
-                message=f"🎯 Главное меню{server_settings[25]}\n\n"
+                message=f"🎯 Главное меню{server_settings[21]}\n\n"
                         f"💵 Доллары на руках » {num1}\n"
                         f"💶 Евро на руках » {num2}\n"
                         f"💴 Иены на руках » {num3}\n"
@@ -55,7 +49,7 @@ async def Show(message: Message, bot: Bot, api: API):
             )
         else:
             await message.answer(
-                message=f"🎯 Главное меню{server_settings[25]}\n\n"
+                message=f"🎯 Главное меню{server_settings[21]}\n\n"
                         f"💵 Доллары на руках » {num1}\n"
                         f"💶 Евро на руках » {num2}\n"
                         f"💴 Иены на руках » {num3}\n"
@@ -90,7 +84,7 @@ async def ShowFixFromId(from_id, bot: Bot, api: API):
     await database.setUserData(from_id, 'state', "'mainMenu.Show'")
     data = await database.getUserData(from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
-    if data[78] == 1:
+    if data[47] == 1:
         await MiniFix(from_id, bot, api)
     else:
         num1 = await database.pretty(data[12])
@@ -101,7 +95,7 @@ async def ShowFixFromId(from_id, bot: Bot, api: API):
             await bot.api.messages.send(
                 user_id=from_id,
                 random_id=random.randint(1, 999999999),
-                message=f"🎯 Главное меню{server_settings[25]}\n\n"
+                message=f"🎯 Главное меню{server_settings[21]}\n\n"
                         f"💵 Доллары на руках » {num1}\n"
                         f"💶 Евро на руках » {num2}\n"
                         f"💴 Иены на руках » {num3}\n"
@@ -132,7 +126,7 @@ async def ShowFixFromId(from_id, bot: Bot, api: API):
             await bot.api.messages.send(
                 user_id=from_id,
                 random_id=random.randint(1, 999999999),
-                message=f"🎯 Главное меню{server_settings[25]}\n\n"
+                message=f"🎯 Главное меню{server_settings[21]}\n\n"
                         f"💵 Доллары на руках » {num1}\n"
                         f"💶 Евро на руках » {num2}\n"
                         f"💴 Иены на руках » {num3}\n"
@@ -173,7 +167,7 @@ async def Mini(message: Message, bot: Bot, api: API):
     num4 = await database.pretty(data[15])
     if data[11] == 0:
         await message.answer(
-            message=f"🎯 Главное меню{server_settings[25]}\n\n"
+            message=f"🎯 Главное меню{server_settings[21]}\n\n"
                     f"💵 Доллары на руках » {num1}\n"
                     f"💶 Евро на руках » {num2}\n"
                     f"💴 Иены на руках » {num3}\n"
@@ -199,7 +193,7 @@ async def Mini(message: Message, bot: Bot, api: API):
         )
     if data[11] > 0:
         await message.answer(
-            message=f"🎯 Главное меню{server_settings[25]}\n\n"
+            message=f"🎯 Главное меню{server_settings[21]}\n\n"
                     f"💵 Доллары на руках » {num1}\n"
                     f"💶 Евро на руках » {num2}\n"
                     f"💴 Иены на руках » {num3}\n"
@@ -241,7 +235,7 @@ async def MiniFix(from_id, bot: Bot, api: API):
         await bot.api.messages.send(
             user_id=from_id,
             random_id=random.randint(1, 999999999),
-            message=f"🎯 Главное меню{server_settings[25]}\n\n"
+            message=f"🎯 Главное меню{server_settings[21]}\n\n"
                     f"💵 Доллары на руках » {num1}\n"
                     f"💶 Евро на руках » {num2}\n"
                     f"💴 Иены на руках » {num3}\n"
@@ -269,7 +263,7 @@ async def MiniFix(from_id, bot: Bot, api: API):
         await bot.api.messages.send(
             user_id=from_id,
             random_id=random.randint(1, 999999999),
-            message=f"🎯 Главное меню{server_settings[25]}\n\n"
+            message=f"🎯 Главное меню{server_settings[21]}\n\n"
                     f"💵 Доллары на руках » {num1}\n"
                     f"💶 Евро на руках » {num2}\n"
                     f"💴 Иены на руках » {num3}\n"

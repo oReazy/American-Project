@@ -16,7 +16,7 @@ from modules import database
 async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'CityHall.Show'")
     data = await database.getUserData(message.from_id)
-    if data[60] == 'Нету':
+    if data[35] == '❌ Отсутствует':
         await message.answer(
             message=f"🎯 » 🗺 » 🏛 » 🏛 Мэрия\n\n"
                     f"👱‍♀ Добро пожаловать в мэрию, чем могу быть обязана?",

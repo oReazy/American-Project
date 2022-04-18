@@ -17,7 +17,7 @@ from modules import database
 async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'historyNicks.Show'")
     data = await database.getUserData(message.from_id)
-    if data[56] == '[]':
+    if data[33] == '[]':
         await message.answer(
             message=f"🎯 » 📃 История ников\n\n❌ История ников пуста.",
             keyboard=(
@@ -27,7 +27,7 @@ async def Show(message: Message, bot: Bot, api: API):
             )
         )
     else:
-        list_nicks = ast.literal_eval(data[56])
+        list_nicks = ast.literal_eval(data[33])
         nicks_end = ''
         count = 0
         while count < len(list_nicks) or count >= 20:

@@ -21,7 +21,7 @@ async def Check(message: Message, bot: Bot, api: API):
 async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'report.Show'")
     data = await database.getUserData(message.from_id)
-    if int(data[76]) <= int(time.time()):
+    if int(data[46]) <= int(time.time()):
         await message.answer(
             message=f"🎯 » 📣 Связь с администрацией\n\n"
                     f"💬 Вы собираетесь отправить сообщение для администрации. Будьте внимательны, чтобы ваш репорт не нарушал правила, "

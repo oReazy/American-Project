@@ -1,18 +1,17 @@
 import asyncio
 import json, re
-import random
+import random, datetime
 
 import aiomysql
 
 loop = asyncio.get_event_loop()
+
 # ---------------------------------------------------------------------------------------
-# ПОДКЛЮЧЕНИЕ К БАЗЕ ДАННЫХ
 
 USER = 'root'
 PASSWORD = ''
 HOST = 'localhost'
-DATABASE = 'bot'
-
+DATABASE = 'game'
 
 # ---------------------------------------------------------------------------------------
 
@@ -27,135 +26,142 @@ async def connect_base():  # Подключение к БД
     return connected
 
 
+#
+# ДОКУМЕНТАЦИЯ ПО МАССИВАМ
+#
+# VIP
+# ---------------------------------------------------------------------------------------
+#     ID | ОПИСАНИЕ
+# ---------------------------------------------------------------------------------------
+#      0 | ТИП VIP (если нет, то устанавливается no vip)
+#      1 | ВРЕМЯ ДЕЙСТВИЯ (ставится из time.time), время, до которого действует VIP (если 10, то навсегда)
+#
+#
+#
+#
+# LICENSE
+# ---------------------------------------------------------------------------------------
+#     ID | ОПИСАНИЕ
+# ---------------------------------------------------------------------------------------
+#      0 | ЛИЦЕНЗИЯ НА АВТОМОБИЛЬ
+#      1 | ЛИЦЕНЗИЯ НА МОТОЦИКЛ
+#      2 | ЛИЦЕНЗИЯ НА ГРУЗОВОЙ ТРАНСПОРТ
+#      3 | ЛИЦЕНЗИЯ НА ОРУЖИЕ
+#      4 | ЛИЦЕНЗИЯ НА ЛОВЛЮ РЫБЫ
+#      5 | ЛИЦЕНЗИЯ НА ПИЛОТИРОВАНИЕ
+#      6 | ЛИЦЕНЗИЯ НА ВОДНЫЙ ТРАНСПОРТ
+#      7 | ЛИЦЕНЗИЯ НА ОХОТУ
+#
+#
+#
+#
+#
+# CLOTHES
+# ---------------------------------------------------------------------------------------
+#     ID | ОПИСАНИЕ
+# ---------------------------------------------------------------------------------------
+#      0 | ОДЕЖДА НА ГОЛОВЕ
+#      1 | ОДЕЖДА НА ТЕЛЕ
+#      2 | ОДЕЖДА НА НОГАХ
+#      3 | ОДЕЖДА НА СТУПНЯХ (БОТИНКИ)
+#      4 | ОДЕЖДА НА НА РУКАХ (ПАЛЬЦЫ)
+#      5 | ОДЕЖДА НА ШЕЕ
+#
+#
+#
+#
+#
+# FIGHTING
+# ---------------------------------------------------------------------------------------
+#     ID | ОПИСАНИЕ
+# ---------------------------------------------------------------------------------------
+#      0 | ВЫБРАННЫЙ СТИЛЬ БОЯ
+#      1 | СТИЛЬ БОЯ КУНГ-ФУ
+#      2 | СТИЛЬ БОЯ КНИХЭД
+#      3 | СТИЛЬ БОЯ БОКС
+#      4 | СТИЛЬ БОЯ ЭЛБОУ
+#
+#
+# SKILLARMOR
+# ---------------------------------------------------------------------------------------
+#     ID | ОПИСАНИЕ
+# ---------------------------------------------------------------------------------------
+#      0 | СКИЛЛ ВЛАДЕНИЯ ПИСТОЛЕТОМ
+#      1 | СКИЛЛ ВЛАДЕНИЯ AK-47
+#      2 | СКИЛЛ ВЛАДЕНИЯ ДРОБОВИК
+#      3 | СКИЛЛ ВЛАДЕНИЯ СНАЙПЕРСКАЯ ВИНТОВКА
+#      4 | СКИЛЛ ВЛАДЕНИЯ
+#
+#
+#
+# SKILLWORKS
+# ---------------------------------------------------------------------------------------
+#     ID | ОПИСАНИЕ
+# ---------------------------------------------------------------------------------------
+#      0 | СКИЛЛ РАБОТЫ ФЕРМЕРА
+#      1 | СКИЛЛ ВОЖДЕНИЯ АВТОМОБИЛЕМ
+#      2 | СКИЛЛ РАБОТЫ ДАЛЬНОБОЙЩИКОМ
+#      3 | СКИЛЛ РАБОТЫ ТАКСИСТА
+#      4 | СКИЛЛ РАБОТЫ ПИЛОТА
+#
+#
+#
+# ADMIN_INFO
+# ---------------------------------------------------------------------------------------
+#     ID | ОПИСАНИЕ
+# ---------------------------------------------------------------------------------------
+#      0 | ИМЯ АДМИНИСТРАТОРА
+#      1 | ВОЗРАСТ АДМИНИСТРАТОРА
+#      2 | ГОРОД ПРОЖИВАНИЕ АДМИНИСТРАТОРА
+#      3 | DISCORD АДМИНИСТРАТОРА
+#      4 | ОПИСАНИЕ АДМИНИСТРАТОРА
+#      5 | МАССИВ ДАТА ПОСТАНОВЛЕНИЯ
+#      6 | МАССИВ ДАТА ПОСТАНОВЛЕНИЯ/СНЯТИЯ
+#      7 | МАССИВ ДАТА ПОВЫШЕНИЙ/ПОНИЖЕНИЙ
+#      8 | СТАТУС АДМИНИСТРАТОРА
+#      9 | НАЗВАНИЕ ДОЛЖНОСТИ
+#
+#
+#
+# INVENTORY
+# ---------------------------------------------------------------------------------------
+#     ID | ОПИСАНИЕ
+# ---------------------------------------------------------------------------------------
+#      0 | ФИШКИ КАЗИНО
+#      1 | ДЕРЕВО
+#      2 | МЕТАЛЛ
+#      3 | ПОДАРКИ
+#      4 | БРОНЗОВАЯ РУЛЕТКА
+#      5 | СЕРЕБРЯНАЯ РУЛЕТКА
+#      6 | ЗОЛОТАЯ РУЛЕТКА
+#
+#
 async def registerNewAccaunt(user_id):  # Создание нового аккаунта в базе данных
     try:
         connection = await connect_base()
         async with connection.cursor() as cursor:
-            # new_user = "INSERT INTO `users` (vk_id, state, nick, mail, telephone, lvl, exp, sex, age, nationality, " \
-            #            "admin, dollars, euro, yen, pounds, bank_dollars, bank_euro, bank_yen, bank_pounds, " \
-            #            "tracing, donate, VIP, lider, member, rang, license_auto, license_motorbike, " \
-            #            "license_cargocar, license_gun, license_fish, license_air, license_water, " \
-            #            "license_hunting, warns, clothes_head, clothes_body, clothes_legs, " \
-            #            "clothes_boots, clothes_hands, clothes_neck, numTelephone, drugs, " \
-            #            "work, fighting_kung_fu, fighting_kneehed, fighting_boks, fighting_elbow, " \
-            #            "fighting_selected, mask, skill_pistol, skill_ak47, skill_drubovic, " \
-            #            "skill_sniper, blacklist, history_punish, history_nicks, history_reports, " \
-            #            "health, eat, passport, passport_serial, passport_number, marriage, " \
-            #            "military_card, casino_chips, admin_info, mailing_project, mailing_server, " \
-            #            "bank_card, skill_farmer, skill_drive, skill_trucker, skill_taxi, skill_air
-            #            "temporary_var, limit_report, last_message, reDesign, timeEventCollectors, inventory
-            #            "family) VALUES " \
-            #            f"({user_id}, " \  # vk_id
-            # f"'', " \  # state
-            # f"'', " \  # nick
-            # f"'', " \  # mail
-            # f"'', " \  # telephone
-            # f"'', " \  # lvl
-            # f"'', " \  # exp
-            # f"'', " \  # sex
-            # f"'', " \  # age
-            # f"'', " \  # nationality
-            # f"'', " \  # admin
-            # f"'', " \  # dollars
-            # f"'', " \  # euro
-            # f"'', " \  # yen
-            # f"'', " \  # pounds
-            # f"'', " \  # bank_dollars
-            # f"'', " \  # bank_euro
-            # f"'', " \  # bank_yen
-            # f"'', " \  # bank_pounds
-            # f"'', " \  # tracing
-            # f"'', " \  # donate
-            # f"'', " \  # VIP
-            # f"'', " \  # lider
-            # f"'', " \  # member
-            # f"'', " \  # rang
-            # f"'', " \  # license_auto
-            # f"'', " \  # license_motorbike
-            # f"'', " \  # license_cargocar
-            # f"'', " \  # license_gun
-            # f"'', " \  # license_fish
-            # f"'', " \  # license_air
-            # f"'', " \  # license_water
-            # f"'', " \  # license_hunting
-            # f"'', " \  # warns
-            # f"'', " \  # clothes_head
-            # f"'', " \  # clothes_body
-            # f"'', " \  # clothes_legs
-            # f"'', " \  # clothes_boots
-            # f"'', " \  # clothes_hands
-            # f"'', " \  # clothes_neck
-            # f"'', " \  # numTelephone
-            # f"'', " \  # drugs
-            # f"'', " \  # work
-            # f"'', " \  # fighting_kung_fu
-            # f"'', " \  # fighting_kneehed
-            # f"'', " \  # fighting_boks
-            # f"'', " \  # fighting_elbow
-            # f"'', " \  # fighting_selected
-            # f"'', " \  # mask
-            # f"'', " \  # skill_pistol
-            # f"'', " \  # skill_ak47
-            # f"'', " \  # skill_drubovic
-            # f"'', " \  # skill_sniper
-            # f"'', " \  # blacklist
-            # f"'', " \  # history_punish
-            # f"'', " \  # history_nicks
-            # f"'', " \  # history_reports
-            # f"'', " \  # health
-            # f"'', " \  # eat
-            # f"'', " \  # passport
-            # f"'', " \  # passport_serial
-            # f"'', " \  # passport_number
-            # f"'', " \  # marriage
-            # f"'', " \  # military_card
-            # f"'', " \  # casino_chips
-            # f"'', " \  # admin_info
-            # f"'', " \  # mailing_project
-            # f"'', " \  # mailing_server
-            # f"'', " \  # bank_card
-            # f"'', " \  # skill_farmer
-            # f"'', " \  # skill_drive
-            # f"'', " \  # skill_trucker
-            # f"'', " \  # skill_taxi
-            # f"'', " \  # skill_air
-            # f"'', " \  # temporary_var
-            # f"'', " \  # limit_report
-            # f"'', " \  # last_message
-            # f"'', " \  # reDesign
-            # f"'', " \  # timeEventCollectors
-            # f"'' " \  # inventory
-            # f"'', " \  # family
-            # f")"
-            admin_info = {"admin_name": "", "admin_age": "", "admin_city_live": "", "admin_discord": "",
-                          "admin_desc": "", "admin_date_add": "", "admin_date_upp": "", "admin_date_leave": "",
-                          "admin_status": "", "admin_post": ""}
+            VIP_table = ['no vip', 0]
+            License = ['❌ Отсутствует', '❌ Отсутствует', '❌ Отсутствует', '❌ Отсутствует', '❌ Отсутствует', '❌ Отсутствует', '❌ Отсутствует', '❌ Отсутствует']
+            clothes = ['Пусто', 'Пусто', 'Пусто', 'Пусто', 'Пусто', 'Пусто']
+            admin_info = ['', '', '', '', '', '', '',  '', '', '']
             new_user = "INSERT INTO `users` (vk_id, state, nick, mail, telephone, lvl, exp, sex, age, nationality, " \
                        "admin, dollars, euro, yen, pounds, bank_dollars, bank_euro, bank_yen, bank_pounds, " \
-                       "tracing, donate, VIP, lider, member, rang, license_auto, license_motorbike, " \
-                       "license_cargocar, license_gun, license_fish, license_air, license_water, " \
-                       "license_hunting, warns, clothes_head, clothes_body, clothes_legs, " \
-                       "clothes_boots, clothes_hands, clothes_neck, numTelephone, drugs, " \
-                       "work, fighting_kung_fu, fighting_kneehed, fighting_boks, fighting_elbow, " \
-                       "fighting_selected, mask, skill_pistol, skill_ak47, skill_drubovic, " \
-                       "skill_sniper, blacklist, history_punish, history_nicks, history_reports, " \
-                       "health, eat, passport, passport_serial, passport_number, marriage, " \
-                       "military_card, casino_chips, admin_info, mailing_project, mailing_server, " \
-                       "bank_card, skill_farmer, skill_drive, skill_trucker, skill_taxi, skill_air, " \
-                       "temporary_var, limit_report, last_message, reDesign, timeEventCollectors, inventory," \
-                       "family, house, biz, cars) VALUES " \
+                       "donate, VIP, member, rang, license, warns, clothes, " \
+                       "work, fighting, skillArmor, skillWorks, blacklist, history_punish, history_nicks, history_reports, " \
+                       "passport, passport_serial, passport_number, marriage, " \
+                       "military_card, admin_info, mailing_project, mailing_server, bank_card, " \
+                       "temporary_var, limit_report, last_message, reDesign, inventory," \
+                       "family) VALUES " \
                        f"({user_id}, " \
                        f"'', " \
-                       f"'', " \
-                       f"'No email address', " \
+                       f"'На этапе регистрации', " \
+                       f"'❌ Отсутствует', " \
                        f"'❌ Отсутствует', " \
                        f"'1', " \
                        f"'0', " \
-                       f"'', " \
+                       f"'Пол не выбран', " \
                        f"'0', " \
-                       f"'', " \
-                       f"'0', " \
-                       f"'0', " \
+                       f"'Национальность не выбрана', " \
                        f"'0', " \
                        f"'0', " \
                        f"'0', " \
@@ -165,74 +171,42 @@ async def registerNewAccaunt(user_id):  # Создание нового акка
                        f"'0', " \
                        f"'0', " \
                        f"'0', " \
-                       f"'❌ Отсутствует', " \
-                       f"'Нет', " \
-                       f"'Нет', " \
                        f"'0', " \
-                       f"'❌ Отсутствует', " \
-                       f"'❌ Отсутствует', " \
-                       f"'❌ Отсутствует', " \
-                       f"'❌ Отсутствует', " \
-                       f"'❌ Отсутствует', " \
-                       f"'❌ Отсутствует', " \
-                       f"'❌ Отсутствует', " \
-                       f"'❌ Отсутствует', " \
+                       f"\"{VIP_table}\", " \
+                       f"'Без организации', " \
                        f"'0', " \
-                       f"'Ничего', " \
-                       f"'Ничего', " \
-                       f"'Ничего', " \
-                       f"'Ничего', " \
-                       f"'Ничего', " \
-                       f"'Ничего', " \
-                       f"'0', " \
-                       f"'0', " \
+                       f"\"{License}\", " \
+                       f"'[]', " \
+                       f"\"{clothes}\", " \
                        f"'Безработный', " \
-                       f"'0', " \
-                       f"'0', " \
-                       f"'0', " \
-                       f"'0', " \
-                       f"'Бокс', " \
-                       f"'Нету', " \
-                       f"'0', " \
-                       f"'0', " \
-                       f"'0', " \
-                       f"'0', " \
+                       f"'[0, 0, 0, 0, 0]', " \
+                       f"'[0, 0, 0, 0]', " \
+                       f"'[0, 0, 0, 0, 0]', " \
                        f"'[]', " \
                        f"'[]', " \
                        f"'[]', " \
                        f"'[]', " \
-                       f"'100', " \
-                       f"'100', " \
-                       f"'Нету', " \
-                       f"'0', " \
-                       f"'0', " \
-                       f"'Не женат(а)', " \
-                       f"'❌ Отсутствует', " \
-                       f"'0', " \
-                       f"'[]', " \
-                       f"'❌ Не подписаны', " \
-                       f"'❌ Не подписаны', " \
                        f"'❌ Отсутствует', " \
                        f"'0', " \
                        f"'0', " \
+                       f"'Не женат(а)'," \
+                       f"'❌ Отсутствует'," \
+                       f"\"{admin_info}\", " \
+                       f"'❌ Не подписаны', " \
+                       f"'❌ Не подписаны', " \
+                       f"'❌ Отсутствует', " \
+                       f"'', " \
                        f"'0', " \
                        f"'0', " \
                        f"'0', " \
-                       f"'0', " \
-                       f"'0', " \
-                       f"'0', " \
-                       f"'0', " \
-                       f"'0'," \
-                       f"'[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]', " \
-                       f"'0'," \
-                       f"'[]'," \
-                       f"'[]'," \
-                       f"'[]'" \
+                       f"'[0, 0, 0, 0, 0, 0, 0]', " \
+                       f"'-1'" \
                        f")"
             await cursor.execute(new_user)
             await connection.commit()
             connection.close()
             print(f'\033[38m[\033[33m!\033[38m][\033[33mDEBUG\033[38m] Встречайте нового пользователя')
+            # [{datetime.datetime.now().hour}:{datetime.datetime.now().minute}:{datetime.datetime.now().second}]
     except Exception as ex:
         print(f'\033[38m[\033[31m!\033[38m][\033[33mDEBUG\033[38m] Не удалось создать пользователя, причина: {ex}')
 
@@ -350,8 +324,9 @@ async def addMultiBdData(table, keys, values):  # Изменение перем�
         connection.close()
 
 
-# --------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # Код который ниже написан не связан с базами данных
+
 
 async def exitBot():  # делает выход из активной переписки
     return
@@ -366,7 +341,7 @@ async def pretty(num):
     return num1
 
 
-def regularCheck(key, value):
+async def regularCheck(key, value):
     # data = database.getUserData(message.from_id)
     # database.setUserData(message.from_id, 'state', "'settings.addMail_check'")
     validate = re.match(rf'{key}', value, flags=re.IGNORECASE)
@@ -377,20 +352,23 @@ def regularCheck(key, value):
         return 1, value
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+
+
 async def def_new_lvl(message, bot, api, data, server_data):
-    new_exp = int(data[7]) - (int(int(data[6]) * int(server_data[16])))
+    new_exp = int(data[7]) - (int(int(data[6]) * int(server_data[20])))
     new_lvl = int(data[6]) + 1
     await setMultiUserData(message.from_id, f"lvl = '{new_lvl}', exp = '{new_exp}'")
     await message.answer(
         message=f"⏫ Поздравляем. Теперь у вас {new_lvl} уровень")
     data = await getUserData(message.from_id)
-    if int(data[7]) >= int(int(data[6]) * int(server_data[16])):
+    if int(data[7]) >= int(int(data[6]) * int(server_data[20])):
         await def_new_lvl(message, bot, api, data, server_data)
 
 
 
 async def def_new_lvl_payday(bot, api, data, server_data, new_exp):
-    new_exp = new_exp - (int(int(data[6]) * int(server_data[16])))
+    new_exp = new_exp - (int(int(data[6]) * int(server_data[20])))
     new_lvl = int(data[6]) + 1
     await setMultiUserData(data[1], f"lvl = '{new_lvl}', exp = '{new_exp}'")
     await bot.api.messages.send(
@@ -400,5 +378,5 @@ async def def_new_lvl_payday(bot, api, data, server_data, new_exp):
         message=f'⏫ Поздравляем. Теперь у вас {new_lvl} уровень'
     )
     data = await getUserData(data[1])
-    if int(data[7]) >= int(int(data[6]) * int(server_data[16])):
+    if int(data[7]) >= int(int(data[6]) * int(server_data[20])):
         await def_new_lvl_payday(bot, api, data, server_data, new_exp)

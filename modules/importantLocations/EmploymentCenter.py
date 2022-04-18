@@ -8,7 +8,7 @@ from modules import database
 
 # ------------------------------------------------------------------------------------------
 
-# Центр лицензирования
+# Центр трудоустройства
 
 # -------------------------------------------------------------------------------------------
 
@@ -16,7 +16,7 @@ from modules import database
 async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'EmploymentCenter.Show'")
     await message.answer(
-        message=f"🎯 » 🗺 » 🏛 » ⚒ Центр занятости",
+        message=f"🎯 » 🗺 » 🏛 » ⚒ Центр занятости\n\n⚠ В РАЗРАБОТКЕ",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "map.importandPlaces1"}), color=KeyboardButtonColor.PRIMARY)

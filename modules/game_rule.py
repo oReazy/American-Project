@@ -18,7 +18,7 @@ async def Show(message: Message, bot: Bot, api: API):
     setting_server = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
         message=f"🎯 » 📖 Правила\n\n"
-                f"{setting_server[19]}",
+                f"{setting_server[6]}",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "mainMenu.Show"}), color=KeyboardButtonColor.PRIMARY)

@@ -35,10 +35,10 @@ async def Show(message: Message, bot: Bot, api: API):
 async def reDesign(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'settings.reDesign'")
     data = await database.getUserData(message.from_id)
-    if data[78] == 0:
+    if data[47] == 0:
         button = 'Включить компактный дизайн'
         status = '❌ Выключен'
-    if data[78] == 1:
+    if data[47] == 1:
         button = 'Выключить компактный дизайн'
         status = '✅ Включен'
     await database.setUserData(message.from_id, 'state', "'settings.Show'")
@@ -59,7 +59,7 @@ async def reDesign(message: Message, bot: Bot, api: API):
 
 async def reDesignSwitch(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[78] == 0:
+    if data[47] == 0:
         await database.setUserData(message.from_id, 'reDesign', "'1'")
         await message.answer(
             message=f"✅ Вы успешно обновили вид главного меню",
@@ -72,7 +72,7 @@ async def reDesignSwitch(message: Message, bot: Bot, api: API):
             )
         )
     else:
-        if data[78] == 1:
+        if data[47] == 1:
             await database.setUserData(message.from_id, 'reDesign', "'0'")
             await message.answer(
                 message=f"✅ Вы успешно обновили вид главного меню",
@@ -174,7 +174,6 @@ async def editMail(message: Message, bot: Bot, api: API):
 
 async def editMail_check(message: Message, bot: Bot, api: API):
     result = await database.regularCheck('^(?!.*@.*@.*$)(?!.*@.*\-\-.*\..*$)(?!.*@.*\-\..*$)(?!.*@.*\-$)(.*@.+(\..{1,11})?)$', str(message.text))
-    print(result)
     if result[0] == 1:
         await database.setUserData(message.from_id, 'mail', f"'{result[1]}'")
         await editMail_OK(message, bot, api)
@@ -208,13 +207,13 @@ async def Mailing(message: Message, bot: Bot, api: API):
     KEYBOARD_MAILING = Keyboard(one_time=True, inline=False)
     KEYBOARD_MAILING.add(Text("◀ Назад", {"cmd": "settings.Show"}), color=KeyboardButtonColor.PRIMARY)
     KEYBOARD_MAILING.row()
-    temporary = str(data[67])
+    temporary = str(data[41])
     if temporary != '❌ Не подписан':
         KEYBOARD_MAILING.add(Text("📮 Отписаться от рассылок проекта", {"cmd": "settings.MailingLeaveProject"}), color=KeyboardButtonColor.SECONDARY)
     else:
         KEYBOARD_MAILING.add(Text("📮 Подписаться на рассылки проекта", {"cmd": "settings.MailingAddProject"}), color=KeyboardButtonColor.SECONDARY)
     KEYBOARD_MAILING.row()
-    temporary = str(data[68])
+    temporary = str(data[42])
     if temporary != '❌ Не подписан':
         KEYBOARD_MAILING.add(Text("📮 Отписаться от рассылок сервера", {"cmd": "settings.MailingLeaveServer"}), color=KeyboardButtonColor.SECONDARY)
     else:
@@ -223,8 +222,8 @@ async def Mailing(message: Message, bot: Bot, api: API):
 
     await message.answer(
         message=f"🎯 » ⚙ » 📬 Рассылки\n\n"
-                f"📮 Рассылка с новостями проекта » {data[67]} » 💵 {await database.pretty(server_settings[12])}\n"
-                f"📮 Рассылка с новостями сервера » {data[68]} » 💵 {await database.pretty(server_settings[13])}\n\n"
+                f"📮 Рассылка с новостями проекта » {data[41]} » 💵 {await database.pretty(server_settings[14])}\n"
+                f"📮 Рассылка с новостями сервера » {data[42]} » 💵 {await database.pretty(server_settings[15])}\n\n"
                 f"💵 Мы платим за рассылки! Читайте новости нашего проекта и получайте гарантированное вознаграждение за это. Для того, "
                 f"чтобы получить вознаграждение, вам необходимо нажать на специальную кнопку в рассылке и после чего вы получите деньги.\n"
                 f"Кроме этого, в наших рассылках мы информируем наших игроков о грядущих обновляниях, а серверная рассылка позволяет "

@@ -18,7 +18,7 @@ from modules import database
 async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'factory.Show'")
     data = await database.getUserData(message.from_id)
-    if data[43] == 'Безработный' or data[43] != 'Работник завода':
+    if data[27] == 'Безработный' or data[27] != 'Работник завода':
         await message.answer(
             message=f"🏭 Завод\n\n"
                     f"👷 Привет, нам на завод срочно нужны работники",
@@ -36,7 +36,7 @@ async def Show(message: Message, bot: Bot, api: API):
     else:
         await message.answer(
             message=f"🏭 Завод\n\n"
-                    f"👷 Привет, {data[3]}. Мы тебя уже заждались! Давай пойдешь за станок",
+                    f"👷 Здравствуй, {data[3]}.\n\nУ нас на заводе есть множество свободных рабочих мест.",
             keyboard=(
                 Keyboard(one_time=True, inline=False)
                     .add(Text("◀ Назад", {"cmd": "map.newGuysWorks"}), color=KeyboardButtonColor.PRIMARY)
@@ -126,11 +126,11 @@ async def rab1_2(message: Message, bot: Bot, api: API):
 
 async def rab1_3(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'block.Show'")
-    await message.answer('🚪 Вы вышли из раздевалки и идете на свое производственное место')
+    await message.answer('🚪 Вы вышли из раздевалки и идете на свое рабочее место')
     await asyncio.sleep(10)
     await database.setUserData(message.from_id, 'state', "'factory.rab1_3'")
     await message.answer(
-        message=f"🏭 Вы на производственном месте. Готовы начать работу?",
+        message=f"🏭 Вы на рабочем месте. Готовы начать работу?",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("Готов", {"cmd": "factory.rab1_4"}), color=KeyboardButtonColor.POSITIVE)
@@ -261,7 +261,7 @@ async def rab1_12(message: Message, bot: Bot, api: API):
 async def rab1_13(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'block.Show'")
     data = await database.getUserData(message.from_id)
-    new_data = int(data[75]) + 1
+    new_data = int(data[44]) + 1
     await database.setMultiUserData(message.from_id, f"temporary_var = '{new_data}'")
     await rab1_14(message, bot, api)
 
@@ -283,11 +283,11 @@ async def rab1_end2(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'factory.Show'")
     data = await database.getUserData(message.from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
-    zarplata = int(data[75]) * 15 * server_settings[15]
+    zarplata = int(data[44]) * 15 * server_settings[26]
     itog = int(data[12]) + zarplata
     await database.setUserData(message.from_id, 'dollars', f"'{itog}'")
     await message.answer(
-        message=f"👷 » Спасибо за смену. Вы сделали {int(data[75])} изделий. Ты заработал {zarplata} долларов (💵)",
+        message=f"👷 » Спасибо за смену. Вы сделали {int(data[44])} изделий. Ты заработал {zarplata} долларов (💵)",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("💵 Забрать деньги", {"cmd": "factory.Show"}), color=KeyboardButtonColor.SECONDARY)

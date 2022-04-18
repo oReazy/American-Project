@@ -18,7 +18,7 @@ from modules import database
 async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'warehouse.Show'")
     data = await database.getUserData(message.from_id)
-    if data[43] == 'Безработный' or data[43] != 'Работник склада':
+    if data[27] == 'Безработный' or data[27] != 'Работник склада':
         await message.answer(
             message=f"📦 Склад\n\n"
                     f"🧑 Здраствуй, нам необходимы грузчики для того, чтобы разгрузить вагоны",
@@ -94,4 +94,3 @@ async def Info2(message: Message, bot: Bot, api: API):
     )
 
 # ---------------------------------------------------------------------------------------------------------
-

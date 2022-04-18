@@ -16,16 +16,12 @@ from modules import database
 async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'casino.Show'")
     inventory = await database.getUserData(message.from_id)
-    inventory = inventory[80]
-    inventory = inventory.replace("]", "")
-    inventory = inventory.replace("[", "")
-    inventory = inventory.replace('"', "")
-    inventory = inventory.replace("'", "")
-    inventory = inventory.split(', ')
+    inventory = ast.literal_eval(inventory[48])
+    inventory = list(inventory)
 
     await message.answer(
         message=f"🎯 » 🗺 » 🏛 » 🎰 Казино\n\n"
-                f"🧿 У вас » {inventory[12]} фишек\n\n"
+                f"🧿 У вас » {inventory[0]} фишек\n\n"
                 f"🧔🏻 Сотрудник казино » Чем мы можем вам помочь?",
         keyboard=(
             Keyboard(one_time=True, inline=False)
@@ -43,23 +39,17 @@ async def Show(message: Message, bot: Bot, api: API):
 async def Dice(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'casino.Dice'")
     inventory = await database.getUserData(message.from_id)
-    inventory = inventory[80]
-    inventory = inventory.replace("]", "")
-    inventory = inventory.replace("[", "")
-    inventory = inventory.replace('"', "")
-    inventory = inventory.replace("'", "")
-    inventory = inventory.split(', ')
+    inventory = ast.literal_eval(inventory[48])
+    inventory = list(inventory)
 
     await message.answer(
         message=f"🎲 Dice\n\n"
-                f"🧿 У вас » {inventory[12]} фишек\n\n",
+                f"🧿 У вас » {inventory[0]} фишек\n\n",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "casino.Show"}), color=KeyboardButtonColor.PRIMARY)
                 .row()
                 .add(Text("🎲 Поставить ставку", {"cmd": "casino.DiceBet"}), color=KeyboardButtonColor.SECONDARY)
-                .row()
-                .add(Callback("💬 Беседа казино", payload={"cmd": "casino.beseda"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("ℹ Правила игры", {"cmd": "casino.DiceBetRules"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
@@ -84,15 +74,11 @@ async def DiceBetRules(message: Message, bot: Bot, api: API):
 async def DiceBet(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'casino.DiceBetCheck'")
     inventory = await database.getUserData(message.from_id)
-    inventory = inventory[80]
-    inventory = inventory.replace("]", "")
-    inventory = inventory.replace("[", "")
-    inventory = inventory.replace('"', "")
-    inventory = inventory.replace("'", "")
-    inventory = inventory.split(', ')
+    inventory = ast.literal_eval(inventory[48])
+    inventory = list(inventory)
     await message.answer(
         message=f"🎲 » 🎲 Поставить ставку\n\n"
-                f"🧿 У вас » {inventory[12]} фишек\n\n"
+                f"🧿 У вас » {inventory[0]} фишек\n\n"
                 f"📝 Выберите или напишите размер ставки",
         keyboard=(
             Keyboard(one_time=True, inline=False)
@@ -123,30 +109,22 @@ async def DiceBet(message: Message, bot: Bot, api: API):
 async def DiceBetCheck(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     inventory = await database.getUserData(message.from_id)
-    inventory = inventory[80]
-    inventory = inventory.replace("]", "")
-    inventory = inventory.replace("[", "")
-    inventory = inventory.replace('"', "")
-    inventory = inventory.replace("'", "")
-    inventory = inventory.split(', ')
+    inventory = ast.literal_eval(inventory[48])
+    inventory = list(inventory)
     if message.text.isdigit():
         count = int(message.text)
         if 0 < count:
-            if int(inventory[12]) >= count:
+            if int(inventory[0]) >= count:
                 rand = int(random.randint(0, 100))
                 if rand >= 65:
-                    inventory[12] = int(inventory[12]) + count
-                    inventory = str(inventory)
-                    inventory = inventory.replace("'", "")
+                    inventory[0] = int(inventory[0]) + count
                     await database.setMultiUserData(message.from_id, f"inventory = '{inventory}'")
                     await message.answer(
                         message=f"✅ Вы выиграли и получили {count} фишек."
                     )
                     await DiceBet(message, bot, api)
                 else:
-                    inventory[12] = int(inventory[12]) - count
-                    inventory = str(inventory)
-                    inventory = inventory.replace("'", "")
+                    inventory[0] = int(inventory[0]) - count
                     await database.setMultiUserData(message.from_id, f"inventory = '{inventory}'")
                     await message.answer(
                         message=f"❌ Вы проиграли {count} фишек."
@@ -176,7 +154,7 @@ async def BuyChips(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'casino.BuyChipsCheck'")
     await message.answer(
         message=f"🎯 » 🗺 » 🏛 » 🎰 » 🧿 Купить фишки\n\n"
-                f"🧔🏻 Сотрудник казино » Цена одной фишки — 100 долларов (💵)\n\n"
+                f"🧔🏻 Сотрудник казино » Цена покупки одной фишки — 90 долларов (💵)\n\n"
                 f"📝 Введите желаемое кол-во фишек",
         keyboard=(
             Keyboard(one_time=True, inline=False)
@@ -191,7 +169,7 @@ async def SellChips(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'casino.SellChipsCheck'")
     await message.answer(
         message=f"🎯 » 🗺 » 🏛 » 🎰 » 🧿 Продать фишки\n\n"
-                f"🧔🏻 Сотрудник казино » Цена одной фишки — 90 долларов (💵)\n\n"
+                f"🧔🏻 Сотрудник казино » Цена продажи одной фишки — 80 долларов (💵)\n\n"
                 f"📝 Введите желаемое кол-во фишек",
         keyboard=(
             Keyboard(one_time=True, inline=False)
@@ -207,21 +185,15 @@ async def SellChips(message: Message, bot: Bot, api: API):
 async def SellChipsCheck(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
     inventory = await database.getUserData(message.from_id)
-    inventory = inventory[80]
-    inventory = inventory.replace("]", "")
-    inventory = inventory.replace("[", "")
-    inventory = inventory.replace('"', "")
-    inventory = inventory.replace("'", "")
-    inventory = inventory.split(', ')
+    inventory = ast.literal_eval(inventory[48])
+    inventory = list(inventory)
     if message.text.isdigit():
         count = int(message.text)
         if 0 < count:
-            final_dollar = count * 90
-            if int(inventory[12]) >= count:
+            final_dollar = count * 80
+            if int(inventory[0]) >= count:
                 new_balance = int(data[12]) + final_dollar
-                inventory[12] = int(inventory[12]) - int(count)
-                inventory = str(inventory)
-                inventory = inventory.replace("'", "")
+                inventory[0] = int(inventory[0]) - int(count)
                 await database.setMultiUserData(message.from_id, f"dollars = '{new_balance}', inventory = '{inventory}'")
                 await message.answer(
                     message=f"✅ Вы успешно обменяли фишки казино на доллары (💵) в кол-ве {count} шт. \n"
@@ -250,22 +222,16 @@ async def BuyChipsCheck(message: Message, bot: Bot, api: API):
     if message.text.isdigit():
         count = int(message.text)
         if 0 < count:
-            final_dollar = count * 100
+            final_dollar = count * 90
             if data[12] >= final_dollar:
 
                 inventory = await database.getUserData(message.from_id)
-                inventory = inventory[80]
-                inventory = inventory.replace("]", "")
-                inventory = inventory.replace("[", "")
-                inventory = inventory.replace('"', "")
-                inventory = inventory.replace("'", "")
-                inventory = inventory.split(', ')
+                inventory = ast.literal_eval(inventory[48])
+                inventory = list(inventory)
 
 
                 new_balance = int(data[12]) - final_dollar
-                inventory[12] = int(inventory[12]) + int(count)
-                inventory = str(inventory)
-                inventory = inventory.replace("'", "")
+                inventory[0] = int(inventory[0]) + int(count)
                 await database.setMultiUserData(message.from_id, f"dollars = '{new_balance}', inventory = '{inventory}'")
                 await message.answer(
                     message=f"✅ Вы успешно обменяли доллары на фишки казино (🧿) в кол-ве {count} шт.\n"

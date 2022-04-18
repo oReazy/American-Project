@@ -8,7 +8,7 @@ from modules import database
 
 # ------------------------------------------------------------------------------------------
 
-# Центр лицензирования
+# Карта - Важные места - Центральный банк
 
 # -------------------------------------------------------------------------------------------
 
@@ -17,10 +17,10 @@ async def Show(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'CentralBank.Show'")
     data = await database.getUserData(message.from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
-    if data[69] == '❌ Отсутствует':
+    if data[43] == '❌ Отсутствует':
         await message.answer(
             message=f"🎯 » 🗺 » 🏛 » 🏦 Центральный банк\n\n"
-                    f"👱‍♀ Доброго времени суток, меня зовут Мария и я являюсь сотрудницей Центрального Банка штата {server_settings[9]}. Чем я могу вам помочь?",
+                    f"👱‍♀ Доброго времени суток, меня зовут Мария и я являюсь сотрудницей Центрального Банка штата {server_settings[2]}. Чем я могу вам помочь?",
             keyboard=(
                 Keyboard(one_time=True, inline=False)
                     .add(Text("◀ Назад", {"cmd": "map.importandPlaces1"}), color=KeyboardButtonColor.PRIMARY)
@@ -32,7 +32,7 @@ async def Show(message: Message, bot: Bot, api: API):
     else:
         await message.answer(
             message=f"🎯 » 🗺 » 🏛 » 🏦 Центральный банк\n\n"
-                    f"👱‍♀ Доброго времени суток, меня зовут Мария и я являюсь сотрудницей Центрального Банка штата {server_settings[9]}. Чем я могу вам помочь?",
+                    f"👱‍♀ Доброго времени суток, меня зовут Мария и я являюсь сотрудницей Центрального Банка штата {server_settings[2]}. Чем я могу вам помочь?",
             keyboard=(
                 Keyboard(one_time=True, inline=False)
                     .add(Text("◀ Назад", {"cmd": "map.importandPlaces1"}), color=KeyboardButtonColor.PRIMARY)
@@ -116,7 +116,7 @@ async def transfer2(message: Message, bot: Bot, api: API):
         id_user = user_get[0].id
         data = await database.getUserData(id_user)
         user_data = await database.getUserData(message.from_id)
-        if data[69] == '❌ Отсутствует':
+        if data[43] == '❌ Отсутствует':
             await message.answer(
                 message=f"❌ У данного человека отсутствует банковская карта. Переводы недоступны"
             )
@@ -171,11 +171,11 @@ async def transferPoundsCheck(message: Message, bot: Bot, api: API):
         count = int(message.text)
         if 0 < count:
             if data[19] >= count:
-                data_to_transfer = await database.getUserData(int(data[75]))
+                data_to_transfer = await database.getUserData(int(data[44]))
                 new_balance = int(data_to_transfer[19]) + count
                 new_balance2 = int(data[19]) - count
                 await database.setMultiUserData(message.from_id, f"bank_pounds = '{new_balance2}'")
-                await database.setMultiUserData(int(data[75]), f"bank_pounds = '{new_balance}'")
+                await database.setMultiUserData(int(data[44]), f"bank_pounds = '{new_balance}'")
                 await message.answer(
                     message=f"✅ Вы успешно перевели деньги {data_to_transfer[3]} на счет в количестве {count} фунтов (💷)"
                     )
@@ -218,11 +218,11 @@ async def transferYenCheck(message: Message, bot: Bot, api: API):
         count = int(message.text)
         if 0 < count:
             if data[18] >= count:
-                data_to_transfer = await database.getUserData(int(data[75]))
+                data_to_transfer = await database.getUserData(int(data[44]))
                 new_balance = int(data_to_transfer[18]) + count
                 new_balance2 = int(data[18]) - count
                 await database.setMultiUserData(message.from_id, f"bank_yen = '{new_balance2}'")
-                await database.setMultiUserData(int(data[75]), f"bank_yen = '{new_balance}'")
+                await database.setMultiUserData(int(data[44]), f"bank_yen = '{new_balance}'")
                 await message.answer(
                     message=f"✅ Вы успешно перевели деньги {data_to_transfer[3]} на счет в количестве {count} иен (💴)"
                     )
@@ -263,11 +263,11 @@ async def transferEuroCheck(message: Message, bot: Bot, api: API):
         count = int(message.text)
         if 0 < count:
             if data[17] >= count:
-                data_to_transfer = await database.getUserData(int(data[75]))
+                data_to_transfer = await database.getUserData(int(data[44]))
                 new_balance = int(data_to_transfer[17]) + count
                 new_balance2 = int(data[17]) - count
                 await database.setMultiUserData(message.from_id, f"bank_euro = '{new_balance2}'")
-                await database.setMultiUserData(int(data[75]), f"bank_euro = '{new_balance}'")
+                await database.setMultiUserData(int(data[44]), f"bank_euro = '{new_balance}'")
                 await message.answer(
                     message=f"✅ Вы успешно перевели деньги {data_to_transfer[3]} на счет в количестве {count} евро (💶)"
                     )
@@ -311,11 +311,11 @@ async def transferDollarsCheck(message: Message, bot: Bot, api: API):
         count = int(message.text)
         if 0 < count:
             if data[16] >= count:
-                data_to_transfer = await database.getUserData(int(data[75]))
+                data_to_transfer = await database.getUserData(int(data[44]))
                 new_balance = int(data_to_transfer[16]) + count
                 new_balance2 = int(data[16]) - count
                 await database.setMultiUserData(message.from_id, f"bank_dollars = '{new_balance2}'")
-                await database.setMultiUserData(int(data[75]), f"bank_dollars = '{new_balance}'")
+                await database.setMultiUserData(int(data[44]), f"bank_dollars = '{new_balance}'")
                 await message.answer(
                     message=f"✅ Вы успешно перевели деньги {data_to_transfer[3]} на счет в количестве {count} долларов (💵)"
                     )

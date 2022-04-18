@@ -50,7 +50,9 @@ async def GetLicences(message: Message, bot: Bot, api: API):
 
 async def BikeCheck(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[27] == '✅ Имеется':
+    dataprava = ast.literal_eval(data[24])
+    dataprava = list(dataprava)
+    if dataprava[1] == '✅ Имеется':
         await message.answer(
             message=f"❌ У вас уже имеются данные права"
         )
@@ -88,9 +90,8 @@ async def BikeQuestion1(message: Message, bot: Bot, api: API):
 
 async def BikeQuestion2(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[2] != 'LicensingCenter.AutoQuestion2':
-        if message.text == '120':
-            await database.setUserData(message.from_id, 'temporary_var', "'1'")
+    if message.text == '120':
+        await database.setUserData(message.from_id, 'temporary_var', "'1'")
     await database.setUserData(message.from_id, 'state', "'LicensingCenter.BikeQuestion2'")
     await message.answer(
         message=f"👨 Инструктор » Разрешена ли парковка на тратуаре?",
@@ -108,10 +109,9 @@ async def BikeQuestion2(message: Message, bot: Bot, api: API):
 
 async def BikeQuestion3(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[2] != 'LicensingCenter.AutoQuestion3':
-        if message.text == 'Только в экстренных ситуациях':
-            new_ball = int(data[75]) + 1
-            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    if message.text == 'Только в экстренных ситуациях':
+        new_ball = int(data[44]) + 1
+        await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
     await database.setUserData(message.from_id, 'state', "'LicensingCenter.BikeQuestion3'")
     await message.answer(
         message=f"👨 Инструктор » На каком расстоянии должен стоять знак аварийной остановки?",
@@ -132,10 +132,9 @@ async def BikeQuestion3(message: Message, bot: Bot, api: API):
 
 async def BikeQuestion4(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[2] != 'LicensingCenter.AutoQuestion4':
-        if message.text == '15 метров':
-            new_ball = int(data[75]) + 1
-            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    if message.text == '15 метров':
+        new_ball = int(data[44]) + 1
+        await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
     await database.setUserData(message.from_id, 'state', "'LicensingCenter.BikeQuestion4'")
     await message.answer(
         message=f"👨 Инструктор » В дождливую погоду тормозной путь транспортного средства?",
@@ -154,10 +153,9 @@ async def BikeQuestion4(message: Message, bot: Bot, api: API):
 
 async def BikeQuestion5(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[2] != 'LicensingCenter.BikeQuestion5':
-        if message.text == 'Увеличивается':
-            new_ball = int(data[75]) + 1
-            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    if message.text == 'Увеличивается':
+        new_ball = int(data[44]) + 1
+        await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
     await database.setUserData(message.from_id, 'state', "'LicensingCenter.BikeQuestion5'")
     await message.answer(
         message=f"👨 Инструктор » Выезд со двора или другой прилегающей территории?",
@@ -174,10 +172,9 @@ async def BikeQuestion5(message: Message, bot: Bot, api: API):
 
 async def BikeQuestion6(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[2] != 'LicensingCenter.BikeQuestion5':
-        if message.text == 'Не считается перекрестком':
-            new_ball = int(data[75]) + 1
-            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    if message.text == 'Не считается перекрестком':
+        new_ball = int(data[44]) + 1
+        await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
     await database.setUserData(message.from_id, 'state', "'LicensingCenter.BikeQuestion6'")
     await message.answer(
         message=f"👨 Инструктор » Какова максимальная скорость мототранспорта по городу?",
@@ -198,13 +195,12 @@ async def BikeQuestion6(message: Message, bot: Bot, api: API):
 
 async def BikeQuestion7(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[2] != 'LicensingCenter.AutoQuestion7':
-        if message.text == '60 км/ч':
-            new_ball = int(data[75]) + 1
-            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    if message.text == '60 км/ч':
+        new_ball = int(data[44]) + 1
+        await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
     await database.setUserData(message.from_id, 'state', "'LicensingCenter.AutoQuestion7'")
     data = await database.getUserData(message.from_id)
-    new_ball = int(data[75])
+    new_ball = int(data[44])
     if new_ball >= 3:
         await message.answer(
             message=f"👨 Инструктор » Вы успешно сдали экзамен на {new_ball} из 6 баллов.\nПолучите свои права, ждем вас снова в центре лицензирования",
@@ -226,7 +222,11 @@ async def BikeQuestion7(message: Message, bot: Bot, api: API):
 
 async def BikeOpen(from_id, bot: Bot):
     await database.setUserData(from_id, 'state', "'LicensingCenter.Show'")
-    await database.setUserData(from_id, 'license_motorbike', "'✅ Имеется'")
+    data = await database.getUserData(from_id)
+    data = ast.literal_eval(data[24])
+    data = list(data)
+    data[1] = '✅ Имеется'
+    await database.setUserData(from_id, 'license', f"\"{data}\"")
     await bot.api.messages.send(
         user_id=from_id,
         random_id=random.randint(1, 999999999),
@@ -254,7 +254,9 @@ async def BikeOpen(from_id, bot: Bot):
 
 async def AutoCheck(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[26] == '✅ Имеется':
+    dataprava = ast.literal_eval(data[24])
+    dataprava = list(dataprava)
+    if dataprava[0] == '✅ Имеется':
         await message.answer(
             message=f"❌ У вас уже имеются данные права"
         )
@@ -292,9 +294,8 @@ async def AutoQuestion1(message: Message, bot: Bot, api: API):
 
 async def AutoQuestion2(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[2] != 'LicensingCenter.AutoQuestion2':
-        if message.text == '60':
-            await database.setUserData(message.from_id, 'temporary_var', "'1'")
+    if message.text == '60':
+        await database.setUserData(message.from_id, 'temporary_var', "'1'")
     await database.setUserData(message.from_id, 'state', "'LicensingCenter.AutoQuestion2'")
     await message.answer(
         message=f"👨 Инструктор » Что нужно сделать при тумане?",
@@ -312,10 +313,9 @@ async def AutoQuestion2(message: Message, bot: Bot, api: API):
 
 async def AutoQuestion3(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[2] != 'LicensingCenter.AutoQuestion3':
-        if message.text == 'Снизить скорость и включить фары':
-            new_ball = int(data[75]) + 1
-            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    if message.text == 'Снизить скорость и включить фары':
+        new_ball = int(data[44]) + 1
+        await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
     await database.setUserData(message.from_id, 'state', "'LicensingCenter.AutoQuestion3'")
     await message.answer(
         message=f"👨 Инструктор » На какой стороне дороги разрешена остановка?",
@@ -332,10 +332,9 @@ async def AutoQuestion3(message: Message, bot: Bot, api: API):
 
 async def AutoQuestion4(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[2] != 'LicensingCenter.AutoQuestion4':
-        if message.text == 'На правой стороне':
-            new_ball = int(data[75]) + 1
-            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    if message.text == 'На правой стороне':
+        new_ball = int(data[44]) + 1
+        await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
     await database.setUserData(message.from_id, 'state', "'LicensingCenter.AutoQuestion4'")
     await message.answer(
         message=f"👨 Инструктор » Что необходимо сделать при повороте на нерегулируемом перекрестке?",
@@ -354,10 +353,9 @@ async def AutoQuestion4(message: Message, bot: Bot, api: API):
 
 async def AutoQuestion5(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[2] != 'LicensingCenter.AutoQuestion5':
-        if message.text == 'Пропустить пешеходов':
-            new_ball = int(data[75]) + 1
-            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    if message.text == 'Пропустить пешеходов':
+        new_ball = int(data[44]) + 1
+        await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
     await database.setUserData(message.from_id, 'state', "'LicensingCenter.AutoQuestion5'")
     await message.answer(
         message=f"👨 Инструктор » Разрешена ли парковка на тротуаре?",
@@ -379,10 +377,9 @@ async def AutoQuestion5(message: Message, bot: Bot, api: API):
 
 async def AutoQuestion6(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[2] != 'LicensingCenter.AutoQuestion6':
-        if message.text == 'Только в экстренных случаях':
-            new_ball = int(data[75]) + 1
-            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    if message.text == 'Только в экстренных случаях':
+        new_ball = int(data[44]) + 1
+        await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
     await database.setUserData(message.from_id, 'state', "'LicensingCenter.AutoQuestion6'")
     await message.answer(
         message=f"👨 Инструктор » В каком случае стоит пристегивать ремень безопасности?",
@@ -401,10 +398,9 @@ async def AutoQuestion6(message: Message, bot: Bot, api: API):
 
 async def AutoQuestion7(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[2] != 'LicensingCenter.AutoQuestion7':
-        if message.text == 'В любом случае':
-            new_ball = int(data[75]) + 1
-            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    if message.text == 'В любом случае':
+        new_ball = int(data[44]) + 1
+        await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
     await database.setUserData(message.from_id, 'state', "'LicensingCenter.AutoQuestion7'")
     await message.answer(
         message=f"👨 Инструктор » Разрешено ли движение задним ходом на магистрали?",
@@ -422,13 +418,12 @@ async def AutoQuestion7(message: Message, bot: Bot, api: API):
 
 async def AutoQuestion8(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    if data[2] != 'LicensingCenter.AutoQuestion8':
-        if message.text == 'В любом случае':
-            new_ball = int(data[75]) + 1
-            await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
+    if message.text == 'В любом случае':
+        new_ball = int(data[44]) + 1
+        await database.setUserData(message.from_id, 'temporary_var', f"'{new_ball}'")
     await database.setUserData(message.from_id, 'state', "'LicensingCenter.AutoQuestion8'")
     data = await database.getUserData(message.from_id)
-    new_ball = int(data[75])
+    new_ball = int(data[44])
     if new_ball >= 4:
         await message.answer(
             message=f"👨 Инструктор » Вы успешно сдали экзамен на {new_ball} из 7 баллов.\nПолучите свои права, ждем вас снова в центре лицензирования",
@@ -451,7 +446,11 @@ async def AutoQuestion8(message: Message, bot: Bot, api: API):
 
 async def AutoOpen(from_id, bot: Bot):
     await database.setUserData(from_id, 'state', "'LicensingCenter.Show'")
-    await database.setUserData(from_id, 'license_auto', "'✅ Имеется'")
+    data = await database.getUserData(from_id)
+    data = ast.literal_eval(data[24])
+    data = list(data)
+    data[0] = '✅ Имеется'
+    await database.setUserData(from_id, 'license', f"\"{data}\"")
     await bot.api.messages.send(
         user_id=from_id,
         random_id=random.randint(1, 999999999),

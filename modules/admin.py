@@ -1,4 +1,5 @@
 import random, asyncio
+import traceback
 
 import vkbottle.api
 import vkbottle_types
@@ -167,7 +168,9 @@ async def Panel8_ControlAdmins_info1(message: Message, bot: Bot, api: API):
         id_user = user_get[0].id
         await database.setUserData(id_user, 'temporary_var', "'[]'")
         data = await database.getUserData(id_user)
-        if data[66] == '[]':
+        data_admin = ast.literal_eval(data[40])
+        data_admin = list(data_admin)
+        if data_admin[0] == '':
             await message.answer(
                 message=f"🎯 » 🛠 » ⚙ » 👤 » ℹ Информация об администраторе\n\n"
                         f"👤 @id{id_user}({data[3]}), настоящее имя @id{id_user}({user_get[0].first_name} {user_get[0].last_name})\n\n"
@@ -183,29 +186,32 @@ async def Panel8_ControlAdmins_info1(message: Message, bot: Bot, api: API):
                 )
             )
         else:
-            info = ast.literal_eval(data[66])
             await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins'")
-            list_punish = info[5]
-            punish_end = ''
-            count = 0
-            for row in list_punish:
-                 punish_end = punish_end + f'{row}\n'
-            # while count < (len(list_punish)) or count >= 20:
-            #     print(f"{count}")
-            #     punish_end = punish_end + f'{list_punish[count]}\n'
-            #     count = count + 1
-            print(punish_end)
+            list_add_admin = data_admin[6] # МАССИВ С ПОСТАНОВЛЕНИЕМ АДМИНИСТРАТОРА
+            add_admin = '' # МАССИВ С ПОСТАНОВЛЕНИЕМ АДМИНИСТРАТОРА
+
+            list_move_admin = data_admin[7]  # МАССИВ С ПОСТАНОВЛЕНИЕМ АДМИНИСТРАТОРА
+            move_admin = ''  # МАССИВ С ПОСТАНОВЛЕНИЕМ АДМИНИСТРАТОРА
+
+            for row in list_add_admin:
+                 add_admin = add_admin + f'{row}\n'
+
+            for row in list_move_admin:
+                 move_admin = move_admin + f'{row}\n'
             await message.answer(
                 message=f"🎯 » 🛠 » ⚙ » 👤 » ℹ Информация об администраторе\n\n"
                         f"👤 @id{id_user}({data[3]}), настоящее имя @id{id_user}({user_get[0].first_name} {user_get[0].last_name})\n\n"
                         f"🅰️ Уровень администрирования » {data[11]}\n\n"
-                        f"😀 Имя » {info[0]}\n"
-                        f"🔢 Возраст » {info[1]}\n"
-                        f"📟 Дискорд » {info[8]}\n"
-                        f"🌇 Город проживания » {info[6]}\n"
-                        f"💬 Описание администратора » {info[7]}\n\n"
-                        f"📅 Поставлен на пост администратора:\n{info[4][0]}\n\n"
-                        f"📅 История администрирования:\n{punish_end}",
+                        f"😀 Имя » {data_admin[0]}\n"
+                        f"🔢 Возраст » {data_admin[1]}\n"
+                        f"📟 Дискорд » {data_admin[3]}\n"
+                        f"🌇 Город проживания » {data_admin[2]}\n"
+                        f"💬 Описание администратора » {data_admin[4]}\n"
+                        f"📄 Статус администратора » {data_admin[8]}\n"
+                        f"📄 Должность » {data_admin[9]}\n"
+                        f"📅 Поставлен на пост администратора:\n{data_admin[5]}\n\n"
+                        f"📅 История постановлений/снятий:\n{add_admin}\n\n"
+                        f"📅 История повышений/понижений:\n{move_admin}\n\n",
                 keyboard=(
                     Keyboard(one_time=True, inline=False)
                         .add(Text("◀ Назад", {"cmd": "admin.Panel8_ControlAdmins"}), color=KeyboardButtonColor.PRIMARY)
@@ -268,7 +274,7 @@ async def Panel8_ControlAdmins_leave_1(message: Message, bot: Bot, api: API):
 
 async def Panel8_ControlAdmins_leave_2(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    temporary = ast.literal_eval(data[75])
+    temporary = ast.literal_eval(data[44])
     admin = await database.getUserData(temporary[0])
     if admin[11] != 0:
         new_lvl = 0
@@ -286,21 +292,24 @@ async def Panel8_ControlAdmins_leave_2(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        info = ast.literal_eval(admin[66])
+        info = ast.literal_eval(admin[40])
+        info = list(info)
         data_now = datetime.date.today()
-        app = []
-        app.extend(info[5])
-        app.append(f'{data_now.day}.{data_now.month}.{data_now.year} — снят с поста администратора')
+        history_add = info[6]
+        history_move = info[7]
+        history_add.append(f'{data_now.day}.{data_now.month}.{data_now.year} — снят с поста администратора')
+        history_move.append(f'{data_now.day}.{data_now.month}.{data_now.year} — снят с поста администратора {admin[11]} уровня')
         JSON_admin = [
             info[0],
             info[1],
             info[2],
             info[3],
             info[4],
-            app,
-            info[6],
-            info[7],
-            info[8]
+            'Администратор снят',
+            history_add,
+            history_move,
+            info[8],
+            info[9]
         ]
         await database.setMultiUserData(temporary[0], f'admin_info = "{JSON_admin}"')
         await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins'")
@@ -397,7 +406,7 @@ async def Panel8_ControlAdmins_upp_set(message: Message, bot: Bot, api: API):
         new_lvl = int(message.text)
         if 1 <= new_lvl <= 8:
             data = await database.getUserData(message.from_id)
-            temporary = ast.literal_eval(data[75])
+            temporary = ast.literal_eval(data[44])
             admin = await database.getUserData(temporary[0])
             await database.setMultiUserData(temporary[0], f'admin = "{new_lvl}", state = "mainMenu.Show"')
             await bot.api.messages.send(user_id=temporary[0], random_id=random.randint(1, 9999999999), sticker_id=17180)
@@ -413,21 +422,22 @@ async def Panel8_ControlAdmins_upp_set(message: Message, bot: Bot, api: API):
                         .get_json()
                 )
             )
-            info = ast.literal_eval(admin[66])
+            info = ast.literal_eval(admin[40])
+            info = list(info)
             data_now = datetime.date.today()
-            app = []
-            app.extend(info[5])
-            app.append(f'{data_now.day}.{data_now.month}.{data_now.year} — изменен на {new_lvl} уровень')
+            history_move = info[7]
+            history_move.append(f'{data_now.day}.{data_now.month}.{data_now.year} — изменен на {new_lvl} уровень')
             JSON_admin = [
                 info[0],
                 info[1],
                 info[2],
                 info[3],
                 info[4],
-                app,
+                info[5],
                 info[6],
-                info[7],
-                info[8]
+                history_move,
+                info[8],
+                info[9]
             ]
             await database.setMultiUserData(temporary[0], f'admin_info = "{JSON_admin}"')
             await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins'")
@@ -455,7 +465,7 @@ async def Panel8_ControlAdmins_upp_set(message: Message, bot: Bot, api: API):
 
 async def Panel8_ControlAdmins_upp_up(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    temporary = ast.literal_eval(data[75])
+    temporary = ast.literal_eval(data[44])
     admin = await database.getUserData(temporary[0])
     if admin[11] != 8:
         new_lvl = admin[11] + 1
@@ -474,21 +484,22 @@ async def Panel8_ControlAdmins_upp_up(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        info = ast.literal_eval(admin[66])
+        info = ast.literal_eval(admin[40])
+        info = list(info)
         data_now = datetime.date.today()
-        app = []
-        app.extend(info[5])
-        app.append(f'{data_now.day}.{data_now.month}.{data_now.year} — повышен на {new_lvl} уровень')
+        history_move = info[7]
+        history_move.append(f'{data_now.day}.{data_now.month}.{data_now.year} — повышен на {new_lvl} уровень')
         JSON_admin = [
             info[0],
             info[1],
             info[2],
             info[3],
             info[4],
-            app,
+            info[5],
             info[6],
-            info[7],
-            info[8]
+            history_move,
+            info[8],
+            info[9]
         ]
         await database.setMultiUserData(temporary[0], f'admin_info = "{JSON_admin}"')
         await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins'")
@@ -513,7 +524,7 @@ async def Panel8_ControlAdmins_upp_up(message: Message, bot: Bot, api: API):
 
 async def Panel8_ControlAdmins_upp_down(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    temporary = ast.literal_eval(data[75])
+    temporary = ast.literal_eval(data[44])
     admin = await database.getUserData(temporary[0])
     if admin[11] != 1:
         new_lvl = admin[11] - 1
@@ -531,20 +542,21 @@ async def Panel8_ControlAdmins_upp_down(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-        info = ast.literal_eval(admin[66])
+        info = ast.literal_eval(admin[40])
+        info = list(info)
         data_now = datetime.date.today()
-        app = []
-        app.extend(info[5])
-        app.append(f'{data_now.day}.{data_now.month}.{data_now.year} — понижен на {new_lvl} уровень')
+        history_move = info[7]
+        history_move.append(f'{data_now.day}.{data_now.month}.{data_now.year} — понижен {new_lvl} уровень')
         JSON_admin = [
             info[0],
             info[1],
             info[2],
             info[3],
             info[4],
-            app,
+            info[5],
             info[6],
-            info[7],
+            history_move,
+            info[8],
             info[8]
         ]
         await database.setMultiUserData(temporary[0], f'admin_info = "{JSON_admin}"')
@@ -609,7 +621,7 @@ async def Panel8_ControlAdmins_add_2(message: Message, bot: Bot, api: API):
 async def Panel8_ControlAdmins_add_3(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_4'")
     data = await database.getUserData(message.from_id)
-    temporary = ast.literal_eval(data[75])
+    temporary = ast.literal_eval(data[44])
     temporary.append(message.text)
     await database.setUserData(message.from_id, 'temporary_var', f'"{temporary}"')
     await message.answer(
@@ -628,7 +640,7 @@ async def Panel8_ControlAdmins_add_3(message: Message, bot: Bot, api: API):
 async def Panel8_ControlAdmins_add_4(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_5'")
     data = await database.getUserData(message.from_id)
-    temporary = ast.literal_eval(data[75])
+    temporary = ast.literal_eval(data[44])
     temporary.append(message.text)
     await database.setUserData(message.from_id, 'temporary_var', f'"{temporary}"')
     today = datetime.date.today()
@@ -640,18 +652,21 @@ async def Panel8_ControlAdmins_add_4(message: Message, bot: Bot, api: API):
             Keyboard(one_time=True, inline=False)
                 .add(Text("Отмена", {"cmd": "admin.Panel8_ControlAdmins"}), color=KeyboardButtonColor.PRIMARY)
                 .row()
-                .add(Text(f"{today.day}.{today.month}.{today.year} — Поставлен на пост", {"cmd": "admin.Panel8_ControlAdmins_add_5"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text(f"📝 Автоматически поставить", {"cmd": "admin.Panel8_ControlAdmins_add_5"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
         )
     )
 
 
-
 async def Panel8_ControlAdmins_add_5(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_6'")
     data = await database.getUserData(message.from_id)
-    temporary = ast.literal_eval(data[75])
-    temporary.append(message.text)
+    temporary = ast.literal_eval(data[44])
+    today = datetime.date.today()
+    if message.text == '📝 Автоматически поставить':
+        temporary.append(f'{today.day}.{today.month}.{today.year} — Поставлен на пост администратора')
+    else:
+        temporary.append(message.text)
     await database.setUserData(message.from_id, 'temporary_var', f'"{temporary}"')
     today = datetime.date.today()
     now = datetime.datetime.now()
@@ -662,18 +677,22 @@ async def Panel8_ControlAdmins_add_5(message: Message, bot: Bot, api: API):
             Keyboard(one_time=True, inline=False)
                 .add(Text("Отмена", {"cmd": "admin.Panel8_ControlAdmins"}), color=KeyboardButtonColor.PRIMARY)
                 .row()
-                .add(Text(f"{today.day}.{today.month}.{today.year} — Поставлен на 1 уровень", {"cmd": "admin.Panel8_ControlAdmins_add_6"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text(f"📝 Автоматически поставить", {"cmd": "admin.Panel8_ControlAdmins_add_6"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
         )
     )
 
-
+# f"{today.day}.{today.month}.{today.year} — Поставлен на 1 уровень"
 
 async def Panel8_ControlAdmins_add_6(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_7'")
     data = await database.getUserData(message.from_id)
-    temporary = ast.literal_eval(data[75])
-    temporary.append(message.text)
+    temporary = ast.literal_eval(data[44])
+    today = datetime.date.today()
+    if message.text == '📝 Автоматически поставить':
+        temporary.append(f'{today.day}.{today.month}.{today.year} — поставлен на 1 уровень')
+    else:
+        temporary.append(message.text)
     await database.setUserData(message.from_id, 'temporary_var', f'"{temporary}"')
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 👤 » 👤 Поставить администратора\n\n"
@@ -690,7 +709,7 @@ async def Panel8_ControlAdmins_add_6(message: Message, bot: Bot, api: API):
 async def Panel8_ControlAdmins_add_7(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_8'")
     data = await database.getUserData(message.from_id)
-    temporary = ast.literal_eval(data[75])
+    temporary = ast.literal_eval(data[44])
     temporary.append(message.text)
     await database.setUserData(message.from_id, 'temporary_var', f'"{temporary}"')
     await message.answer(
@@ -708,7 +727,7 @@ async def Panel8_ControlAdmins_add_7(message: Message, bot: Bot, api: API):
 async def Panel8_ControlAdmins_add_8(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_9'")
     data = await database.getUserData(message.from_id)
-    temporary = ast.literal_eval(data[75])
+    temporary = ast.literal_eval(data[44])
     temporary.append(message.text)
     await database.setUserData(message.from_id, 'temporary_var', f'"{temporary}"')
     await message.answer(
@@ -726,7 +745,7 @@ async def Panel8_ControlAdmins_add_8(message: Message, bot: Bot, api: API):
 async def Panel8_ControlAdmins_add_9(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_10'")
     data = await database.getUserData(message.from_id)
-    temporary = ast.literal_eval(data[75])
+    temporary = ast.literal_eval(data[44])
     temporary.append(message.text)
     await database.setUserData(message.from_id, 'temporary_var', f'"{temporary}"')
     await message.answer(
@@ -757,7 +776,7 @@ async def Panel8_ControlAdmins_add_10(message: Message, bot: Bot, api: API):
         if 1 <= count <= 8:
             await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_11'")
             data = await database.getUserData(message.from_id)
-            temporary = ast.literal_eval(data[75])
+            temporary = ast.literal_eval(data[44])
             temporary.append(message.text)
             await database.setUserData(message.from_id, 'temporary_var', f'"{temporary}"')
             await Panel8_ControlAdmins_add_11(message, bot, api)
@@ -774,7 +793,7 @@ async def Panel8_ControlAdmins_add_10(message: Message, bot: Bot, api: API):
 async def Panel8_ControlAdmins_add_11(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins_add_11'")
     data = await database.getUserData(message.from_id)
-    temporary = ast.literal_eval(data[75])
+    temporary = ast.literal_eval(data[44])
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 👤 » 👤 Поставить администратора\n\n"
                 f"👤 Вы действительно хотите поставить на пост администратора {temporary[8]} уровня игрока {temporary[0]}\n\n"
@@ -801,46 +820,47 @@ async def Panel8_ControlAdmins_add_set(message: Message, bot: Bot, api: API):
     try:
         await database.setUserData(message.from_id, 'state', "'admin.Panel8_ControlAdmins'")
         data = await database.getUserData(message.from_id)
-        temporary = ast.literal_eval(data[75])
+        temporary = ast.literal_eval(data[44])
         link = temporary[0]
         link = link[15:]
         user_get = await api.users.get(user_ids=link)
         id_user = (user_get[0].id)
-
         dataadmin = await database.getUserData(id_user)
-        if dataadmin[66] == '[]':
+
+        # user_get_admin_info = ast.literal_eval(dataadmin[40])
+        if dataadmin[40] == '[]':
             JSON_admin = [
                 temporary[1],
                 temporary[2],
-                f'https://vk.com/{link}',
-                id_user,
-                [temporary[3]],
-                [temporary[4]],
                 temporary[5],
-                temporary[7],
                 temporary[6],
-                temporary[8]
+                temporary[7],
+                temporary[3],
+                [temporary[4]],
+                [temporary[4]],
+                'Администратор',
+                'Администратор'
             ]
             await database.setMultiUserData(id_user, f'admin = "{temporary[8]}", admin_info = "{JSON_admin}"')
         else:
-            info = ast.literal_eval(dataadmin[66])
-            posted = []
-            posted.extend(info[4])
-            posted.append(temporary[3])
-            app = []
-            app.extend(info[5])
-            app.append(temporary[4])
+            info = ast.literal_eval(dataadmin[40])
+            info = list(info)
+            data_now = datetime.date.today()
+            history_move = list(info[7])
+            history_move.append(temporary[4])
+            history_add = list(info[6])
+            history_add.append(temporary[4])
             JSON_admin = [
                 temporary[1],
                 temporary[2],
-                f'https://vk.com/{link}',
-                id_user,
-                posted,
-                app,
                 temporary[5],
-                temporary[7],
                 temporary[6],
-                temporary[8]
+                temporary[7],
+                temporary[3],
+                history_add,
+                history_move,
+                'Администратор',
+                'Администратор'
             ]
             await database.setMultiUserData(id_user, f'admin = "{temporary[8]}", admin_info = "{JSON_admin}"')
         await message.answer(
@@ -868,7 +888,7 @@ async def Panel8_ControlAdmins_add_set(message: Message, bot: Bot, api: API):
             message=f"⚠ Возникла ошибка при постановлении данного администратора.\n\n"
                     f"— Убедитесь, что игроку, которому вы хотите выдать админ-права зарегистрирован "
                     f"в чат-боте.")
-        print(f'\033[38m[\033[31m!\033[38m][\033[33mDEBUG\033[38m] Произошла ошибка: {ex}')
+        print(f'\033[38m[\033[31m!\033[38m][\033[33mDEBUG\033[38m] Произошла ошибка: {ex}\n| {traceback.format_exc()}')
         await Panel8_ControlAdmins_add_11(message, bot, api)
 
 
@@ -910,7 +930,7 @@ async def Panel8_Donate(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 💎 Донат\n\n"
-                f"📊 Текущий курс обмена рублей на донат » 1 RUB = {server_settings[1]} 💎",
+                f"📊 Текущий курс обмена рублей на донат » 1 RUB = {server_settings[24]} 💎",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "admin.Panel8"}), color=KeyboardButtonColor.PRIMARY)
@@ -949,7 +969,7 @@ async def Panel8_Donate_CurseRubAdd(message: Message, bot: Bot, api: API):
         count = int(message.text)
         if 0 <= count <= 5000:
             await database.setUserData(message.from_id, 'state', "'admin.Panel8_Donate_CurseRubAdd'")
-            await database.setBdData('settings', 'id', "'1'", 'course_ruble_to_donate', f"'{message.text}'")
+            await database.setBdData('settings', 'id', "'1'", 'cource_donate', f"'{message.text}'")
             await message.answer(
                 message=f"✅ Вы успешно поменяли курс рубля к донату",
                 keyboard=(
@@ -1014,10 +1034,10 @@ async def Panel7(message: Message, bot: Bot, api: API):
 async def Panel7_EditRegistration(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditRegistration'")
-    if server_settings[26] == 1:
+    if server_settings[5] == 1:
         status = "🟩 открыт"
         button = "🟥 Закрыть сервер"
-    if server_settings[26] == 0:
+    if server_settings[5] == 0:
         status = "🟥 закрыт"
         button = "🟩 Открыть сервер"
     await message.answer(
@@ -1035,7 +1055,7 @@ async def Panel7_EditRegistration(message: Message, bot: Bot, api: API):
 
 async def Panel7_EditRegistrationSwitch(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
-    if server_settings[26] == 1:
+    if server_settings[5] == 1:
         await database.setBdData('settings', 'id', "'1'", 'open_registration', f"'0'")
         await message.answer(
             message=f"✅ Вы успешно закрыли регистрацию на сервере",
@@ -1045,7 +1065,7 @@ async def Panel7_EditRegistrationSwitch(message: Message, bot: Bot, api: API):
                     .get_json()
             )
         )
-    if server_settings[26] == 0:
+    if server_settings[5] == 0:
         await database.setBdData('settings', 'id', "'1'", 'open_registration', f"'1'")
         await message.answer(
             message=f"✅ Вы успешно открыли регистрацию на сервере",
@@ -1064,11 +1084,11 @@ async def Panel7_Statistics(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_Statistics'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 📊 Статистика приходов игроков\n\n"
-                f"👥 Узнал от друзей » {await database.pretty(int(server_settings[20]))}\n"
-                f"📄 Узнал из списка чат-ботов » {await database.pretty(int(server_settings[21]))}\n"
-                f"🔎 Узнал из поисковой системы » {await database.pretty(int(server_settings[22]))}\n"
-                f"📺 Узнал от ютубера » {await database.pretty(int(server_settings[23]))}\n"
-                f"🔘 Другое » {await database.pretty(int(server_settings[24]))}",
+                f"👥 Узнал от друзей » {await database.pretty(int(server_settings[9]))}\n"
+                f"📄 Узнал из списка чат-ботов » {await database.pretty(int(server_settings[10]))}\n"
+                f"🔎 Узнал из поисковой системы » {await database.pretty(int(server_settings[11]))}\n"
+                f"📺 Узнал от ютубера » {await database.pretty(int(server_settings[12]))}\n"
+                f"🔘 Другое » {await database.pretty(int(server_settings[13]))}",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "admin.Panel7"}), color=KeyboardButtonColor.PRIMARY)
@@ -1098,8 +1118,8 @@ async def Panel7_EditMailing(message: Message, bot: Bot, api: API):
         message=f"🎯 » 🛠 » ⚙ » 📢 Настройки рассылок\n\n"
                 f"ℹ Вознаграждение за рассылки — это уникальный способ замотивировать игроков чаще заходить в чат-бот и пользоваться им. "
                 f"Благодаря тому, что людям предлагают бонусы за подписку на рассылку, они будут чаще подписываться на них.\n\n"
-                f"📢 Вознаграждение за рассылку новостей проекта » 💵 {await database.pretty(int(server_settings[12]))}\n"
-                f"📢 Вознаграждение за рассылку новостей сервера » 💵 {await database.pretty(int(server_settings[13]))}\n",
+                f"📢 Вознаграждение за рассылку новостей проекта » 💵 {await database.pretty(int(server_settings[14]))}\n"
+                f"📢 Вознаграждение за рассылку новостей сервера » 💵 {await database.pretty(int(server_settings[15]))}\n",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "admin.Panel7"}), color=KeyboardButtonColor.PRIMARY)
@@ -1194,11 +1214,13 @@ async def Panel7_EditData(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 📝 Изменить данные\n\n"
-                f"📔 Название проекта » {server_settings[8]}\n"
-                f"📔 Название сервера » {server_settings[9]}\n"
+                f"📔 Название проекта » {server_settings[1]}\n"
+                f"📔 Название сервера » {server_settings[2]}\n"
+                f"📔 Ссылка проекта » {server_settings[3]}\n"
+                f"📔 Ссылка сервера » {server_settings[4]}\n"
                 f"📓 Название группы » {byld[0].name}\n"
                 f"📓 Статус группы » {byld[0].status}\n"
-                f"📔 Название акции » {server_settings[25]}",
+                f"📔 Название акции » {server_settings[21]}",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "admin.Panel7"}), color=KeyboardButtonColor.PRIMARY)
@@ -1208,6 +1230,10 @@ async def Panel7_EditData(message: Message, bot: Bot, api: API):
                 .add(Text("📝 Изменить название проекта", {"cmd": "admin.Panel7_EditData_Project"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("📝 Изменить название сервера", {"cmd": "admin.Panel7_EditData_Server"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("📝 Изменить ссылку проекта", {"cmd": "admin.Panel7_EditData_ProjectLink"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("📝 Изменить ссылку сервера", {"cmd": "admin.Panel7_EditData_ServerLink"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("📝 Изменить название группы", {"cmd": "admin.Panel7_EditData_Group"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
@@ -1285,6 +1311,65 @@ async def Panel7_EditData_ServerAdd(message: Message, bot: Bot, api: API):
         )
 
 
+async def Panel7_EditData_ProjectLink(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData_ProjectLinkAdd'")
+    await message.answer(
+        message=f"🎯 » 🛠 » ⚙ » 📝 » 📝 Изменить ссылку проекта\n\n"
+                f"📝 Напишите новую ссылку на проект",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Отмена", {"cmd": "admin.Panel7_EditData"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text(f"id207884216", {"cmd": "admin.Panel7_EditData_ServerLinkAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+            )
+        )
+
+
+
+async def Panel7_EditData_ProjectLinkAdd(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData'")
+    await database.setBdData('settings', 'id', "'1'", 'project_link', f"'{message.text}'")
+    await message.answer(
+        message=f"✅ Вы успешно поменяли ссылку на проект",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("👉🏻 Далее", {"cmd": "admin.Panel7_EditData"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+async def Panel7_EditData_ServerLink(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData_ServerLinkAdd'")
+    await message.answer(
+        message=f"🎯 » 🛠 » ⚙ » 📝 » 📝 Изменить ссылку сервера\n\n"
+                f"📝 Напишите новую ссылку на сервер",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Отмена", {"cmd": "admin.Panel7_EditData"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text(f"id{message.group_id}", {"cmd": "admin.Panel7_EditData_ServerLinkAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+            )
+        )
+
+
+
+async def Panel7_EditData_ServerLinkAdd(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData'")
+    await database.setBdData('settings', 'id', "'1'", 'server_link', f"'{message.text}'")
+    await message.answer(
+        message=f"✅ Вы успешно поменяли ссылку на сервер",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("👉🏻 Далее", {"cmd": "admin.Panel7_EditData"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+
 
 async def Panel7_EditData_Group(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData_GroupAdd'")
@@ -1296,13 +1381,9 @@ async def Panel7_EditData_Group(message: Message, bot: Bot, api: API):
             Keyboard(one_time=True, inline=False)
                 .add(Text("Отмена", {"cmd": "admin.Panel7_EditData"}), color=KeyboardButtonColor.PRIMARY)
                 .row()
-                .add(Text(f"{server_settings[8]} | {server_settings[9]}", {"cmd": "admin.Panel7_EditData_GroupAdd"}), color=KeyboardButtonColor.SECONDARY)
-                .row()
-                .add(Text(f"{server_settings[8]} | {server_settings[9]} | Обновление!", {"cmd": "admin.Panel7_EditData_GroupAdd"}), color=KeyboardButtonColor.SECONDARY)
-                .row()
-                .add(Text(f"{server_settings[8]} | {server_settings[9]} | Акции", {"cmd": "admin.Panel7_EditData_GroupAdd"}), color=KeyboardButtonColor.SECONDARY) .get_json()
-            )
+                .add(Text(f"{server_settings[1]} | {server_settings[2]}", {"cmd": "admin.Panel7_EditData_GroupAdd"}), color=KeyboardButtonColor.SECONDARY)
         )
+    )
 
 
 
@@ -1397,9 +1478,9 @@ async def Panel7_EditData_Stocks(message: Message, bot: Bot, api: API):
 async def Panel7_EditData_StocksAdd(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditData'")
     if message.text == '~~~ Пустой ~~~':
-        await database.setBdData('settings', 'id', "'1'", 'name_stocks', f"''")
+        await database.setBdData('settings', 'id', "'1'", 'stocks', f"''")
     else:
-        await database.setBdData('settings', 'id', "'1'", 'name_stocks', f"' • {message.text}'")
+        await database.setBdData('settings', 'id', "'1'", 'stocks', f"' • {message.text}'")
     await message.answer(
         message=f"✅ Вы успешно поменяли название проекта",
         keyboard=(
@@ -1416,9 +1497,9 @@ async def Panel7_EditDonate(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditDonate'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 💎 Изменить курс доната к товарам\n\n"
-                f"📊 Текущий курс обмена рублей на донат » 1 RUB = {await database.pretty(server_settings[1])} 💎\n\n"
-                f"За 1 💎, игрок может получить {await database.pretty(server_settings[2])} долларов 💵\n"
-                f"За {await database.pretty(server_settings[3])} 💎, игрок может получить 1 EXP 🌐\n",
+                f"📊 Текущий курс обмена рублей на донат » 1 RUB = {await database.pretty(server_settings[24])} 💎\n\n"
+                f"За 1 💎, игрок может получить {await database.pretty(server_settings[23])} долларов 💵\n"
+                f"За {await database.pretty(server_settings[22])} 💎, игрок может получить 1 EXP 🌐\n",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "admin.Panel7"}), color=KeyboardButtonColor.PRIMARY)
@@ -1471,7 +1552,7 @@ async def Panel7_EditDonate_DollarsAdd(message: Message, bot: Bot, api: API):
         count = int(message.text)
         if 0 <= count <= 999999999:
             await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditDonate'")
-            await database.setBdData('settings', 'id', "'1'", 'course_donate_to_dollar', f"'{message.text}'")
+            await database.setBdData('settings', 'id', "'1'", 'donate_buyDollars', f"'{message.text}'")
             await message.answer(
                 message=f"✅ Вы успешно поменяли курс доната к доллару",
                 keyboard=(
@@ -1530,7 +1611,7 @@ async def Panel7_EditDonate_EXPAdd(message: Message, bot: Bot, api: API):
         count = int(message.text)
         if 0 <= count <= 5000:
             await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditDonate'")
-            await database.setBdData('settings', 'id', "'1'", 'course_donate_to_exp', f"'{message.text}'")
+            await database.setBdData('settings', 'id', "'1'", 'donate_buyXP', f"'{message.text}'")
             await message.answer(
                 message=f"✅ Вы успешно поменяли курс доната к EXP",
                 keyboard=(
@@ -1556,9 +1637,9 @@ async def Panel7_EditMulti(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditDonate'")
     await message.answer(
         message=f"🎯 » 🛠 » ⚙ » 🌐 Изменить множители сервера\n\n"
-                f"🌐 Множитель PayDay » {server_settings[14]}\n"
-                f"🌐 Множитель зарплат » {server_settings[15]}\n"
-                f"🌐 Множитель EXP » {server_settings[16]}\n",
+                f"🌐 Множитель PayDay » {server_settings[20]}\n"
+                f"🌐 Множитель зарплат » {server_settings[26]}\n"
+                f"🌐 Множитель EXP » {server_settings[25]}\n",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "admin.Panel7"}), color=KeyboardButtonColor.PRIMARY)
@@ -1775,7 +1856,7 @@ async def Panel6_EditRules_RulesServer(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
         message=f"🎯 » 🛠 » 👹 » 📖 » 📖 Изменить правила сервера\n\n"
-                    f"{server_settings[19]}",
+                    f"{server_settings[6]}",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "admin.Panel6_EditRules"}), color=KeyboardButtonColor.PRIMARY)
@@ -1837,7 +1918,7 @@ async def Panel6_EditRules_RulesAdmins(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
         message=f"🎯 » 🛠 » 👹 » 📖 » 📖 Изменить правила администраторов\n\n"
-                    f"{server_settings[17]}",
+                    f"{server_settings[7]}",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "admin.Panel6_EditRules"}), color=KeyboardButtonColor.PRIMARY)
@@ -1865,7 +1946,7 @@ async def Panel6_EditRules_RulesAdmins_Edit(message: Message, bot: Bot, api: API
 
 async def Panel6_EditRules_RulesAdmins_EditStandart(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesAdmins_EditCheck'")
-    await database.setBdData('settings', 'id', "'1'", 'regulation_admins', f"'Главный администратор еще не написал устав для администрации'")
+    await database.setBdData('settings', 'id', "'1'", 'rules_admin', f"'Главный администратор еще не написал устав для администрации'")
     await message.answer(
         message=f"✅ Вы успешно обновили правила для администраторов"
         )
@@ -1875,7 +1956,7 @@ async def Panel6_EditRules_RulesAdmins_EditStandart(message: Message, bot: Bot, 
 async def Panel6_EditRules_RulesAdmins_EditCheck(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesAdmins_EditCheck'")
     if len(message.text) <= 3000:
-        await database.setBdData('settings', 'id', "'1'", 'regulation_admins', f"'{message.text}'")
+        await database.setBdData('settings', 'id', "'1'", 'rules_admin', f"'{message.text}'")
         await message.answer(
             message=f"✅ Вы успешно обновили правила для администраторов"
             )
@@ -1897,7 +1978,7 @@ async def Panel6_EditRules_FAQAdmins(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
         message=f"🎯 » 🛠 » 👹 » 📖 » 📖 Изменить FAQ администраторов\n\n"
-                    f"{server_settings[18]}",
+                    f"{server_settings[8]}",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "admin.Panel6_EditRules"}), color=KeyboardButtonColor.PRIMARY)
@@ -1926,7 +2007,7 @@ async def Panel6_EditRules_FAQAdmins_Edit(message: Message, bot: Bot, api: API):
 
 async def Panel6_EditRules_FAQAdmins_EditStandart(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_RulesAdmins_EditCheck'")
-    await database.setBdData('settings', 'id', "'1'", 'faq_admins', f"'Главный администратор еще не написал FAQ админ-панели для администрации'")
+    await database.setBdData('settings', 'id', "'1'", 'faq_admin', f"'Главный администратор еще не написал FAQ админ-панели для администрации'")
     await message.answer(
         message=f"✅ Вы успешно обновили FAQ для администраторов"
         )
@@ -1936,7 +2017,7 @@ async def Panel6_EditRules_FAQAdmins_EditStandart(message: Message, bot: Bot, ap
 async def Panel6_EditRules_FAQAdmins_EditCheck(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'admin.Panel6_EditRules_FAQAdmins_EditCheck'")
     if len(message.text) <= 3000:
-        await database.setBdData('settings', 'id', "'1'", '	faq_admins', f"'{message.text}'")
+        await database.setBdData('settings', 'id', "'1'", '	faq_admin', f"'{message.text}'")
         await message.answer(
             message=f"✅ Вы успешно обновили FAQ для администраторов"
             )
@@ -2141,7 +2222,7 @@ async def Panel1_Report(message: Message, bot: Bot, api: API):
 
 async def Panel1_ReportSendReport(message: Message, bot: Bot, api: API):
     data = await database.getUserData(message.from_id)
-    id_report = data[75]
+    id_report = data[44]
     await database.setMultiDbData('report', 'id', f"'{id_report}'", f"answer = '{message.text}'")
     report_data = await database.getBdData('report', 'id', f"'{id_report}'")
     await message.answer(
@@ -2186,12 +2267,25 @@ async def Panel1_CheckPlayer1(message: Message, bot: Bot, api: API):
         await database.setUserData(id_user, 'temporary_var', "'[]'")
         server_settings = await database.getBdData('settings', 'id', "'1'")
         data = await database.getUserData(id_user)
+
+        VIP = ast.literal_eval(data[21])
+        blacklist = ast.literal_eval(data[25])
+        VIP = list(VIP)
+        if VIP[0] == 'no vip':
+            vipitog = f'❌ Отсутствует'
+        else:
+            if VIP[1] == 10:
+                vipitog = f'{VIP[0]}, навсегда'
+            else:
+                endvip = datetime.datetime.utcfromtimestamp(VIP[1]).strftime('%d.%m.%Y')
+                vipitog = f'{VIP[0]} до {endvip}'
+
         await message.answer(
             message=f"🎯 » 🛠 » 😀 » ℹ Статистика игрока\n\n"
                     f"⚠ Вы просматриваете статистику игрока @id{id_user}({data[3]})\n\n"
                     f"😀 Ник » {data[3]}\n"
                     f"🌐 Уровень » {data[6]}\n"
-                    f"🌐 Очки опыта » {data[7]} / {server_settings[16] * data[6]}\n"
+                    f"🌐 Очки опыта » {data[7]} / {server_settings[20] * data[6]}\n"
                     f"🚻 Пол » {data[8]}\n"
                     f"🔢 Возраст » {data[9]} лет\n"
                     f"🏳 Национальность » {data[10]}\n\n"
@@ -2203,15 +2297,13 @@ async def Panel1_CheckPlayer1(message: Message, bot: Bot, api: API):
                     f"💶 Евро в банке » {await database.pretty(data[17])}\n"
                     f"💴 Иены в банке » {await database.pretty(data[18])}\n"
                     f"💷 Фунты в банке » {await database.pretty(data[19])}\n\n"
-                    f"🛠 Работа » {data[43]}\n"
-                    f"🏢 Организация » {data[24]}\n"
-                    f"⭐ Уровень розыска » {data[20]}\n\n"
-                    f"🅰️ Предупреждения » {data[34]}\n"
-                    f"💳 Банковская карта » {data[69]}\n"
+                    f"🛠 Работа » {data[27]}\n"
+                    f"🏢 Организация » {data[22]}\n\n"
+                    f"🅰️ Предупреждения » {len(blacklist)}\n"
+                    f"💳 Банковская карта » {data[43]}\n"
                     f"📱 Телефон » {data[5]}\n"
-                    f"👑 VIP » {data[22]}\n"
-                    f"💰 Фишки казино » {await database.pretty(data[65])}\n"
-                    f"💎 Донат » {await database.pretty(data[21])}",
+                    f"👑 VIP » {vipitog}\n"
+                    f"💎 Донат » {await database.pretty(data[20])}",
             keyboard=(
                 Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "admin.Panel1"}), color=KeyboardButtonColor.PRIMARY)
@@ -2243,7 +2335,7 @@ async def Rules(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
         message=f"🎯 » 🛠 » 📖 Устав администрации [1]\n\n"
-                f"{server_settings[17]}",
+                f"{server_settings[7]}",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "admin.Show2"}), color=KeyboardButtonColor.PRIMARY).get_json()
@@ -2256,7 +2348,7 @@ async def FAQ(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
         message=f"🎯 » 🛠 » 📖 FAQ для администрации [1]\n\n"
-                f"{server_settings[18]}",
+                f"{server_settings[8]}",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "admin.Show2"}), color=KeyboardButtonColor.PRIMARY).get_json()
@@ -2388,7 +2480,7 @@ async def Console(message: Message, bot: Bot, api: API):
 
 
     if command[0] == '/regopen' and data[11] >= 7:
-        await database.setBdData('settings', 'id', "'1'", 'pay_mailing_server', f"'1'")
+        await database.setBdData('settings', 'id', "'1'", 'open_registration', f"'1'")
         await message.answer(
             message=f'✅ Вы успешно открыли регистрацию на сервере'
         )
@@ -2401,20 +2493,9 @@ async def Console(message: Message, bot: Bot, api: API):
 
 
     if command[0] == '/regclosed' and data[11] >= 7:
-        await database.setBdData('settings', 'id', "'1'", 'pay_mailing_server', f"'0'")
+        await database.setBdData('settings', 'id', "'1'", 'open_registration', f"'0'")
         await message.answer(
             message=f'✅ Вы успешно закрыли регистрацию на сервере'
-        )
-    else:
-        if command[0] == '/regopen':
-            await message.answer(
-                message=f"❌ Нету доступа"
-            )
-
-
-    if command[0] == '/paydayactivate' and data[11] >= 7:
-        await message.answer(
-            message=f'✅ Вы успешно включили PayDay'
         )
     else:
         if command[0] == '/regopen':
@@ -2431,7 +2512,7 @@ async def Console(message: Message, bot: Bot, api: API):
         await message.answer(
             message=f'✅ Вы изменили название акции на "{text}"'
         )
-        await database.setBdData('settings', 'id', "'1'", 'name_stocks', f"'{text}'")
+        await database.setBdData('settings', 'id', "'1'", 'stocks', f"'{text}'")
     else:
         if command[0] == '/changenamestocks':
             await message.answer(
@@ -2567,12 +2648,24 @@ async def Console(message: Message, bot: Bot, api: API):
             await database.setUserData(id_user, 'temporary_var', "'[]'")
             server_settings = await database.getBdData('settings', 'id', "'1'")
             data = await database.getUserData(id_user)
+            VIP = ast.literal_eval(data[21])
+            blacklist = ast.literal_eval(data[25])
+            VIP = list(VIP)
+            if VIP[0] == 'no vip':
+                vipitog = f'❌ Отсутствует'
+            else:
+                if VIP[1] == 10:
+                    vipitog = f'{VIP[0]}, навсегда'
+                else:
+                    endvip = datetime.datetime.utcfromtimestamp(VIP[1]).strftime('%d.%m.%Y')
+                    vipitog = f'{VIP[0]} до {endvip}'
+
             await message.answer(
-                message=f"📟 » ℹ Статистика игрока\n\n"
+                message=f"🎯 » 🛠 » 😀 » ℹ Статистика игрока\n\n"
                         f"⚠ Вы просматриваете статистику игрока @id{id_user}({data[3]})\n\n"
                         f"😀 Ник » {data[3]}\n"
                         f"🌐 Уровень » {data[6]}\n"
-                        f"🌐 Очки опыта » {data[7]} / {server_settings[16] * data[6]}\n"
+                        f"🌐 Очки опыта » {data[7]} / {server_settings[20] * data[6]}\n"
                         f"🚻 Пол » {data[8]}\n"
                         f"🔢 Возраст » {data[9]} лет\n"
                         f"🏳 Национальность » {data[10]}\n\n"
@@ -2584,15 +2677,13 @@ async def Console(message: Message, bot: Bot, api: API):
                         f"💶 Евро в банке » {await database.pretty(data[17])}\n"
                         f"💴 Иены в банке » {await database.pretty(data[18])}\n"
                         f"💷 Фунты в банке » {await database.pretty(data[19])}\n\n"
-                        f"🛠 Работа » {data[43]}\n"
-                        f"🏢 Организация » {data[24]}\n"
-                        f"⭐ Уровень розыска » {data[20]}\n\n"
-                        f"🅰️ Предупреждения » {data[34]}\n"
-                        f"💳 Банковская карта » {data[69]}\n"
+                        f"🛠 Работа » {data[27]}\n"
+                        f"🏢 Организация » {data[22]}\n\n"
+                        f"🅰️ Предупреждения » {len(blacklist)}\n"
+                        f"💳 Банковская карта » {data[43]}\n"
                         f"📱 Телефон » {data[5]}\n"
-                        f"👑 VIP » {data[22]}\n"
-                        f"💰 Фишки казино » {await database.pretty(data[65])}\n"
-                        f"💎 Донат » {await database.pretty(data[21])}"
+                        f"👑 VIP » {vipitog}\n"
+                        f"💎 Донат » {await database.pretty(data[20])}"
             )
         except Exception as ex:
             await message.answer(

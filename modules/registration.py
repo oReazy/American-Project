@@ -1,26 +1,19 @@
-import random
-
-import vkbottle.api
-import vkbottle_types
+import asyncio, vkbottle.api, vkbottle_types
 from vkbottle.bot import Bot, Message
-from vkbottle import Keyboard, KeyboardButtonColor, Text, Callback, GroupEventType, GroupTypes, Bot, API
-import json, time, os, sys, re, ast, datetime
+from vkbottle import Keyboard, KeyboardButtonColor, Text, API, GroupEventType, GroupTypes, LoopWrapper, Callback
+import json, time, os, sys, re, ast, datetime, random
+
 from modules import database
-
-# ------------------------------------------------------------------------------------------
-
-# Регистрация аккаунтов на проекте American Project
-
-# -------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 
 async def registration_1(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
-    if server_settings[26] == 1:
+    if server_settings[5] == 1:
         await database.registerNewAccaunt(message.from_id)
         await database.setUserData(message.from_id, 'state', "'registration.registration_1_check'")
         await message.answer(
-            message=f"👋🏻 Добро пожаловать на проект {server_settings[8]} на сервер {server_settings[9]}\n\n"
+            message=f"👋🏻 Добро пожаловать на проект @{server_settings[3]}({server_settings[1]}) на сервер @{server_settings[4]}({server_settings[2]})\n\n"
                     f"❌ Ваш аккаунт не зарегистрирован на данном сервере.\n"
                     f"📝 Придумайте ник вашего персонажа (от 3 до 15 символов)"
         )
@@ -78,7 +71,6 @@ async def registration_2_woman(message: Message, bot: Bot, api: API):
     await registration_3(message, bot, api)
 
 
-
 async def registration_3(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'registration.registration_3'")
     await message.answer(
@@ -106,7 +98,6 @@ async def registration_3(message: Message, bot: Bot, api: API):
             .get_json()
         )
     )
-
 
 
 async def registration_3_check(message: Message, bot: Bot, api: API):
@@ -142,7 +133,6 @@ async def registration_4_check(message: Message, bot: Bot, api: API):
         await registration_4(message, bot, api)
 
 
-
 async def registration_5(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'registration.registration_5'")
     await message.answer(
@@ -163,10 +153,9 @@ async def registration_5(message: Message, bot: Bot, api: API):
     )
 
 
-
 async def registration_5_friend(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', '1')
-    update = server_settings[20] + 1
+    update = server_settings[9] + 1
     await database.setBdData('settings', 'id', "'1'", 'statistics_friend', f"'{update}'")
     await registration_6(message, bot, api)
 
@@ -174,7 +163,7 @@ async def registration_5_friend(message: Message, bot: Bot, api: API):
 
 async def registration_5_list_chatbot(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', '1')
-    update = server_settings[21] + 1
+    update = server_settings[10] + 1
     await database.setBdData('settings', 'id', "'1'", 'statistics_list_chatbot', f"'{update}'")
     await registration_6(message, bot, api)
 
@@ -182,7 +171,7 @@ async def registration_5_list_chatbot(message: Message, bot: Bot, api: API):
 
 async def registration_5_search(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', '1')
-    update = server_settings[22] + 1
+    update = server_settings[11] + 1
     await database.setBdData('settings', 'id', "'1'", 'statistics_search', f"'{update}'")
     await registration_6(message, bot, api)
 
@@ -190,7 +179,7 @@ async def registration_5_search(message: Message, bot: Bot, api: API):
 
 async def registration_5_youtube(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', '1')
-    update = server_settings[23] + 1
+    update = server_settings[12] + 1
     await database.setBdData('settings', 'id', "'1'", 'statistics_youtube', f"'{update}'")
     await registration_6(message, bot, api)
 
@@ -198,10 +187,9 @@ async def registration_5_youtube(message: Message, bot: Bot, api: API):
 
 async def registration_5_other(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', '1')
-    update = server_settings[24] + 1
+    update = server_settings[13] + 1
     await database.setBdData('settings', 'id', "'1'", 'statistics_other', f"'{update}'")
     await registration_6(message, bot, api)
-
 
 
 async def registration_6(message: Message, bot: Bot, api: API):
@@ -209,7 +197,7 @@ async def registration_6(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', '1')
     await message.answer(
         message=f"📬 Не желаете подписаться на новостную рассылку проекта?\n\n"
-                f"Если вы согласитесь, то при каждой рассылке вы будете получать {await database.pretty(server_settings[12])} долларов (💵)",
+                f"Если вы согласитесь, то при каждой рассылке вы будете получать {await database.pretty(server_settings[14])} долларов (💵)",
         keyboard=(
             Keyboard(one_time=True, inline=False)
             .add(Text("Подписаться", {"cmd": "registration.registration_6_accept"}), color=KeyboardButtonColor.POSITIVE)
@@ -218,8 +206,6 @@ async def registration_6(message: Message, bot: Bot, api: API):
             .get_json()
         )
     )
-
-
 
 
 async def registration_6_accept(message: Message, bot: Bot, api: API):
@@ -244,7 +230,7 @@ async def registration_6_denial(message: Message, bot: Bot, api: API):
 
 async def registration_7(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
-    await database.setMultiUserData(message.from_id, f"lvl = '{server_settings[4]}', exp = '{server_settings[6]}', dollars = '{server_settings[5]}', donate = '{server_settings[7]}'")
+    await database.setMultiUserData(message.from_id, f"lvl = '{server_settings[18]}', dollars = '{server_settings[17]}', donate = '{server_settings[19]}'")
     await registration_8(message, bot, api)
 
 
@@ -255,8 +241,8 @@ async def registration_8(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'registration.registration_8'")
     server_settings = await database.getBdData('settings', 'id', "'1'")
     await message.answer(
-        message=f"✈ Каждый человек, который прилетает в штат {server_settings[9]} получает начальное пособие:\n\n"
-                f"— 💵 Доллары » {await database.pretty(server_settings[5])}\n\n"
+        message=f"✈ Каждый человек, который прилетает в штат @{server_settings[4]}({server_settings[2]}) получает начальное пособие:\n\n"
+                f"— 💵 Доллары » {await database.pretty(server_settings[17])}\n\n"
                 f"ℹ Данного пособия будет достаточно до того момента, пока вы не найдете себе работу.",
         keyboard=(
             Keyboard(one_time=True, inline=False)
@@ -266,8 +252,8 @@ async def registration_8(message: Message, bot: Bot, api: API):
     )
 
 
+# ----------------------------------------------------------------------------------------------------------------------
 
-# ---------------------------------------------------------------------------------
 
 async def newAccaunt(message: Message, bot: Bot, api: API):
     await database.deleteUserData(message.from_id)
