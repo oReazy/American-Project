@@ -136,6 +136,30 @@ async def connect_base():  # Подключение к БД
 #      6 | ЗОЛОТАЯ РУЛЕТКА
 #
 #
+#
+#
+#
+# ВАЛЮТЫ (В SERVER_SETTINGS)
+# ---------------------------------------------------------------------------------------
+#     ID | ОПИСАНИЕ
+# ---------------------------------------------------------------------------------------
+#      0 | 0.91   | ДОЛЛАРЫ В ЕВРО
+#      1 | 128.07 | ДОЛЛАРЫ В ИЕНЫ
+#      2 | 0,76   | ДОЛЛАРЫ В ФУНТЫ
+
+#      3 | 1,09   | ЕВРО В ДОЛЛАРЫ
+#      4 | 138,53 | ЕВРО В ИЕНЫ
+#      5 | 0,82   | ЕВРО В ФУНТЫ
+
+#      6 | 0,0078 | ИЕНЫ В ДОЛЛАРЫ
+#      7 | 0,0072 | ИЕНЫ В ЕВРО
+#      8 | 0,0059 | ИЕНЫ В ФУНТЫ
+
+#      9 | 1,31   | ФУНТЫ В ДОЛЛАРЫ
+#     10 | 1,21   | ФУНТЫ В ЕВРО
+#     11 | 168,22 | ФУНТЫ В ИЕНЫ
+#
+#
 async def registerNewAccaunt(user_id):  # Создание нового аккаунта в базе данных
     try:
         connection = await connect_base()
@@ -151,7 +175,7 @@ async def registerNewAccaunt(user_id):  # Создание нового акка
                        "passport, passport_serial, passport_number, marriage, " \
                        "military_card, admin_info, mailing_project, mailing_server, bank_card, " \
                        "temporary_var, limit_report, last_message, reDesign, inventory," \
-                       "family) VALUES " \
+                       "family, timeEventCollectors, notes_telephone, promocode, warn_fraction, temporary_var2) VALUES " \
                        f"({user_id}, " \
                        f"'', " \
                        f"'На этапе регистрации', " \
@@ -200,7 +224,12 @@ async def registerNewAccaunt(user_id):  # Создание нового акка
                        f"'0', " \
                        f"'0', " \
                        f"'[0, 0, 0, 0, 0, 0, 0]', " \
-                       f"'-1'" \
+                       f"'-1', " \
+                       f"'0', " \
+                       f"'❌ Заметок нет'," \
+                       f"'', " \
+                       f"'0', " \
+                       f"''" \
                        f")"
             await cursor.execute(new_user)
             await connection.commit()
@@ -263,6 +292,32 @@ async def findBaseData(key, value):  # найти значения в базе �
     return count_row
 
 
+
+
+async def findBaseDataSetting(table, where_key, where_value):  # найти значения в базе данных. Выводит их количестве в БД
+    count_row = 0
+    connection = await connect_base()
+    async with connection.cursor() as cursor:
+        select_row = f"SELECT * FROM `{table}` WHERE `{where_key}` = {where_value}"
+        await cursor.execute(select_row)
+        rows = await cursor.fetchall()
+        for row in rows:
+            count_row = count_row + 1
+        connection.close()
+    return count_row
+
+
+
+async def yourSQL(sql):  # получение данных пользователя
+    connection = await connect_base()
+    async with connection.cursor() as cursor:
+        select_row = f"{sql}"
+        await cursor.execute(select_row)
+        rows = await cursor.fetchall()
+        connection.close()
+    return rows
+
+
 # --------------------------------------------------------------------------------------------------
 
 async def getBdData(table, key, value):  # получение данных (выводит только последнее)
@@ -322,6 +377,42 @@ async def addMultiBdData(table, keys, values):  # Изменение перем�
         await cursor.execute(update_row)
         await connection.commit()
         connection.close()
+
+
+
+
+
+
+
+
+
+async def newDataInBase(table, keys, values):  # Создание нового аккаунта в базе данных
+    try:
+        connection = await connect_base()
+        async with connection.cursor() as cursor:
+            new_data = f"INSERT INTO `{table}` ({keys}) VALUES ({values})"
+            await cursor.execute(new_data)
+            await connection.commit()
+            connection.close()
+    except Exception as ex:
+        print(f'\033[38m[\033[31m!\033[38m][\033[33mDEBUG\033[38m] Произошла ошибка в базе данных: {ex}')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # ----------------------------------------------------------------------------------------------------------------------

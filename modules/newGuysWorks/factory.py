@@ -73,7 +73,7 @@ async def Info1(message: Message, bot: Bot, api: API):
     await message.answer(
         message=f"🏭 » 📖 Информация по зарплатам\n\n"
                 f"На данной работе вы можете работать лишь мастером\n\n"
-                f"📦 Оплата за одно изделение » 15 долларов (💵)",
+                f"📦 Оплата за одно изделение » 80 долларов (💵)",
         keyboard=(
             Keyboard(one_time=True, inline=False)
                 .add(Text("◀ Назад", {"cmd": "factory.Show"}), color=KeyboardButtonColor.PRIMARY)
@@ -283,7 +283,7 @@ async def rab1_end2(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'factory.Show'")
     data = await database.getUserData(message.from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
-    zarplata = int(data[44]) * 15 * server_settings[26]
+    zarplata = int(data[44]) * 80 * server_settings[26]
     itog = int(data[12]) + zarplata
     await database.setUserData(message.from_id, 'dollars', f"'{itog}'")
     await message.answer(

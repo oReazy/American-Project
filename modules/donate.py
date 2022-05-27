@@ -60,7 +60,7 @@ async def ShopMenu1(message: Message, bot: Bot, api: API):
                 .add(Text("◀", {"cmd": "none"}), color=KeyboardButtonColor.SECONDARY)
                 .add(Text("▶", {"cmd": "donate.ShopMenu2"}), color=KeyboardButtonColor.PRIMARY)
                 .row()
-                .add(Text("👑 VIP", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .add(Text("👑 VIP", {"cmd": "donate.VIP"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("💵 Получить доллары", {"cmd": "donate.Dollars"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
@@ -103,6 +103,209 @@ async def ShopMenu2(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
+
+
+
+async def VIP(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'donate.VIP'")
+    data = await database.getUserData(message.from_id)
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    await message.answer(
+        message=f"🎯 » 💎 » 🛍 » 👑 VIP\n\n"
+                f'💎 Текущее состояние счета » {await database.pretty(data[20])}\n\n'
+                f'📄 VIP — уникальная возможность получить дополнительные привелегии. У нас есть множество вариантов VIP и возможно один из них вам подойдет.',
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "donate.ShopMenu1"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("💎 VIP PREMIUM", {"cmd": "donate.VIPPremium"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("🥇 VIP Gold", {"cmd": "donate.VIPGold"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("🥈 VIP Silver", {"cmd": "donate.VIPSilver"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("🥉 VIP Bronze", {"cmd": "donate.VIPBronze"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+
+async def VIPBronze(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'donate.VIPBronze'")
+    data = await database.getUserData(message.from_id)
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    await message.answer(
+        message=f"🎯 » 💎 » 🛍 » 👑 » 🥉 VIP Bronze\n\n"
+                f'💎 Текущее состояние счета » {await database.pretty(data[20])}\n'
+                f'🛍 Цена » 199 💎\n'
+                f'🛍 ⏰ Срок действия VIP » Выдается на 30 дней\n\n'
+                f'🥉 VIP Bronze — подойдет для новичков, чтобы быстро развиться на сервере:\n\n'
+                f'⚠ В РАЗРАБОТКЕ',
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "donate.VIP"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("Купить", {"cmd": "donate.VIPBronzeCheck"}), color=KeyboardButtonColor.POSITIVE)
+                .get_json()
+        )
+    )
+
+
+async def VIPBronzeCheck(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if data[20] >= 199:
+        vip_data = ast.literal_eval(data[21])
+        vip_data = list(vip_data)
+        vip_data[0] = 'Bronze'
+        vip_data[1] = int(time.time()) + 2592000
+        new_donate = int(data[20]) - 199
+        await database.setMultiUserData(message.from_id, f'donate = "{new_donate}", VIP = "{vip_data}"')
+        await message.answer(
+            message=f'✅ Вы успешно купили VIP Bronze (на 30 дней)',
+        )
+        await VIPBronze(message, bot, api)
+    else:
+        await message.answer(
+            message=f'❌ У вас недостаточно алмазов для покупки',
+        )
+        await VIPBronze(message, bot, api)
+
+
+
+
+
+async def VIPSilver(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'donate.VIPSilver'")
+    data = await database.getUserData(message.from_id)
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    await message.answer(
+        message=f"🎯 » 💎 » 🛍 » 👑 » 🥈 VIP Silver\n\n"
+                f'💎 Текущее состояние счета » {await database.pretty(data[20])}\n'
+                f'🛍 Цена » 499 💎\n'
+                f'🛍 ⏰ Срок действия VIP » Выдается навсегда\n\n'
+                f'🥈 VIP Silver — отличная VIP для игры на нашем проекте. Покупая данную VIP вы получаете следующие бонусы:\n\n'
+                f'⚠ В РАЗРАБОТКЕ',
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "donate.VIP"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("Купить", {"cmd": "donate.VIPSilverCheck"}), color=KeyboardButtonColor.POSITIVE)
+                .get_json()
+        )
+    )
+
+
+async def VIPSilverCheck(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if data[20] >= 499:
+        vip_data = ast.literal_eval(data[21])
+        vip_data = list(vip_data)
+        vip_data[0] = 'Silver'
+        vip_data[1] = 10
+        new_donate = int(data[20]) - 499
+        await database.setMultiUserData(message.from_id, f'donate = "{new_donate}", VIP = "{vip_data}"')
+        await message.answer(
+            message=f'✅ Вы успешно купили VIP Silver (навсегда)',
+        )
+        await VIPSilver(message, bot, api)
+    else:
+        await message.answer(
+            message=f'❌ У вас недостаточно алмазов для покупки',
+        )
+        await VIPSilver(message, bot, api)
+
+
+
+
+
+
+async def VIPGold(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'donate.VIPGold'")
+    data = await database.getUserData(message.from_id)
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    await message.answer(
+        message=f"🎯 » 💎 » 🛍 » 👑 » 🥇 VIP Gold\n\n"
+                f'💎 Текущее состояние счета » {await database.pretty(data[20])}\n'
+                f'🛍 Цена » 1500 💎\n'
+                f'🛍 ⏰ Срок действия VIP » Выдается навсегда\n\n'
+                f'🥇 VIP Gold — универсальная VIP, которая включает в себе все бонусы из Bronze и Silver, однако дополняет своими:\n\n'
+                f'⚠ В РАЗРАБОТКЕ',
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "donate.VIP"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("Купить", {"cmd": "donate.VIPGoldCheck"}), color=KeyboardButtonColor.POSITIVE)
+                .get_json()
+        )
+    )
+
+
+async def VIPGoldCheck(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if data[20] >= 1500:
+        vip_data = ast.literal_eval(data[21])
+        vip_data = list(vip_data)
+        vip_data[0] = 'Gold'
+        vip_data[1] = 10
+        new_donate = int(data[20]) - 1500
+        await database.setMultiUserData(message.from_id, f'donate = "{new_donate}", VIP = "{vip_data}"')
+        await message.answer(
+            message=f'✅ Вы успешно купили VIP Gold (навсегда)',
+        )
+        await VIPGold(message, bot, api)
+    else:
+        await message.answer(
+            message=f'❌ У вас недостаточно алмазов для покупки',
+        )
+        await VIPGold(message, bot, api)
+
+
+
+
+
+
+async def VIPPremium(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'donate.VIPPremium'")
+    data = await database.getUserData(message.from_id)
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    await message.answer(
+        message=f"🎯 » 💎 » 🛍 » 👑 » 💎 VIP PREMIUM\n\n"
+                f'💎 Текущее состояние счета » {await database.pretty(data[20])}\n'
+                f'🛍 Цена » 3000 💎\n'
+                f'🛍 ⏰ Срок действия VIP » Выдается навсегда\n\n'
+                f'💎 VIP PREMIUM — самая лучшая подписка на нашем сервере. С помощью данной подписки вы получаете самое большое количество бонусов на нашем сервере:\n\n'
+                f'⚠ В РАЗРАБОТКЕ',
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "donate.VIP"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("Купить", {"cmd": "donate.VIPPremiumCheck"}), color=KeyboardButtonColor.POSITIVE)
+                .get_json()
+        )
+    )
+
+
+async def VIPPremiumCheck(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if data[20] >= 3000:
+        vip_data = ast.literal_eval(data[21])
+        vip_data = list(vip_data)
+        vip_data[0] = 'PREMIUM'
+        vip_data[1] = 10
+        new_donate = int(data[20]) - 3000
+        await database.setMultiUserData(message.from_id, f'donate = "{new_donate}", VIP = "{vip_data}"')
+        await message.answer(
+            message=f'✅ Вы успешно купили VIP PREMIUM (навсегда)',
+        )
+        await VIPPremium(message, bot, api)
+    else:
+        await message.answer(
+            message=f'❌ У вас недостаточно алмазов для покупки',
+        )
+        await VIPPremium(message, bot, api)
+
+
 
 
 async def ChangeNick(message: Message, bot: Bot, api: API):
@@ -410,6 +613,9 @@ async def EXPGetCheckOK(message: Message, bot: Bot, api: API):
     await message.answer(
         message=f'✅ Транзакция успешно проведена.',
     )
+    data = await database.getUserData(message.from_id)
+    if new_exp >= (data[6] * server_settings[20]):
+        await database.def_new_lvl(message, bot, api, data, server_settings)
     await EXP(message, bot, api)
 
 

@@ -29,18 +29,43 @@ async def Show(message: Message, bot: Bot, api: API):
                 .add(Text("🏠 Меню дома", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .row()
                 .add(Text("🏪 Меню бизнеса", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
-                .add(Text("🤠 Меню лидера", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .add(Text("🤠 Меню лидера", {"cmd": "liderfraction.Show"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("⏏ Улучшения", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .row()
                 .add(Text("📕 Мой паспорт", {"cmd": "passport.Show"}), color=KeyboardButtonColor.SECONDARY)
                 .add(Text("📒 Мои лицензии", {"cmd": "licences.Show"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
+                .add(Text("👕 Моя одежда", {"cmd": "characterAction.Clothes"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
                 .add(Text("🐯 Татуировки", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .add(Text("👥 Меню семьи", {"cmd": "family.Show"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
         )
     )
+
+
+async def Clothes(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'characterAction.Clothes'")
+    data = await database.getUserData(message.from_id)
+
+    data = ast.literal_eval(data[26])
+    data = list(data)
+    await message.answer(
+        message=f"🎯 » 👤 » 👕 Моя одежда\n\n"
+                f"🧢 Голова » {data[0]}\n"
+                f"👕 Тело » {data[1]}\n"
+                f"👖 Ноги » {data[2]}\n"
+                f"🥾 Обувь » {data[3]}\n\n"
+                f"🤚🏻 Руки » {data[4]}\n"
+                f"🧣 Шея » {data[5]}",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "characterAction.Show"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
+        )
+    )
+
 
 
 async def Statistics(message: Message, bot: Bot, api: API):

@@ -29,6 +29,8 @@ async def Show(message: Message, bot: Bot, api: API):
                 .row()
                 .add(Text("🔰 Часто задаваемые вопросы", {"cmd": "helpGame.List1"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
+                .add(Text("🔰 Экскурсия по серверу", {"cmd": "excursion.Show1"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
                 .add(Text("🌐 Как заработать первые деньги?", {"cmd": "helpGame.List2"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("🌐 Виды лицензий", {"cmd": "helpGame.List3"}), color=KeyboardButtonColor.SECONDARY)

@@ -1020,6 +1020,8 @@ async def Panel7(message: Message, bot: Bot, api: API):
                     .add(Text("📢 Настройки рассылок", {"cmd": "admin.Panel7_EditMailing"}), color=KeyboardButtonColor.SECONDARY)
                     .row()
                     .add(Text("📊 Статистика приходов игроков", {"cmd": "admin.Panel7_Statistics"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("📝 Изменить начальные бонусы", {"cmd": "admin.Panel7_EditBonus"}), color=KeyboardButtonColor.SECONDARY)
                     .get_json()
             )
         )
@@ -1028,6 +1030,163 @@ async def Panel7(message: Message, bot: Bot, api: API):
             message=f"❌ Нету доступа"
         )
         await Show(message, bot, api)
+
+
+
+
+async def Panel7_EditBonus(message: Message, bot: Bot, api: API):
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditBonus'")
+    await message.answer(
+        message=f"🎯 » 🛠 » ⚙ » 📝 Изменить начальные бонусы\n\n"
+                f"ℹ Начальные бонусы, которые тут указаны, выдаются игроку при регистрации\n\n"
+                f"📄 Бонус доллары » {await database.pretty(int(server_settings[17]))}\n"
+                f"📄 Бонус уровень » {await database.pretty(int(server_settings[18]))}\n"
+                f"📄 Бонус доната » {await database.pretty(int(server_settings[19]))}\n",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "admin.Panel7"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("📝 Изменить бонус долларов", {"cmd": "admin.Panel7_EditBonusDollars"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("📝 Изменить бонус уровня", {"cmd": "admin.Panel7_EditBonusLVL"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("📝 Изменить бонус доната", {"cmd": "admin.Panel7_EditBonusDonate"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+            )
+        )
+
+
+
+
+async def Panel7_EditBonusDonate(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditBonusDonateAdd'")
+    await message.answer(
+        message=f"🎯 » 🛠 » ⚙ » 📝 » 📝 Изменить бонус доната\n\n"
+                f"📝 Напишите новое значение бонуса",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Отмена", {"cmd": "admin.Panel7_EditBonus"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("0", {"cmd": "admin.Panel7_EditBonusDonateAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("10", {"cmd": "admin.Panel7_EditBonusDonateAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("20", {"cmd": "admin.Panel7_EditBonusDonateAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("30", {"cmd": "admin.Panel7_EditBonusDonateAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("50", {"cmd": "admin.Panel7_EditBonusDonateAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("100", {"cmd": "admin.Panel7_EditBonusDonateAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("200", {"cmd": "admin.Panel7_EditBonusDonateAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("500", {"cmd": "admin.Panel7_EditBonusDonateAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("1000", {"cmd": "admin.Panel7_EditBonusDonateAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("2000", {"cmd": "admin.Panel7_EditBonusDonateAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+            )
+        )
+
+
+
+async def Panel7_EditBonusDonateAdd(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditBonus'")
+    await database.setBdData('settings', 'id', "'1'", 'bonus_donate', f"'{message.text}'")
+    await message.answer(
+        message=f"✅ Вы успешно изменили бонус доната!",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("👉🏻 Далее", {"cmd": "admin.Panel7_EditBonus"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+
+
+
+async def Panel7_EditBonusLVL(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditBonusLVLAdd'")
+    await message.answer(
+        message=f"🎯 » 🛠 » ⚙ » 📝 » 📝 Изменить бонус EXP\n\n"
+                f"📝 Напишите новое значение бонуса",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Отмена", {"cmd": "admin.Panel7_EditBonus"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("1", {"cmd": "admin.Panel7_EditBonusLVLAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("2", {"cmd": "admin.Panel7_EditBonusLVLAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("3", {"cmd": "admin.Panel7_EditBonusLVLAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("4", {"cmd": "admin.Panel7_EditBonusLVLAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("5", {"cmd": "admin.Panel7_EditBonusLVLAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("6", {"cmd": "admin.Panel7_EditBonusLVLAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("7", {"cmd": "admin.Panel7_EditBonusLVLAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("8", {"cmd": "admin.Panel7_EditBonusLVLAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("9", {"cmd": "admin.Panel7_EditBonusLVLAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("10", {"cmd": "admin.Panel7_EditBonusLVLAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+            )
+        )
+
+
+
+async def Panel7_EditBonusLVLAdd(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditBonus'")
+    await database.setBdData('settings', 'id', "'1'", 'bonus_lvl', f"'{message.text}'")
+    await message.answer(
+        message=f"✅ Вы успешно изменили бонус уровня!",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("👉🏻 Далее", {"cmd": "admin.Panel7_EditBonus"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+
+
+async def Panel7_EditBonusDollars(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditBonusDollarsAdd'")
+    await message.answer(
+        message=f"🎯 » 🛠 » ⚙ » 📝 » 📝 Изменить бонус долларов\n\n"
+                f"📝 Напишите новое значение бонуса",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Отмена", {"cmd": "admin.Panel7_EditBonus"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("0", {"cmd": "admin.Panel7_EditBonusDollarsAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("100", {"cmd": "admin.Panel7_EditBonusDollarsAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("200", {"cmd": "admin.Panel7_EditBonusDollarsAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("300", {"cmd": "admin.Panel7_EditBonusDollarsAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("500", {"cmd": "admin.Panel7_EditBonusDollarsAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("1000", {"cmd": "admin.Panel7_EditBonusDollarsAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("2000", {"cmd": "admin.Panel7_EditBonusDollarsAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("5000", {"cmd": "admin.Panel7_EditBonusDollarsAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("10000", {"cmd": "admin.Panel7_EditBonusDollarsAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("20000", {"cmd": "admin.Panel7_EditBonusDollarsAdd"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+            )
+        )
+
+
+
+async def Panel7_EditBonusDollarsAdd(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel7_EditBonus'")
+    await database.setBdData('settings', 'id', "'1'", 'bonus_dollars', f"'{message.text}'")
+    await message.answer(
+        message=f"✅ Вы успешно изменили бонус долларов!",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("👉🏻 Далее", {"cmd": "admin.Panel7_EditBonus"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+
+
+
+
+
+
 
 
 
@@ -2047,6 +2206,8 @@ async def Panel5(message: Message, bot: Bot, api: API):
                     .add(Text("◀ Назад", {"cmd": "admin.Show"}), color=KeyboardButtonColor.PRIMARY)
                     .add(Text("◀", {"cmd": "none"}), color=KeyboardButtonColor.SECONDARY)
                     .add(Text("▶", {"cmd": "none"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("📄 Резюме во фракциях", {"cmd": "admin.Panel5_Resumes"}), color=KeyboardButtonColor.SECONDARY)
                     .get_json()
             )
         )
@@ -2056,6 +2217,26 @@ async def Panel5(message: Message, bot: Bot, api: API):
         )
         await Show(message, bot, api)
 
+
+async def Panel5_Resumes(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel5_Resumes'")
+    await message.answer(
+        message=f"🎯 » 🛠 » 🤠 » 📄 Резюме во фракциях\n\n",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "admin.Panel4"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("0️⃣ Удалить все резюме", {"cmd": "admin.Panel5_ResumesEdit"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+            )
+        )
+
+
+async def Panel5_ResumesEdit(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel5_Resumes'")
+    await database.yourSQL("UPDATE `fractions` SET resumes = '[]' WHERE 1")
+    await message.answer('✅ Вы успешно удалили все резюме во фракциях')
+    await Panel5_Resumes(message, bot, api)
 
 # --------------------------------------------------------------------------------------------------------
 
@@ -2075,6 +2256,8 @@ async def Panel4(message: Message, bot: Bot, api: API):
                     .add(Text("◀ Назад", {"cmd": "admin.Show"}), color=KeyboardButtonColor.PRIMARY)
                     .add(Text("◀", {"cmd": "none"}), color=KeyboardButtonColor.SECONDARY)
                     .add(Text("▶", {"cmd": "none"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("📇 Объявления", {"cmd": "admin.Panel4_Advert"}), color=KeyboardButtonColor.SECONDARY)
                     .get_json()
             )
         )
@@ -2086,6 +2269,39 @@ async def Panel4(message: Message, bot: Bot, api: API):
 
 
 
+async def Panel4_Advert(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel4_Advert'")
+    await message.answer(
+        message=f"🎯 » 🛠 » 😎 » 📇 Объявления\n\n",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "admin.Panel4"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("0️⃣ Удалить все объявления", {"cmd": "admin.Panel4_AdvertEdit"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("0️⃣ Удалить опубликованные объявления", {"cmd": "admin.Panel4_AdvertEdit"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("0️⃣ Удалить редактируемые объявления", {"cmd": "admin.Panel4_AdvertEdit"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+            )
+        )
+
+
+async def Panel4_AdvertEdit(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'admin.Panel4_Advert'")
+    print(message.text)
+    if message.text == '0️⃣ Удалить все объявления':
+        await database.setMultiDbData('settings', 'id', "'1'", "advert_access = '[]', advert_edit = '[]'")
+        await message.answer('✅ Вы успешно удалили все объявления (опубликованные и на редакции)')
+        await Panel4_Advert(message, bot, api)
+    if message.text == '0️⃣ Удалить опубликованные объявления':
+        await database.setMultiDbData('settings', 'id', "'1'", "advert_access = '[]'")
+        await message.answer('✅ Вы успешно удалили все объявления (опубликованные)')
+        await Panel4_Advert(message, bot, api)
+    if message.text == '0️⃣ Удалить редактируемые объявления':
+        await database.setMultiDbData('settings', 'id', "'1'", "advert_edit = '[]'")
+        await message.answer('✅ Вы успешно удалили все объявления (на редакции)')
+        await Panel4_Advert(message, bot, api)
 # --------------------------------------------------------------------------------------------------------
 
 # АДМИН ПАНЕЛЬ 3-ОГО УРОВНЯ !!!
@@ -2376,11 +2592,13 @@ async def Console(message: Message, bot: Bot, api: API):
         await message.answer(
             message=f"Эхо бот работает!"
         )
+        return
     else:
         if command[0] == '/test':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
     # -------------------------------------------------------------
 
@@ -2391,11 +2609,13 @@ async def Console(message: Message, bot: Bot, api: API):
             message=f'✅ Вы изменили название проекта на "{text}"'
         )
         await database.setBdData('settings', 'id', "'1'", 'name_project', f"'{text}'")
+        return
     else:
         if command[0] == '/changenameproject':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
 
     if command[0] == '/changenameserver' and data[11] >= 7:
@@ -2405,11 +2625,13 @@ async def Console(message: Message, bot: Bot, api: API):
             message=f'✅ Вы изменили название сервера на "{text}"'
         )
         await database.setBdData('settings', 'id', "'1'", 'name_server', f"'{text}'")
+        return
     else:
         if command[0] == '/changenameserver':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
 
     if command[0] == '/setmailingprojectprice' and data[11] >= 7:
@@ -2420,15 +2642,18 @@ async def Console(message: Message, bot: Bot, api: API):
                 message=f'✅ Вы изменили вознаграждение за рассылку новостей проекта'
             )
             await database.setBdData('settings', 'id', "'1'", 'pay_mailing_project', f"'{text}'")
+            return
         else:
             await message.answer(
                 message=f'❌ Введите корректное число'
             )
+            return
     else:
         if command[0] == '/setmailingprojectprice':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
 
     if command[0] == '/setmailingserverprice' and data[11] >= 7:
@@ -2439,15 +2664,18 @@ async def Console(message: Message, bot: Bot, api: API):
                 message=f'✅ Вы изменили вознаграждение за рассылку новостей сервера'
             )
             await database.setBdData('settings', 'id', "'1'", 'pay_mailing_server', f"'{text}'")
+            return
         else:
             await message.answer(
                 message=f'❌ Введите корректное число'
             )
+            return
     else:
         if command[0] == '/setmailingserverprice':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
 
     if command[0] == '/changenamegroup' and data[11] >= 7:
@@ -2457,11 +2685,13 @@ async def Console(message: Message, bot: Bot, api: API):
             message=f'✅ Вы изменили название сообщества на "{text}"'
         )
         await bot.api.groups.edit(group_id=message.group_id, title=text)
+        return
     else:
         if command[0] == '/changenamegroup':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
 
     if command[0] == '/changestatusgroup' and data[11] >= 7:
@@ -2471,11 +2701,13 @@ async def Console(message: Message, bot: Bot, api: API):
             message=f'✅ Вы изменили статус сообщества на "{text}"'
         )
         await api.status.set(group_id=message.group_id, text=text)
+        return
     else:
         if command[0] == '/changestatusgroup':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
 
 
@@ -2484,11 +2716,13 @@ async def Console(message: Message, bot: Bot, api: API):
         await message.answer(
             message=f'✅ Вы успешно открыли регистрацию на сервере'
         )
+        return
     else:
         if command[0] == '/regopen':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
 
 
@@ -2497,11 +2731,13 @@ async def Console(message: Message, bot: Bot, api: API):
         await message.answer(
             message=f'✅ Вы успешно закрыли регистрацию на сервере'
         )
+        return
     else:
         if command[0] == '/regopen':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
 
 
@@ -2513,11 +2749,90 @@ async def Console(message: Message, bot: Bot, api: API):
             message=f'✅ Вы изменили название акции на "{text}"'
         )
         await database.setBdData('settings', 'id', "'1'", 'stocks', f"'{text}'")
+        return
     else:
         if command[0] == '/changenamestocks':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
+
+
+
+
+
+    if command[0] == '/setbonusdollars' and data[11] >= 7:
+        lentext = len(command[0]) + 1
+        text = message.text[lentext:]
+        if text.isdigit():
+            await message.answer(
+                message=f'✅ Вы изменили бонус при регистрации (доллары)'
+            )
+            await database.setBdData('settings', 'id', "'1'", 'bonus_dollars', f"'{text}'")
+            return
+        else:
+            await message.answer(
+                message=f'❌ Введите корректное число'
+            )
+            return
+    else:
+        if command[0] == '/setbonusdollars':
+            await message.answer(
+                message=f"❌ Нету доступа"
+            )
+            return
+
+
+
+    if command[0] == '/setbonuslvl' and data[11] >= 7:
+        lentext = len(command[0]) + 1
+        text = message.text[lentext:]
+        if text.isdigit():
+            await message.answer(
+                message=f'✅ Вы изменили бонус при регистрации (уровень)'
+            )
+            await database.setBdData('settings', 'id', "'1'", 'bonus_lvl', f"'{text}'")
+            return
+        else:
+            await message.answer(
+                message=f'❌ Введите корректное число'
+            )
+            return
+    else:
+        if command[0] == '/setbonuslvl':
+            await message.answer(
+                message=f"❌ Нету доступа"
+            )
+            return
+
+
+    if command[0] == '/setbonusdonate' and data[11] >= 7:
+        lentext = len(command[0]) + 1
+        text = message.text[lentext:]
+        if text.isdigit():
+            await message.answer(
+                message=f'✅ Вы изменили бонус при регистрации (донат)'
+            )
+            await database.setBdData('settings', 'id', "'1'", 'bonus_donate', f"'{text}'")
+            return
+        else:
+            await message.answer(
+                message=f'❌ Введите корректное число'
+            )
+            return
+    else:
+        if command[0] == '/setbonusdonate':
+            await message.answer(
+                message=f"❌ Нету доступа"
+            )
+            return
+
+
+
+
+
+
+
 
 
     if command[0] == '/testproject' and data[11] >= 7:
@@ -2545,11 +2860,66 @@ async def Console(message: Message, bot: Bot, api: API):
                 .get_json()
             )
         )
+        return
     else:
         if command[0] == '/testproject':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
+
+    # -------------------------------------------------------------
+
+    if command[0] == '/delresumes' and data[11] >= 5:
+        await database.yourSQL("UPDATE `fractions` SET resumes = '[]' WHERE 1")
+        await message.answer('✅ Вы успешно удалили все резюме во фракциях')
+        return
+    else:
+        if command[0] == '/deladvertall':
+            await message.answer(
+                message=f"❌ Нету доступа"
+            )
+            return
+    # -------------------------------------------------------------
+
+
+
+
+    if command[0] == '/deladvertall' and data[11] >= 4:
+        await database.setMultiDbData('settings', 'id', "'1'", "advert_access = '[]', advert_edit = '[]'")
+        await message.answer('✅ Вы успешно удалили все объявления (опубликованные и на редакции)')
+        return
+    else:
+        if command[0] == '/deladvertall':
+            await message.answer(
+                message=f"❌ Нету доступа"
+            )
+            return
+
+
+    if command[0] == '/deladvertpublic' and data[11] >= 4:
+        await database.setMultiDbData('settings', 'id', "'1'", "advert_access = '[]'")
+        await message.answer('✅ Вы успешно удалили все объявления (опубликованные и на редакции)')
+        return
+    else:
+        if command[0] == '/deladvertpublic':
+            await message.answer(
+                message=f"❌ Нету доступа"
+            )
+            return
+
+
+    if command[0] == '/deladvertedit' and data[11] >= 4:
+        await database.setMultiDbData('settings', 'id', "'1'", "advert_edit = '[]'")
+        await message.answer('✅ Вы успешно удалили все объявления (на редакции)')
+        return
+    else:
+        if command[0] == '/deladvertedit':
+            await message.answer(
+                message=f"❌ Нету доступа"
+            )
+            return
+
     # -------------------------------------------------------------
 
     if command[0] == '/fractioninfo' and data[11] >= 3:
@@ -2557,6 +2927,11 @@ async def Console(message: Message, bot: Bot, api: API):
         text = message.text[lentext:]
         try:
             data = await database.getBdData('fractions', 'id', f"'{text}'")
+            NAME_RANGS = ast.literal_eval(data[5])
+            NAME_RANGS = list(NAME_RANGS)
+
+            SALARY_RANGS = ast.literal_eval(data[6])
+            SALARY_RANGS = list(SALARY_RANGS)
             await message.answer(
                 message=f"📟 » Информация о фракции\n\n"
                         f"📃 Название фракции » {data[1]}\n"
@@ -2564,17 +2939,18 @@ async def Console(message: Message, bot: Bot, api: API):
                         f"⛓ Ссылка на беседу » {data[3]}\n\n"
                         f"✏ Доска объявлений фракции » {data[4]}\n\n"
                         f"📜 ИНФОРМАЦИЯ О РАНГАХ ФРАКЦИИ:\n"
-                        f"🔟 — 10 РАНГ — {data[5]} — {data[15]} долларов (💵)\n"
-                        f"9️⃣ — 9 РАНГ — {data[6]} — {data[16]} долларов (💵)\n"
-                        f"8️⃣ — 8 РАНГ — {data[7]} — {data[17]} долларов (💵)\n"
-                        f"7️⃣ — 7 РАНГ — {data[8]} — {data[18]} долларов (💵)\n"
-                        f"6️⃣ — 6 РАНГ — {data[9]} — {data[19]} долларов (💵)\n"
-                        f"5️⃣ — 5 РАНГ — {data[10]} — {data[20]} долларов (💵)\n"
-                        f"4️⃣ — 4 РАНГ — {data[11]} — {data[21]} долларов (💵)\n"
-                        f"3️⃣ — 3 РАНГ — {data[12]} — {data[22]} долларов (💵)\n"
-                        f"2️⃣ — 2 РАНГ — {data[13]} — {data[23]} долларов (💵)\n"
-                        f"1️⃣ — 1 РАНГ — {data[14]} — {data[24]} долларов (💵)\n"
+                        f"🔟 — 10 РАНГ — {NAME_RANGS[0]} — {await database.pretty(SALARY_RANGS[0])} долларов (💵)\n"
+                        f"9️⃣ — 9 РАНГ — {NAME_RANGS[1]} — {await database.pretty(SALARY_RANGS[1])} долларов (💵)\n"
+                        f"8️⃣ — 8 РАНГ — {NAME_RANGS[2]} — {await database.pretty(SALARY_RANGS[2])} долларов (💵)\n"
+                        f"7️⃣ — 7 РАНГ — {NAME_RANGS[3]} — {await database.pretty(SALARY_RANGS[3])} долларов (💵)\n"
+                        f"6️⃣ — 6 РАНГ — {NAME_RANGS[4]} — {await database.pretty(SALARY_RANGS[4])} долларов (💵)\n"
+                        f"5️⃣ — 5 РАНГ — {NAME_RANGS[5]} — {await database.pretty(SALARY_RANGS[5])} долларов (💵)\n"
+                        f"4️⃣ — 4 РАНГ — {NAME_RANGS[6]} — {await database.pretty(SALARY_RANGS[6])} долларов (💵)\n"
+                        f"3️⃣ — 3 РАНГ — {NAME_RANGS[7]} — {await database.pretty(SALARY_RANGS[7])} долларов (💵)\n"
+                        f"2️⃣ — 2 РАНГ — {NAME_RANGS[8]} — {await database.pretty(SALARY_RANGS[8])} долларов (💵)\n"
+                        f"1️⃣ — 1 РАНГ — {NAME_RANGS[9]} — {await database.pretty(SALARY_RANGS[9])} долларов (💵)\n"
             )
+            return
         except Exception as ex:
             await message.answer(
                 message=f'⚠ Возникла ошибка при выводе информации фракции\n\n'
@@ -2586,6 +2962,7 @@ async def Console(message: Message, bot: Bot, api: API):
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
 
 
@@ -2601,11 +2978,13 @@ async def Console(message: Message, bot: Bot, api: API):
             message=f"👥 Онлайн игроков » {count_online}\n"
                     f"🤠 За последний час ботом воспользовалось » {count_1h} человек",
         )
+        return
     else:
         if command[0] == '/onlineserver':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
 
     if command[0] == '/online' and data[11] >= 2:
@@ -2614,11 +2993,13 @@ async def Console(message: Message, bot: Bot, api: API):
         await message.answer(
             message=f"👥 Онлайн игроков » {count_online}",
         )
+        return
     else:
         if command[0] == '/online':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
 
     if command[0] == '/houronline' and data[11] >= 2:
@@ -2627,11 +3008,13 @@ async def Console(message: Message, bot: Bot, api: API):
         await message.answer(
             message=f"🤠 За последний час ботом воспользовалось » {count_1h} человек",
         )
+        return
     else:
         if command[0] == '/houronline':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
 
 
@@ -2661,7 +3044,7 @@ async def Console(message: Message, bot: Bot, api: API):
                     vipitog = f'{VIP[0]} до {endvip}'
 
             await message.answer(
-                message=f"🎯 » 🛠 » 😀 » ℹ Статистика игрока\n\n"
+                message=f"📟 » ℹ Статистика игрока\n\n"
                         f"⚠ Вы просматриваете статистику игрока @id{id_user}({data[3]})\n\n"
                         f"😀 Ник » {data[3]}\n"
                         f"🌐 Уровень » {data[6]}\n"
@@ -2685,11 +3068,13 @@ async def Console(message: Message, bot: Bot, api: API):
                         f"👑 VIP » {vipitog}\n"
                         f"💎 Донат » {await database.pretty(data[20])}"
             )
+            return
         except Exception as ex:
             await message.answer(
                 message=f'⚠ Возникла ошибка при проверки статистики\n\n'
                         f'— Убедитесь, что данный пользователь зарегистрирован в чат-боте.'
             )
+            return
     else:
         if command[0] == '/check':
             await message.answer(
@@ -2699,29 +3084,35 @@ async def Console(message: Message, bot: Bot, api: API):
 
     if command[0] == '/mn' and data[11] >= 1:
         await mainMenu.Show(message, bot, api)
+        return
     else:
         if command[0] == '/mn':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
 
     if command[0] == '/minimn' and data[11] >= 1:
         await mainMenu.Mini(message, bot, api)
+        return
     else:
         if command[0] == '/minimn':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
 
     if command[0] == '/quit' and data[11] >= 1:
         await Show(message, bot, api)
+        return
     else:
         if command[0] == '/quit':
             await message.answer(
                 message=f"❌ Нету доступа"
             )
+            return
 
     await message.answer(
         message=f"❌ Неизвестная команда."

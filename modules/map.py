@@ -29,7 +29,7 @@ async def Show(message: Message, bot: Bot, api: API):
                 .add(Text("🛠 Основные работы", {"cmd": "map.Works"}), color=KeyboardButtonColor.SECONDARY)
                 .add(Text("🚙 Автосалоны", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .row()
-                .add(Text("🏢 Отели", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .add(Text("🏢 Отели", {"cmd": "map.Hotels"}), color=KeyboardButtonColor.SECONDARY)
                 .add(Text("🏷 Разное", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .row()
                 .add(Text("🔩 Автомастерские", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
@@ -43,6 +43,31 @@ async def Show(message: Message, bot: Bot, api: API):
                 .get_json()
         )
     )
+
+
+async def Hotels(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'map.Hotels'")
+    await message.answer(
+        message=f"🎯 » 🗺 » 🏢 Отели",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "map.Show"}), color=KeyboardButtonColor.PRIMARY)
+                .add(Text("◀", {"cmd": "none"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("▶", {"cmd": "none"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("🏢 Titanic Palace", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .add(Text("🏢 Beverly Hills", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .row()
+                .add(Text("🏢 Bellagio", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .add(Text("🏢 Fairmont Century Plaza", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .row()
+                .add(Text("🏢 The Beverly Hilton", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .add(Text("🏢 Mosaic Hotel", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .get_json()
+        )
+    )
+
+
 
 async def importandPlaces1(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'map.importandPlaces1'")
@@ -62,6 +87,8 @@ async def importandPlaces1(message: Message, bot: Bot, api: API):
                 .row()
                 .add(Text("🌅 Пирс", {"cmd": "Pier.Show"}), color=KeyboardButtonColor.SECONDARY)
                 .add(Text("🏦 Центральный банк", {"cmd": "CentralBank.Show"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("🏰 Центральный рынок", {"cmd": "CentralMarket.Show"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("🏣 Страховая компания", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .add(Text("🚓 Штрафстоянка", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
@@ -89,7 +116,7 @@ async def importandPlaces2(message: Message, bot: Bot, api: API):
                 .add(Text("◀", {"cmd": "map.importandPlaces1"}), color=KeyboardButtonColor.PRIMARY)
                 .add(Text("▶", {"cmd": "none"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
-                .add(Text("📻 Радиостанция", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .add(Text("📻 Радиостанция", {"cmd": "radiostation.Show"}), color=KeyboardButtonColor.SECONDARY)
                 .add(Text("📺 Телецентр", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .row()
                 .add(Text("🛡 Военная база", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
@@ -118,7 +145,7 @@ async def newGuysWorks(message: Message, bot: Bot, api: API):
                 .add(Text("🏭 Завод", {"cmd": "factory.Show"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("📦 Склад", {"cmd": "warehouse.Show"}), color=KeyboardButtonColor.SECONDARY)
-                .add(Text("🍕 Доставщик", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
+                .add(Text("🍕 Доставщик", {"cmd": "delivery.Show"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
                 .add(Text("🚗 Автомобильный завод", {"cmd": "none"}), color=KeyboardButtonColor.NEGATIVE)
                 .row()

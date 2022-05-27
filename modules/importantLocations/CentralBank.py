@@ -63,24 +63,560 @@ async def BankomatWelcome(message: Message, bot: Bot, api: API):
 async def Bankomat(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'CentralBank.Bankomat'")
     data = await database.getUserData(message.from_id)
+    count = await database.findBaseDataSetting('fractions', 'leader', f"'{data[3]}'")
+    if count == 0:
+        if data[22] == 'Без организации':
+            await message.answer(
+                message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 Банковские операции над картой\n\n"
+                        f"👤 Здраствуйте, {data[3]}.\n\n"
+                        f"💳 Выберите опцию, которой хотите воспользоваться",
+                keyboard=(
+                    Keyboard(one_time=True, inline=False)
+                        .add(Text("💳 Выйти", {"cmd": "CentralBank.Show"}), color=KeyboardButtonColor.PRIMARY)
+                        .row()
+                        .add(Text("ℹ Баланс карты", {"cmd": "CentralBank.Balance"}), color=KeyboardButtonColor.SECONDARY)
+                        .row()
+                        .add(Text("🔼 Пополнить", {"cmd": "CentralBank.addBalance1"}), color=KeyboardButtonColor.SECONDARY)
+                        .add(Text("🔽 Списать", {"cmd": "CentralBank.vivodBalance1"}), color=KeyboardButtonColor.SECONDARY)
+                        .row()
+                        .add(Text("💸 Перевод денег", {"cmd": "CentralBank.transfer"}), color=KeyboardButtonColor.SECONDARY)
+                        .row()
+                        .add(Text("💱 Курс валют", {"cmd": "CentralBank.CourceVallet"}), color=KeyboardButtonColor.SECONDARY)
+                        .add(Text("💱 Обменник валют", {"cmd": "CentralBank.exchanger1"}), color=KeyboardButtonColor.SECONDARY)
+                        .get_json()
+                )
+            )
+        else:
+            await message.answer(
+                message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 Банковские операции над картой\n\n"
+                        f"👤 Здраствуйте, {data[3]}.\n\n"
+                        f"💳 Выберите опцию, которой хотите воспользоваться",
+                keyboard=(
+                    Keyboard(one_time=True, inline=False)
+                        .add(Text("💳 Выйти", {"cmd": "CentralBank.Show"}), color=KeyboardButtonColor.PRIMARY)
+                        .row()
+                        .add(Text("ℹ Баланс карты", {"cmd": "CentralBank.Balance"}), color=KeyboardButtonColor.SECONDARY)
+                        .row()
+                        .add(Text("🔼 Пополнить", {"cmd": "CentralBank.addBalance1"}), color=KeyboardButtonColor.SECONDARY)
+                        .add(Text("🔽 Списать", {"cmd": "CentralBank.vivodBalance1"}), color=KeyboardButtonColor.SECONDARY)
+                        .row()
+                        .add(Text("💸 Перевод денег", {"cmd": "CentralBank.transfer"}), color=KeyboardButtonColor.SECONDARY)
+                        .row()
+                        .add(Text("💱 Курс валют", {"cmd": "CentralBank.CourceVallet"}), color=KeyboardButtonColor.SECONDARY)
+                        .add(Text("💱 Обменник валют", {"cmd": "CentralBank.exchanger1"}), color=KeyboardButtonColor.SECONDARY)
+                        .row()
+                        .add(Text("🏦 Пополнить счет фракции", {"cmd": "CentralBank.fractionAdd"}), color=KeyboardButtonColor.SECONDARY)
+                        .get_json()
+                )
+            )
+    else:
+        await message.answer(
+            message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 Банковские операции над картой\n\n"
+                    f"👤 Здраствуйте, {data[3]}.\n\n"
+                    f"💳 Выберите опцию, которой хотите воспользоваться",
+            keyboard=(
+                Keyboard(one_time=True, inline=False)
+                    .add(Text("💳 Выйти", {"cmd": "CentralBank.Show"}), color=KeyboardButtonColor.PRIMARY)
+                    .row()
+                    .add(Text("ℹ Баланс карты", {"cmd": "CentralBank.Balance"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("🔼 Пополнить", {"cmd": "CentralBank.addBalance1"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("🔽 Списать", {"cmd": "CentralBank.vivodBalance1"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("💸 Перевод денег", {"cmd": "CentralBank.transfer"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("💱 Курс валют", {"cmd": "CentralBank.CourceVallet"}), color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("💱 Обменник валют", {"cmd": "CentralBank.exchanger1"}), color=KeyboardButtonColor.SECONDARY)
+                    .row()
+                    .add(Text("🏦 Пополнить счет фракции", {"cmd": "CentralBank.fractionAdd"}),  color=KeyboardButtonColor.SECONDARY)
+                    .add(Text("🏦 Снять со счета фракции", {"cmd": "CentralBank.fractionVivod"}), color=KeyboardButtonColor.SECONDARY)
+                    .get_json()
+            )
+        )
+
+
+
+
+
+
+async def fractionVivod(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'CentralBank.fractionVivodCheck'")
+    data_user = await database.getUserData(message.from_id)
+
     await message.answer(
-        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 Банковские операции над картой\n\n"
-                f"👤 Здраствуйте, {data[3]}.\n\n"
-                f"💳 Выберите опцию, которой хотите воспользоваться",
+        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 » 🏦 Снять со счета фракции\n\n"
+                f"📝 Введите количество денег для снятия со счета фракции",
         keyboard=(
             Keyboard(one_time=True, inline=False)
-                .add(Text("💳 Выйти", {"cmd": "CentralBank.Show"}), color=KeyboardButtonColor.PRIMARY)
+                .add(Text("◀ Отмена", {"cmd": "CentralBank.Bankomat"}), color=KeyboardButtonColor.PRIMARY)
                 .row()
-                .add(Text("ℹ Баланс карты", {"cmd": "CentralBank.Balance"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("25", {"cmd": "CentralBank.fractionVivodCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("50", {"cmd": "CentralBank.fractionVivodCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("100", {"cmd": "CentralBank.fractionVivodCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("250", {"cmd": "CentralBank.fractionVivodCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("500", {"cmd": "CentralBank.fractionVivodCheck"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
-                .add(Text("🔼 Пополнить", {"cmd": "CentralBank.addBalance1"}), color=KeyboardButtonColor.SECONDARY)
-                .add(Text("🔽 Списать", {"cmd": "CentralBank.vivodBalance1"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("1000", {"cmd": "CentralBank.fractionVivodCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("2500", {"cmd": "CentralBank.fractionVivodCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("5000", {"cmd": "CentralBank.fractionVivodCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("10000", {"cmd": "CentralBank.fractionVivodCheck"}), color=KeyboardButtonColor.SECONDARY)
                 .row()
-                .add(Text("💸 Перевод денег", {"cmd": "CentralBank.transfer"}), color=KeyboardButtonColor.SECONDARY)
-                .add(Text("💱 Обменник валют", {"cmd": "CentralBank.ComingSoon"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("25000", {"cmd": "CentralBank.fractionVivodCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("50000", {"cmd": "CentralBank.fractionVivodCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("100000", {"cmd": "CentralBank.fractionVivodCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("250000", {"cmd": "CentralBank.fractionVivodCheck"}), color=KeyboardButtonColor.SECONDARY)
                 .get_json()
         )
     )
+
+
+async def fractionVivodCheck(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    data_fraction = await database.getBdData('fractions', 'name', f"'{data[22]}'")
+    if message.text.isdigit():
+        count = int(message.text)
+        if 0 < count:
+            if data_fraction[7] >= count:
+                new_balance = int(data[16]) + count
+
+                await database.setMultiUserData(message.from_id, f"bank_dollars = '{new_balance}'")
+                await database.setBdData('fractions', 'name', f"'{data[22]}'", 'bank', f"'{data_fraction[7] - count}'")
+                await message.answer(
+                    message=f"✅ Вы успешно сняли деньги со счета фракции"
+                    )
+                await Bankomat(message, bot, api)
+            else:
+                await message.answer(
+                    message=f"❌ На банковском счету фракции нету столько денег"
+                )
+                await Bankomat(message, bot, api)
+        else:
+            await message.answer(
+                message=f"❌ Укажите число больше 0",
+            )
+            await fractionVivod(message, bot, api)
+    else:
+        await message.answer(
+            message=f"❌ Укажите число больше 0",
+        )
+        await fractionVivod(message, bot, api)
+
+
+
+
+
+async def fractionAdd(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'CentralBank.fractionAddCheck'")
+    data_user = await database.getUserData(message.from_id)
+
+    await message.answer(
+        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 » 🏦 Пополнить счет фракции\n\n"
+                f"📝 Введите количество денег для пополнения счета фракции",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Отмена", {"cmd": "CentralBank.Bankomat"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("25", {"cmd": "CentralBank.fractionAddCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("50", {"cmd": "CentralBank.fractionAddCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("100", {"cmd": "CentralBank.fractionAddCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("250", {"cmd": "CentralBank.fractionAddCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("500", {"cmd": "CentralBank.fractionAddCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("1000", {"cmd": "CentralBank.fractionAddCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("2500", {"cmd": "CentralBank.fractionAddCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("5000", {"cmd": "CentralBank.fractionAddCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("10000", {"cmd": "CentralBank.fractionAddCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("25000", {"cmd": "CentralBank.fractionAddCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("50000", {"cmd": "CentralBank.fractionAddCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("100000", {"cmd": "CentralBank.fractionAddCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("250000", {"cmd": "CentralBank.fractionAddCheck"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+async def fractionAddCheck(message: Message, bot: Bot, api: API):
+    data = await database.getUserData(message.from_id)
+    if message.text.isdigit():
+        count = int(message.text)
+        if 0 < count:
+            if data[16] >= count:
+                new_balance = int(data[16]) - count
+                data_fraction = await database.getBdData('fractions', 'name', f"'{data[22]}'")
+                await database.setMultiUserData(message.from_id, f"bank_dollars = '{new_balance}'")
+                await database.setBdData('fractions', 'name', f"'{data[22]}'", 'bank', f"'{data_fraction[7] + count}'")
+                await message.answer(
+                    message=f"✅ Вы успешно пополнили счет фракции"
+                    )
+                await Bankomat(message, bot, api)
+            else:
+                await message.answer(
+                    message=f"❌ У вас нет столько денег в банке"
+                )
+                await Bankomat(message, bot, api)
+        else:
+            await message.answer(
+                message=f"❌ Укажите число больше 0",
+            )
+            await fractionAdd(message, bot, api)
+    else:
+        await message.answer(
+            message=f"❌ Укажите число больше 0",
+        )
+        await fractionAdd(message, bot, api)
+
+
+
+
+
+async def CourceValletDollars(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'CentralBank.CourceValletDollars'")
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    data = ast.literal_eval(server_settings[16])
+    data = list(data)
+    await message.answer(
+        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💱 » 💵 Доллары\n\n"
+                f"⚠ Вы просматриваете обмен с долларов на другие валюты.\n\n"
+                f"1 доллар (💵) = {data[0]} евро (💶)\n"
+                f"1 доллар (💵) = {data[1]} иен (💴)\n"
+                f"1 доллар (💵) = {data[2]} фунтов (💷)\n",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "CentralBank.CourceVallet"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
+        )
+    )
+
+
+async def CourceValletEuro(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'CentralBank.CourceValletEuro'")
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    data = ast.literal_eval(server_settings[16])
+    data = list(data)
+    await message.answer(
+        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💱 » 💶 Евро\n\n"
+                f"⚠ Вы просматриваете обмен с евро на другие валюты.\n\n"
+                f"1 евро (💶) = {data[3]} доллары (💵)\n"
+                f"1 евро (💶) = {data[4]} иен (💴)\n"
+                f"1 евро (💶) = {data[5]} фунтов (💷)\n",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "CentralBank.CourceVallet"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
+        )
+    )
+
+
+
+async def CourceValletYen(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'CentralBank.CourceValletYen'")
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    data = ast.literal_eval(server_settings[16])
+    data = list(data)
+    await message.answer(
+        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💱 » 💴 Иены\n\n"
+                f"⚠ Вы просматриваете обмен с иены на другие валюты.\n\n"
+                f"1 иена (💴) = {data[6]} доллары (💵)\n"
+                f"1 иена (💴) = {data[7]} евро (💶)\n"
+                f"1 иена (💴) = {data[8]} фунтов (💷)\n",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "CentralBank.CourceVallet"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
+        )
+    )
+
+
+async def CourceValletPounds(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'CentralBank.CourceValletPounds'")
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    data = ast.literal_eval(server_settings[16])
+    data = list(data)
+    await message.answer(
+        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💱 » 💷 Фунты\n\n"
+                f"⚠ Вы просматриваете обмен с иены на другие валюты.\n\n"
+                f"1 фунт (💷) = {data[9]} доллары (💵)\n"
+                f"1 фунт (💷) = {data[10]} евро (💶)\n"
+                f"1 фунт (💷) = {data[11]} иен (💴)\n",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "CentralBank.CourceVallet"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
+        )
+    )
+
+
+async def CourceVallet(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'CentralBank.CourceVallet'")
+    await message.answer(
+        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💱 Курс валют\n\n"
+                f"⤵ Выберите валюту на которую хотите посмотреть курс",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Назад", {"cmd": "CentralBank.Bankomat"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("💵 Доллары", {"cmd": "CentralBank.CourceValletDollars"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("💶 Евро", {"cmd": "CentralBank.CourceValletEuro"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("💴 Иены", {"cmd": "CentralBank.CourceValletYen"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("💷 Фунты", {"cmd": "CentralBank.CourceValletPounds"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+
+async def exchanger1(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'CentralBank.exchangerError'")
+    await database.setUserData(message.from_id, 'temporary_var', "'[]'")
+    await message.answer(
+        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 » 💱 Обменник валют\n\n"
+                f"Выберите валюту, с которой хотите произвести обмен",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("◀ Отмена", {"cmd": "CentralBank.Bankomat"}), color=KeyboardButtonColor.PRIMARY)
+                .row()
+                .add(Text("💵 Доллары", {"cmd": "CentralBank.exchanger2"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("💶 Евро", {"cmd": "CentralBank.exchanger2"}), color=KeyboardButtonColor.SECONDARY)
+                .row()
+                .add(Text("💴 Иены", {"cmd": "CentralBank.exchanger2"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("💷 Фунты", {"cmd": "CentralBank.exchanger2"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+async def exchanger2(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'CentralBank.exchangerError'")
+    data = await database.getUserData(message.from_id)
+
+    data = ast.literal_eval(data[44])
+    data = list(data)
+
+    KEYBOARD = Keyboard(one_time=True, inline=False)
+    KEYBOARD.add(Text("◀ Отмена", {"cmd": "CentralBank.Bankomat"}), color=KeyboardButtonColor.PRIMARY)
+    KEYBOARD.row()
+    if message.text == '💵 Доллары':
+        data.append(0)
+        KEYBOARD.add(Text("💶 Евро", {"cmd": "CentralBank.exchanger3"}), color=KeyboardButtonColor.SECONDARY)
+        KEYBOARD.row()
+        KEYBOARD.add(Text("💴 Иены", {"cmd": "CentralBank.exchanger3"}), color=KeyboardButtonColor.SECONDARY)
+        KEYBOARD.add(Text("💷 Фунты", {"cmd": "CentralBank.exchanger3"}), color=KeyboardButtonColor.SECONDARY)
+    if message.text == '💶 Евро':
+        data.append(1)
+        KEYBOARD.add(Text("💵 Доллары", {"cmd": "CentralBank.exchanger3"}), color=KeyboardButtonColor.SECONDARY)
+        KEYBOARD.row()
+        KEYBOARD.add(Text("💴 Иены", {"cmd": "CentralBank.exchanger3"}), color=KeyboardButtonColor.SECONDARY)
+        KEYBOARD.add(Text("💷 Фунты", {"cmd": "CentralBank.exchanger3"}), color=KeyboardButtonColor.SECONDARY)
+    if message.text == '💴 Иены':
+        data.append(2)
+        KEYBOARD.add(Text("💵 Доллары", {"cmd": "CentralBank.exchanger3"}), color=KeyboardButtonColor.SECONDARY)
+        KEYBOARD.row()
+        KEYBOARD.add(Text("💶 Евро", {"cmd": "CentralBank.exchanger3"}), color=KeyboardButtonColor.SECONDARY)
+        KEYBOARD.add(Text("💷 Фунты", {"cmd": "CentralBank.exchanger3"}), color=KeyboardButtonColor.SECONDARY)
+    if message.text == '💷 Фунты':
+        data.append(3)
+        KEYBOARD.add(Text("💵 Доллары", {"cmd": "CentralBank.exchanger3"}), color=KeyboardButtonColor.SECONDARY)
+        KEYBOARD.row()
+        KEYBOARD.add(Text("💶 Евро", {"cmd": "CentralBank.exchanger3"}), color=KeyboardButtonColor.SECONDARY)
+        KEYBOARD.add(Text("💴 Иены", {"cmd": "CentralBank.exchanger3"}), color=KeyboardButtonColor.SECONDARY)
+    KEYBOARD.get_json()
+    await database.setUserData(message.from_id, 'temporary_var', f'"{data}"')
+    await message.answer(
+        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 » 💱 Обменник валют\n\n"
+                f"Выберите валюту, в которую хотите произвести обмен",
+        keyboard=KEYBOARD
+    )
+
+
+
+async def exchanger3(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'CentralBank.exchanger3_check'")
+    data = await database.getUserData(message.from_id)
+
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    exchange = ast.literal_eval(server_settings[16])
+    exchange = list(exchange)
+
+    data = ast.literal_eval(data[44])
+    data = list(data)
+    if message.text == '💵 Доллары':
+        data.append(0)
+    if message.text == '💶 Евро':
+        data.append(1)
+    if message.text == '💴 Иены':
+        data.append(2)
+    if message.text == '💷 Фунты':
+        data.append(3)
+    if data[0] == 0:
+        title = 'долларов (💵)'
+        title_one = 'доллар (💵)'
+        if data[1] == 1:
+            minimum = 10
+            data[1] = 0
+        if data[1] == 2:
+            minimum = 10
+            data[1] = 1
+        if data[1] == 3:
+            minimum = 10
+            data[1] = 2
+    if data[0] == 1:
+        title = 'евро (💶)'
+        title_one = 'евро (💶)'
+        if data[1] == 3:
+            minimum = 10
+            data[1] = 5
+        if data[1] == 2:
+            minimum = 10
+            data[1] = 4
+        if data[1] == 0:
+            minimum = 10
+            data[1] = 3
+    if data[0] == 2:
+        title = 'иен (💴)'
+        title_one = 'иену (💴)'
+        if data[1] == 0:
+            minimum = 5000
+            data[1] = 6
+        if data[1] == 1:
+            minimum = 5000
+            data[1] = 7
+        if data[1] == 3:
+            minimum = 5000
+            data[1] = 8
+    if data[0] == 3:
+        title = 'фунтов (💷)'
+        title_one = 'фунт (💷)'
+        if data[1] == 0:
+            minimum = 10
+            data[1] = 9
+        if data[1] == 1:
+            minimum = 10
+            data[1] = 10
+        if data[1] == 2:
+            minimum = 10
+            data[1] = 11
+    await database.setUserData(message.from_id, 'temporary_var', f'"{data}"')
+    await message.answer(
+        message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 » 💱 Обменник валют\n\n"
+                f"⚠ Минимальное количество для перевода {minimum} {title}\n"
+                f"💱 За 1 {title_one} вы получите {exchange[data[1]]}\n\n"
+                f"✏ Напиши количество {title} для перевода",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Отмена", {"cmd": "CentralBank.Bankomat"}), color=KeyboardButtonColor.PRIMARY)
+                .get_json()
+        )
+    )
+
+
+async def exchanger3_check(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'block.Show'")
+    data = await database.getUserData(message.from_id)
+    temporary_var = ast.literal_eval(data[44])
+    temporary_var = list(temporary_var)
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    exchange = ast.literal_eval(server_settings[16])
+    exchange = list(exchange)
+    if temporary_var[0] == 0:
+        minimum = 10
+        type_vallet = 16
+    if temporary_var[0] == 1:
+        minimum = 10
+        type_vallet = 17
+    if temporary_var[0] == 2:
+        minimum = 5000
+        type_vallet = 18
+    if temporary_var[0] == 3:
+        minimum = 10
+        type_vallet = 19
+
+    if temporary_var[1] == 0:
+        end_vallet = 17
+    if temporary_var[1] == 1:
+        end_vallet = 18
+    if temporary_var[1] == 2:
+        end_vallet = 19
+
+    if temporary_var[1] == 3:
+        end_vallet = 16
+    if temporary_var[1] == 4:
+        end_vallet = 18
+    if temporary_var[1] == 5:
+        end_vallet = 19
+
+    if temporary_var[1] == 6:
+        end_vallet = 16
+    if temporary_var[1] == 7:
+        end_vallet = 17
+    if temporary_var[1] == 8:
+        end_vallet = 19
+
+    if temporary_var[1] == 9:
+        end_vallet = 16
+    if temporary_var[1] == 10:
+        end_vallet = 17
+    if temporary_var[1] == 11:
+        end_vallet = 18
+
+    if message.text.isdigit():
+        count = int(message.text)
+        if 0 < count:
+            if count >= minimum:
+                if data[type_vallet] >= count:
+
+                    procent = count / 100
+                    countprocent = count - (procent * 2)
+                    out_bank = data[type_vallet] - count
+                    in_bank = int(data[end_vallet] + (exchange[temporary_var[1]] * countprocent))
+
+                    if type_vallet == 16:
+                        name_out = 'bank_dollars'
+                    if type_vallet == 17:
+                        name_out = 'bank_euro'
+                    if type_vallet == 18:
+                        name_out = 'bank_yen'
+                    if type_vallet == 19:
+                        name_out = 'bank_pounds'
+
+                    if end_vallet == 16:
+                        name_in = 'bank_dollars'
+                    if end_vallet == 17:
+                        name_in = 'bank_euro'
+                    if end_vallet == 18:
+                        name_in = 'bank_yen'
+                    if end_vallet == 19:
+                        name_in = 'bank_pounds'
+
+                    await database.setMultiUserData(message.from_id, f"{name_out} = '{out_bank}'")
+                    await database.setMultiUserData(message.from_id, f"{name_in} = '{in_bank}'")
+                    await message.answer(
+                        message=f"✅ Вы успешно обменяли валюту! (с учетом комиссии 2%)"
+                    )
+                    await Bankomat(message, bot, api)
+                else:
+                    await message.answer(
+                        message=f"❌ У вас нет столько денег в банке"
+                    )
+                    await Bankomat(message, bot, api)
+            else:
+                await message.answer(
+                    message=f"❌ Вы должны указать число больше {minimum}",
+                )
+                await Bankomat(message, bot, api)
+        else:
+            await message.answer(
+                message=f"❌ Укажите число больше 0",
+            )
+            await Bankomat(message, bot, api)
+    else:
+        await message.answer(
+            message=f"❌ Укажите число больше 0",
+        )
+        await Bankomat(message, bot, api)
+
+
 
 
 
@@ -511,7 +1047,7 @@ async def vivodBalanceYenCheck(message: Message, bot: Bot, api: API):
 
 
 async def vivodBalanceEuro(message: Message, bot: Bot, api: API):
-    await database.setUserData(message.from_id, 'state', "'CentralBank.addBalanceEuroCheck'")
+    await database.setUserData(message.from_id, 'state', "'CentralBank.vivodBalanceEuroCheck'")
     await message.answer(
         message=f"🎯 » 🗺 » 🏛 » 🏦 » 💳 » 🔽 » 💶 Евро\n\n"
                 f"📝 Введите количество денег, которое вы хотите снять",

@@ -18,9 +18,16 @@ async def Show(message: Message, bot: Bot, api: API):
         num2 = await database.pretty(data[13])
         num3 = await database.pretty(data[14])
         num4 = await database.pretty(data[15])
+        real_time = datetime.datetime.now()
+        real_time_hour = real_time.hour
+        real_time_minute = real_time.minute
+        TEXT_OBJ = ''
+        if int(real_time.hour) == 20:
+            if int(5 <= real_time.minute < 10):
+                TEXT_OBJ = '🥚 Мероприятие «Собиратели» уже скоро начнется. Найти данное мероприятие можно во вкладке «🗺 Карта», в категории «🎭 Мероприятия»\n\n'
         if data[11] == 0:
             await message.answer(
-                message=f"🎯 Главное меню{server_settings[21]}\n\n"
+                message=f"🎯 Главное меню{server_settings[21]}\n\n{TEXT_OBJ}"
                         f"💵 Доллары на руках » {num1}\n"
                         f"💶 Евро на руках » {num2}\n"
                         f"💴 Иены на руках » {num3}\n"
@@ -49,7 +56,7 @@ async def Show(message: Message, bot: Bot, api: API):
             )
         else:
             await message.answer(
-                message=f"🎯 Главное меню{server_settings[21]}\n\n"
+                message=f"🎯 Главное меню{server_settings[21]}\n\n{TEXT_OBJ}"
                         f"💵 Доллары на руках » {num1}\n"
                         f"💶 Евро на руках » {num2}\n"
                         f"💴 Иены на руках » {num3}\n"
@@ -91,11 +98,18 @@ async def ShowFixFromId(from_id, bot: Bot, api: API):
         num2 = await database.pretty(data[13])
         num3 = await database.pretty(data[14])
         num4 = await database.pretty(data[15])
+        real_time = datetime.datetime.now()
+        real_time_hour = real_time.hour
+        real_time_minute = real_time.minute
+        TEXT_OBJ = ''
+        if int(real_time.hour) == 20:
+            if int(5 <= real_time.minute < 10):
+                TEXT_OBJ = '🥚 Мероприятие «Собиратели» уже скоро начнется. Найти данное мероприятие можно во вкладке «🗺 Карта», в категории «🎭 Мероприятия»\n\n'
         if data[11] == 0:
             await bot.api.messages.send(
                 user_id=from_id,
                 random_id=random.randint(1, 999999999),
-                message=f"🎯 Главное меню{server_settings[21]}\n\n"
+                message=f"🎯 Главное меню{server_settings[21]}\n\n{TEXT_OBJ}"
                         f"💵 Доллары на руках » {num1}\n"
                         f"💶 Евро на руках » {num2}\n"
                         f"💴 Иены на руках » {num3}\n"
@@ -126,7 +140,7 @@ async def ShowFixFromId(from_id, bot: Bot, api: API):
             await bot.api.messages.send(
                 user_id=from_id,
                 random_id=random.randint(1, 999999999),
-                message=f"🎯 Главное меню{server_settings[21]}\n\n"
+                message=f"🎯 Главное меню{server_settings[21]}\n\n{TEXT_OBJ}"
                         f"💵 Доллары на руках » {num1}\n"
                         f"💶 Евро на руках » {num2}\n"
                         f"💴 Иены на руках » {num3}\n"
@@ -165,9 +179,16 @@ async def Mini(message: Message, bot: Bot, api: API):
     num2 = await database.pretty(data[13])
     num3 = await database.pretty(data[14])
     num4 = await database.pretty(data[15])
+    real_time = datetime.datetime.now()
+    real_time_hour = real_time.hour
+    real_time_minute = real_time.minute
+    TEXT_OBJ = ''
+    if int(real_time.hour) == 20:
+        if int(5 <= real_time.minute < 10):
+            TEXT_OBJ = '🥚 Мероприятие «Собиратели» уже скоро начнется. Найти данное мероприятие можно во вкладке «🗺 Карта», в категории «🎭 Мероприятия»\n\n'
     if data[11] == 0:
         await message.answer(
-            message=f"🎯 Главное меню{server_settings[21]}\n\n"
+            message=f"🎯 Главное меню{server_settings[21]}\n\n{TEXT_OBJ}"
                     f"💵 Доллары на руках » {num1}\n"
                     f"💶 Евро на руках » {num2}\n"
                     f"💴 Иены на руках » {num3}\n"
@@ -193,7 +214,7 @@ async def Mini(message: Message, bot: Bot, api: API):
         )
     if data[11] > 0:
         await message.answer(
-            message=f"🎯 Главное меню{server_settings[21]}\n\n"
+            message=f"🎯 Главное меню{server_settings[21]}\n\n{TEXT_OBJ}"
                     f"💵 Доллары на руках » {num1}\n"
                     f"💶 Евро на руках » {num2}\n"
                     f"💴 Иены на руках » {num3}\n"
@@ -231,11 +252,18 @@ async def MiniFix(from_id, bot: Bot, api: API):
     num2 = await database.pretty(data[13])
     num3 = await database.pretty(data[14])
     num4 = await database.pretty(data[15])
+    real_time = datetime.datetime.now()
+    real_time_hour = real_time.hour
+    real_time_minute = real_time.minute
+    TEXT_OBJ = ''
+    if int(real_time.hour) == 20:
+        if int(5 <= real_time.minute < 10):
+            TEXT_OBJ = '🥚 Мероприятие «Собиратели» уже скоро начнется. Найти данное мероприятие можно во вкладке «🗺 Карта», в категории «🎭 Мероприятия»\n\n'
     if data[11] == 0:
         await bot.api.messages.send(
             user_id=from_id,
             random_id=random.randint(1, 999999999),
-            message=f"🎯 Главное меню{server_settings[21]}\n\n"
+            message=f"🎯 Главное меню{server_settings[21]}\n\n{TEXT_OBJ}"
                     f"💵 Доллары на руках » {num1}\n"
                     f"💶 Евро на руках » {num2}\n"
                     f"💴 Иены на руках » {num3}\n"
@@ -263,7 +291,7 @@ async def MiniFix(from_id, bot: Bot, api: API):
         await bot.api.messages.send(
             user_id=from_id,
             random_id=random.randint(1, 999999999),
-            message=f"🎯 Главное меню{server_settings[21]}\n\n"
+            message=f"🎯 Главное меню{server_settings[21]}\n\n{TEXT_OBJ}"
                     f"💵 Доллары на руках » {num1}\n"
                     f"💶 Евро на руках » {num2}\n"
                     f"💴 Иены на руках » {num3}\n"

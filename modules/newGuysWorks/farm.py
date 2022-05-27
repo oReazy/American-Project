@@ -71,7 +71,7 @@ async def Info1(message: Message, bot: Bot, api: API):
     await message.answer(
         message=f"🥔 » 📖 Информация по зарплатам\n\n"
                 f"На данной работе есть несколько должностей. На каждой должности вы получаете разную зарплату.\n\n"
-                f"Фермер (сбор картошки) » 10 долларов (💵)\n"
+                f"Фермер (сбор картошки) » 5 долларов (💵)\n"
                 f"Тракторист » 15 долларов (💵)\n"
                 f"Комбайнер » 75 долларов (💵)\n"
                 f"Пилот кукурузника » 150 долларов (💵)",
@@ -210,6 +210,7 @@ async def rab1_5(message: Message, bot: Bot, api: API):
 
 async def rab1_6(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'farm.rab1_6'")
+    await asyncio.sleep(1)
     await message.answer(
         message=f"👨‍🌾 Собирайте урожай",
         keyboard=(
@@ -234,7 +235,7 @@ async def rab1_7(message: Message, bot: Bot, api: API):
     datafarm[0] = int(datafarm[0]) + 1
     await database.setMultiUserData(message.from_id, f"temporary_var = '{new_data}', skillWorks = '{datafarm}'")
     await message.answer(
-        message=f"🥔 Вы собрали {kukurusa} картошки"
+        message=f"🥔 Вы собрали {kukurusa} картошку(и)"
     )
     await rab1_8(message, bot, api)
 
@@ -242,6 +243,7 @@ async def rab1_7(message: Message, bot: Bot, api: API):
 
 async def rab1_8(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'farm.rab1_8'")
+    await asyncio.sleep(1)
     await message.answer(
         message=f"🥔 Хотите продолжить работу или сдать всю картошку и получить деньги за труд?",
         keyboard=(
@@ -258,7 +260,7 @@ async def rab1_end(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'farm.Show'")
     data = await database.getUserData(message.from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
-    zarplata = int(data[44]) * 10 * server_settings[26]
+    zarplata = int(data[44]) * 5 * server_settings[26]
     itog = int(data[12]) + zarplata
     await database.setUserData(message.from_id, 'dollars', f"'{itog}'")
 
@@ -448,6 +450,7 @@ async def rab2_7(message: Message, bot: Bot, api: API):
 
 
 async def rab2_8(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'block.Show'")
     data = await database.getUserData(message.from_id)
     datafarm = ast.literal_eval(data[30])
     datafarm = list(datafarm)
@@ -722,6 +725,7 @@ async def rab3_9(message: Message, bot: Bot, api: API):
 
 
 async def rab3_9_1(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'block.Show'")
     data = await database.getUserData(message.from_id)
     datafarm = ast.literal_eval(data[30])
     datafarm = list(datafarm)
@@ -1163,6 +1167,7 @@ async def rab4_16(message: Message, bot: Bot, api: API):
 
 
 async def rab4_16_1(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'block.Show'")
     data = await database.getUserData(message.from_id)
     datafarm = ast.literal_eval(data[30])
     datafarm = list(datafarm)
@@ -1290,19 +1295,19 @@ async def rab4_end3_4(message: Message, bot: Bot, api: API):
         message=f"👨‍🌾 Джейн » Как работа? Думаю ты нам помог достаточно, однако приходи к нам еще раз, ведь работы у нас всегда много.\n\nПодойти к Тому, он выдаст тебе деньги за проделанный труд",
         keyboard=(
             Keyboard(one_time=True, inline=False)
-                .add(Text("🔑 Вынуть ключи", {"cmd": "farm.rab4_end3_5_1"}), color=KeyboardButtonColor.SECONDARY)
+                .add(Text("🚶‍♂ Подойти к Тому", {"cmd": "farm.rab4_end3_5"}), color=KeyboardButtonColor.SECONDARY)
         )
     )
 
 
-async def rab4_end3_5_1(message: Message, bot: Bot, api: API):
+
+async def rab4_end3_5(message: Message, bot: Bot, api: API):
     await database.setUserData(message.from_id, 'state', "'farm.Show'")
     data = await database.getUserData(message.from_id)
     server_settings = await database.getBdData('settings', 'id', "'1'")
     zarplata = int(data[44]) * 150 * server_settings[26]
     itog = int(data[12]) + zarplata
     await database.setUserData(message.from_id, 'dollars', f"'{itog}'")
-
     await message.answer(
         message=f"👨‍🌾 Том » Ты отлично поработал на моей ферме. Ты сделал {int(data[44])} полет(а) и получаешь за это {zarplata} долларов (💵)",
         keyboard=(

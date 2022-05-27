@@ -10,7 +10,8 @@ from modules import database
 async def registration_1(message: Message, bot: Bot, api: API):
     server_settings = await database.getBdData('settings', 'id', "'1'")
     if server_settings[5] == 1:
-        await database.registerNewAccaunt(message.from_id)
+        if await database.findBaseData("vk_id", f"{message.from_id}") == 0:
+            await database.registerNewAccaunt(message.from_id)
         await database.setUserData(message.from_id, 'state', "'registration.registration_1_check'")
         await message.answer(
             message=f"👋🏻 Добро пожаловать на проект @{server_settings[3]}({server_settings[1]}) на сервер @{server_settings[4]}({server_settings[2]})\n\n"
@@ -31,9 +32,11 @@ async def registration_1(message: Message, bot: Bot, api: API):
 
 async def registration_1_check(message: Message, bot: Bot, api: API):
     if 3 <= len(message.text) <= 15:
+        text = message.text.replace("\n", "")
+        text = text.replace("\r", "")
         if await database.findBaseData('nick', f"'{message.text}'") == 0:
             await database.setUserData(message.from_id, 'state', "'registration.registration_2'")
-            await database.setUserData(message.from_id, 'nick', f"'{message.text}'")
+            await database.setUserData(message.from_id, 'nick', f"'{text}'")
             await registration_2(message, bot, api)
         else:
             await message.answer(
@@ -125,7 +128,6 @@ async def registration_4_check(message: Message, bot: Bot, api: API):
                 message=f"❌ Введите возраст в пределах от 18 до 70"
             )
             await registration_4(message, bot, api)
-
     else:
         await message.answer(
             message=f"❌ Введите возраст цифрами"
@@ -251,6 +253,38 @@ async def registration_8(message: Message, bot: Bot, api: API):
         )
     )
 
+
+async def registration_9(message: Message, bot: Bot, api: API):
+    await database.setUserData(message.from_id, 'state', "'registration.registration_9'")
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    await message.answer(
+        message=f"🔰 Желаете ли вы просмотреть дополнительную информацию о нашем сервере?",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Да", {"cmd": "excursion.Show1"}), color=KeyboardButtonColor.POSITIVE)
+                .row()
+                .add(Text("❌ Отказаться", {"cmd": "mainMenu.Show"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
+
+
+
+async def registration_9_1(from_id, bot: Bot, api: API):
+    await database.setUserData(from_id.object.user_id, 'state', "'registration.registration_9'")
+    server_settings = await database.getBdData('settings', 'id', "'1'")
+    await bot.api.messages.send(
+        user_id=from_id.object.user_id,
+        random_id=random.randint(1, 999999999),
+        message=f"🔰 Желаете ли вы просмотреть дополнительную информацию о нашем сервере?",
+        keyboard=(
+            Keyboard(one_time=True, inline=False)
+                .add(Text("Да", {"cmd": "excursion.Show1"}), color=KeyboardButtonColor.POSITIVE)
+                .row()
+                .add(Text("❌ Отказаться", {"cmd": "mainMenu.Show"}), color=KeyboardButtonColor.SECONDARY)
+                .get_json()
+        )
+    )
 
 # ----------------------------------------------------------------------------------------------------------------------
 
